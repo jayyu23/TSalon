@@ -11,7 +11,18 @@ contract Article is Ownable, ERC721 {
         string author_name;
         string content_url;
     }
-    constructor() ERC721("Article", "ARTICLE") {
-
+    string private _currentBaseURI;
+    string articleName = "Test";
+    string subTitle = "";
+    
+    constructor() ERC721("Article", "ARTICLE") {   
+        _currentBaseURI = "http://localhost/token/";
     }
+
+    function getName() public view returns (string memory){
+        return articleName;
+    }
+
+    
+    
 }
