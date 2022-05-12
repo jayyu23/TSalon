@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/jayyu23/TSalon_NFT#readme",
   "dependencies": {
+    "@openzeppelin/contracts": "^4.6.0",
     "truffle": "^5.5.13"
   }
 }
