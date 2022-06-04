@@ -18,7 +18,13 @@
   "homepage": "https://github.com/jayyu23/TSalon_NFT#readme",
   "dependencies": {
     "@openzeppelin/contracts": "^4.6.0",
+    "create-react-app": "^5.0.1",
+    "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "mongoose": "^6.3.3",
     "truffle": "^5.5.13"
+  },
+  "devDependencies": {
+    "concurrently": "^7.1.0"
   }
 }

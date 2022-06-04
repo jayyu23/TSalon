@@ -1,33 +1,23 @@
-const express = require('express')
-const app = express()
-const path = require('path')
+import article from './routes/article.route.js'
+import cors from 'cors'
+import express from 'express'
+import mongoose from 'mongoose'
 
 const port = 8080;
 const baseUri = "http://localhost:8080";
 const contractAddress = '0x91F3923e2d0FA2A1E41bd97bB64b2555239D4D56';
 
-const Web3 = require('web3');
-console.log(__dirname)
-const ArticleToken = require("../build/contracts/Article.json");
-const web3 = new Web3(new Web3.providers.HttpProvider(`http://localhost:7545`));
-const contract = new web3.eth.Contract(ArticleToken.abi, contractAddress);
+const app = express();
 
-app.use(express.static(path.join(__dirname, '/client')));
+app.use(cors());
+app.use(express.json());
 
-app.get('/', function (req, res) {
-    res.sendFile(__dirname + "/client/index.html", function (err) {
-        if (err) {
-            console.log(err);
-        }
-        res.end();
-    });    
-})
+app.use("/api/v1/articles", article);
 
-app.get('/contract', function (req, res) {
-    res.send(contractAddress)
-})
+app.use("*", (req, res) => {
+    res.status(404).json({error: "Not Found"});
+});
 
 app.listen(port, () => {
-    console.log(__dirname + "/client/index.html");
-    console.log(`API listening port ${port}`)
-})
+    console.log(`Server is running on Port: ${port}`);
+});

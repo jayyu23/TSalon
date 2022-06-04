@@ -6,23 +6,24 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Article is Ownable, ERC721 {
     struct Metadata {
-        string id;
         string title;
         string author_name;
         string content_url;
     }
+    mapping(uint256 => Metadata) id_map;
+
     string private _currentBaseURI;
-    string articleName = "Test";
-    string subTitle = "";
+    uint256 numTokens = 0;
     
     constructor() ERC721("Article", "ARTICLE") {   
         _currentBaseURI = "http://localhost/token/";
     }
 
-    function getName() public view returns (string memory){
-        return articleName;
+    function claim(string memory title, string memory author_name, string memory content_url) external {
+        uint tokenId = numTokens;
+        id_map[tokenId] = Metadata(title, author_name, content_url);
+        numTokens++;
+        _safeMint(msg.sender, tokenId);
     }
-
-    
     
 }
