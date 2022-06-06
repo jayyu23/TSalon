@@ -1,4 +1,4 @@
-import article from './routes/article.route.js'
+import article from '../routes/article.route.js'
 import cors from 'cors'
 import express from 'express'
 import mongoose from 'mongoose'

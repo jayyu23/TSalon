@@ -1,10 +1,8 @@
-import logo from './logo.svg';
-import navBar from './components/navbar.jsx';
-import { Component } from 'react';
-import NavBar from './components/navbar';
+import React, {Component} from 'react'
+import {Route, Routes, BrowserRouter} from 'react-router-dom'
+import HomePage from './pages/home';
 import TBook from './components/tbook';
-import { ReactDOM } from 'react';
-import TBookStore from './components/tbookstore';
+import TSalonEditor from './pages/editor';
 
 class App extends Component {
   constructor (props) {
@@ -13,10 +11,13 @@ class App extends Component {
   // state = {  } 
   render() { 
     return (
-      <div className="App">
-        <NavBar />
-        <TBookStore />
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage/>}/>
+          <Route path="/book" element={<TBook/>}/>
+          <Route path="/editor" element={<TSalonEditor/>}/>
+        </Routes>
+     </BrowserRouter>
     );
   }
 }
