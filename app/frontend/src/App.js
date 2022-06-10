@@ -5,6 +5,7 @@ import TBook from "./components/tbook";
 import TSalonEditor from "./pages/editor";
 import TBookView from "./components/tbookview";
 import Error404 from "./pages/error404";
+import UserMenu from "./components/usermenu";
 
 class App extends Component {
   constructor(props) {
@@ -16,7 +17,7 @@ class App extends Component {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/book" element={<TBook />} />
+          <Route path="/usermenu" element={<UserMenu />} />
           <Route path="/editor" element={<TSalonEditor />} />
           <Route path="/view" element={<TBookView />} />
           <Route path="/error" element={<Error404 />} />
