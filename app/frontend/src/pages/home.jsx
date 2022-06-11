@@ -10,7 +10,7 @@ class HomePage extends Component {
   render() {
     return (
       <div className="App container-flex d-col">
-        <NavBar />
+        <NavBar showImage="true" />
         <div className="my-5">
           <TBookStore />
         </div>

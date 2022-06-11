@@ -3,7 +3,7 @@ import React, { Component } from "react";
 class NavBar extends Component {
   constructor(props) {
     super(props);
-    this.state = { showImage: false };
+    this.state = { showImage: "false" };
   }
   imgUrl = "/assets/cafedeflore.jpg";
   logoUrl = "/assets/logo_circle.png";
@@ -12,7 +12,7 @@ class NavBar extends Component {
   getNavBarHTML(showImage) {
     let darkHeader = " navbar-dark bg-dark";
     let lightHeader = " navbar-light";
-    let modifier = showImage ? lightHeader : darkHeader;
+    let modifier = showImage === "true" ? lightHeader : darkHeader;
 
     let navbarHTML = (
       <nav
@@ -110,7 +110,7 @@ class NavBar extends Component {
       ? this.props.showImage
       : this.state.showImage;
 
-    if (this.state.showImage) {
+    if (showImage === "true") {
       outHTML = (
         <div id="navBarHeader">
           {this.getNavBarHTML(showImage)} {this.bgImageHTML}

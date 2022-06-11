@@ -22,7 +22,7 @@ class TSalonEditor extends Component {
           <div className="col-9">
             <h1 className="my-5 pt-5 text-center">TSalon Editor</h1>
             <div className="form-group container-fluid px-5 py-4 row">
-              <div className="col-xl-4">
+              <div className="col-xl-5">
                 <h4 className="font-weight-normal">Image Cover</h4>
                 <img
                   src={this.imgUrl}
@@ -38,7 +38,7 @@ class TSalonEditor extends Component {
                 />
                 <p className="text-muted mb-3 mt-2">300x300 PNG</p>
               </div>
-              <div className="col-xl-8">
+              <div className="col-xl-7">
                 <h4 className="font-weight-normal">Title</h4>
                 <input
                   className="form-control"
