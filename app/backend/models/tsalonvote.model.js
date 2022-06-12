@@ -1,4 +1,3 @@
-import { Int32 } from "mongodb";
 import mongoose from "mongoose";
 import tsalonmemberModel from "./tsalonmember.model.js";
 
@@ -8,7 +7,7 @@ const TSalonVoteSchema = new mongoose.Schema({
     default: [],
     required: "Vote count required",
   },
-  TBSN: {
+  tbsn: {
     type: Number,
     required: "TBSN required",
   },

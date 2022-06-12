@@ -1,4 +1,3 @@
-import { Int32 } from "mongodb";
 import mongoose from "mongoose";
 import tbookdraftModel from "./tbookdraft.model.js";
 import tbookpubModel from "./tbookpub.model.js";

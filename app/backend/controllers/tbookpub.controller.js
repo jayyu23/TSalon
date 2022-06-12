@@ -2,9 +2,10 @@ import tbookpubModel from "../models/tbookpub.model.js";
 import extend from "lodash/extend.js";
 
 const create = (req, res, next) => {
-  console.log("hi");
-  const publication = new tbookpubModel(req.body);
-  console.log(publication);
+  let fields = req.body;
+  fields.tbsn = 0; // dummy
+  // get tbsn
+  const publication = new tbookpubModel(fields);
   try {
     publication.save();
     return res.status(200).json({ message: "Publication success" });
@@ -21,7 +22,6 @@ const list = (req, res, next) => {
       .exec()
       .then((acc, rej) => {
         let publications = acc;
-        console.log(publications);
         return res.json(publications);
       });
   } catch (err) {
@@ -31,16 +31,44 @@ const list = (req, res, next) => {
 };
 const getFromTBSN = (req, res, next, tbsn) => {
   try {
-    let publication = tbookpubModel.find({ tbsn: tbsn });
-    console.log(publication);
-    if (!publication) {
-      return res.status(400).json({ error: "User not found" });
-    }
-    req.publication = publication;
-    next();
+    tbookpubModel
+      .findOne({ tbsn: tbsn })
+      .exec()
+      .then((acc, rej) => {
+        let publication = acc;
+        console.log(publication);
+        req.publication = publication;
+        next();
+      });
   } catch (err) {
-    return res.status(400).json({ error: err });
+    return res.status(400).json({ error: err.message });
   }
 };
 
-export default { create, list, getFromTBSN };
+const read = (req, res) => {
+  try {
+    let publication = req.publication;
+    return res.status(200).json(publication);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+};
+
+const deletePublication = (req, res) => {
+  try {
+    let publication = req.publication;
+    tbookpubModel
+      .findOneAndDelete({ tbsn: publication.tbsn })
+      .then((acc, rej) => {
+        if (acc) {
+          return res.status(200).json({ message: "delete success", acc: acc });
+        } else {
+          return res.status(400).json({ error: "error in delete" });
+        }
+      });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+};
+
+export default { create, list, getFromTBSN, read, deletePublication };
