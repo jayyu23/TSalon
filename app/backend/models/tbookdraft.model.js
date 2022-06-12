@@ -1,10 +1,10 @@
-import { Int32 } from "mongodb";
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
+import tsalonvoteModel from "./tsalonvote.model";
 
 const TBookDraftSchema = new mongoose.Schema({
   // TSBN Starts at 75000
-  TBSN: {
-    type: Int32,
+  tbsn: {
+    type: Number,
     unique: "TBSN must be unique",
     required: "TBook Serial Number (TBSN) is required",
   },
@@ -13,8 +13,8 @@ const TBookDraftSchema = new mongoose.Schema({
   content: { type: String, required: "Content is required" },
   publishDate: { type: Date },
   coverImage: { type: String, default: "assets/logo_square_blue.png" },
-  numVotes: { type: Int32, default: 0 },
-  voters: { type: Array },
+  numVotes: { type: Number, default: 0 },
+  voters: { type: [tsalonvoteModel.Schema] },
 });
 
 export default mongoose.model("TBookDraft", TBookDraftSchema);

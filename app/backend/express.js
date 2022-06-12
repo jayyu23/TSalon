@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import compress from "compression";
 import cors from "cors";
 import helmet from "helmet";
+import pubRoutes from "./routes/tbookpub.route.js";
 
 const app = express();
 
@@ -17,4 +18,6 @@ app.use(cors());
 app.get("/", (req, res) => {
   res.status(200).send("Hello World");
 });
+
+app.use("/", pubRoutes);
 export default app;

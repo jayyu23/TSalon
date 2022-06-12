@@ -1,7 +1,7 @@
 import { Int32 } from "mongodb";
 import mongoose from "mongoose";
-import tbookdraftModel from "./tbookdraft.model";
-import tbookpubModel from "./tbookpub.model";
+import tbookdraftModel from "./tbookdraft.model.js";
+import tbookpubModel from "./tbookpub.model.js";
 
 const TSalonMemberSchema = mongoose.Schema({
   username: {
@@ -19,27 +19,27 @@ const TSalonMemberSchema = mongoose.Schema({
     default: true,
   },
   tbooksPublished: {
-    type: Array[tbookpubModel],
+    type: [tbookpubModel.schema],
     default: [],
   },
   tbooksCollected: {
-    type: Array[tbookpubModel],
+    type: [tbookpubModel.schema],
     default: [],
   },
   tbooksDrafted: {
-    type: Array[tbookdraftModel],
+    type: [tbookdraftModel.schema],
     default: [],
   },
   dailyVotes: {
-    type: Int32,
+    type: Number,
     default: 10,
   },
   currentVotes: {
-    type: Int32,
+    type: Number,
     default: 10,
   },
   greenTokens: {
-    type: Int32,
+    type: Number,
     default: 0,
   },
 });
