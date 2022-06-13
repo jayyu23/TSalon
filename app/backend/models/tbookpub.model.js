@@ -8,6 +8,7 @@ const TBookPubSchema = new mongoose.Schema({
     unique: "TBSN must be unique",
     required: "TBook Serial Number (TBSN) is required",
   },
+  title: { type: String, required: "Title is required" },
   author: { type: String, required: "Author is required" },
   blurb: { type: String },
   content: { type: String, required: "Content is required" },

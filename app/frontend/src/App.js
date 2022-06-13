@@ -6,6 +6,7 @@ import TSalonEditor from "./pages/editor";
 import TBookView from "./components/tbookview";
 import Error404 from "./pages/error404";
 import UserMenu from "./components/usermenu";
+import TBookStore from "./components/tbookstore";
 
 class App extends Component {
   constructor(props) {
@@ -21,6 +22,7 @@ class App extends Component {
           <Route path="/editor" element={<TSalonEditor />} />
           <Route path="/view" element={<TBookView />} />
           <Route path="/error" element={<Error404 />} />
+          <Route path="/bookstore" element={<TBookStore />} />
           <Route path="*" element={<Navigate to="/error" />} />
         </Routes>
       </BrowserRouter>

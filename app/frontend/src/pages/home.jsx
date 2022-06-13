@@ -6,7 +6,7 @@ class HomePage extends Component {
   constructor(props) {
     super(props);
   }
-  // state = {  }
+
   render() {
     return (
       <div className="App container-flex d-col">

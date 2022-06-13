@@ -8,7 +8,9 @@ const create = (req, res, next) => {
   const publication = new tbookpubModel(fields);
   try {
     publication.save();
-    return res.status(200).json({ message: "Publication success" });
+    return res
+      .status(200)
+      .json({ message: "Publication success", publication: publication });
   } catch (err) {
     return res.status(400).json({ error: err });
   }

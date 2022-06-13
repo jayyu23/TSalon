@@ -1,56 +1,32 @@
 import React, { Component } from "react";
 import TBook from "./tbook";
-
-const apiContent = [
-  {
-    id: 1,
-    title: "Wittgenstein’s Clockface Problem",
-    blurb: "Article 1 blurb",
-    author: "Jay Yu",
-    link: "https://www.google.com",
-  },
-  {
-    id: 2,
-    title: "The Blue Book",
-    blurb: "Article 2 blurb",
-    author: "Jay Yu",
-    link: "https://www.google.com",
-  },
-  {
-    id: 3,
-    title: "The Buddhas Dao and Platos Li",
-    blurb: "Article 3 blurb",
-    author: "Jay Yu",
-    link: "https://www.google.com",
-  },
-  {
-    id: 4,
-    title: "陋室铭",
-    blurb: "Article 4 blurb",
-    author: "Jay Yu",
-    link: "https://www.google.com",
-  },
-];
+import axios from "axios";
 
 class TBookStore extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { publications: [] };
   }
-  //state = {  }
+  componentDidMount() {
+    axios.get("http://localhost:8000/api/publications").then((pubs) => {
+      console.log(pubs);
+      this.setState({ publications: pubs.data });
+    });
+  }
 
   render() {
     return (
       <div>
         <h1 className="text-center pb-4">TBookstore</h1>
         <div className="row justify-content-center p-3">
-          {apiContent.map((data) => (
+          {this.state.publications.map((data) => (
             <TBook
-              key={data.id}
+              key={data.tbsn}
               title={data.title}
               blurb={data.blurb}
               author={data.author}
               link={data.link}
+              imageCover={data.coverImage}
             />
           ))}
         </div>
