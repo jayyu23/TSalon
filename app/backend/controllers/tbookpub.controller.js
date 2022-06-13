@@ -4,16 +4,16 @@ import extend from "lodash/extend.js";
 const create = (req, res, next) => {
   let fields = req.body;
   fields.tbsn = 0; // dummy
-  // get tbsn
   const publication = new tbookpubModel(fields);
-  try {
-    publication.save();
-    return res
-      .status(200)
-      .json({ message: "Publication success", publication: publication });
-  } catch (err) {
-    return res.status(400).json({ error: err });
-  }
+  publication.save().then((acc, rej) => {
+    if (acc) {
+      return res
+        .status(200)
+        .json({ message: "Publication success", publication: acc });
+    } else {
+      return res.status(400).json({ error: rej });
+    }
+  });
 };
 
 const list = (req, res, next) => {
@@ -73,4 +73,19 @@ const deletePublication = (req, res) => {
   }
 };
 
-export default { create, list, getFromTBSN, read, deletePublication };
+const clear = (req, res) => {
+  tbookpubModel
+    .find()
+    .select()
+    .deleteMany()
+    .exec()
+    .then((acc, rej) => {
+      if (acc) {
+        return res.status(200).json({ message: "delete success", acc: acc });
+      } else {
+        return res.status(400).json({ error: "error in delete" });
+      }
+    });
+};
+
+export default { create, list, getFromTBSN, read, deletePublication, clear };

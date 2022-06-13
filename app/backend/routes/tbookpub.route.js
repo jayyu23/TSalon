@@ -9,6 +9,7 @@ router
 
 router.route("/api/publication/:tbsn").get(tbookpubController.read);
 router.route("/api/delete/:tbsn").get(tbookpubController.deletePublication);
+router.route("/api/clear").get(tbookpubController.clear);
 router.param("tbsn", tbookpubController.getFromTBSN);
 
 export default router;
