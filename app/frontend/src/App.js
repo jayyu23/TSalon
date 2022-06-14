@@ -20,7 +20,7 @@ class App extends Component {
           <Route path="/" element={<HomePage />} />
           <Route path="/usermenu" element={<UserMenu />} />
           <Route path="/editor" element={<TSalonEditor />} />
-          <Route path="/view" element={<TBookView />} />
+          <Route path="/view/:tbsn" element={<TBookView />} />
           <Route path="/error" element={<Error404 />} />
           <Route path="/bookstore" element={<TBookStore />} />
           <Route path="*" element={<Navigate to="/error" />} />

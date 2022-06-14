@@ -13,7 +13,7 @@ const TBookPubSchema = new mongoose.Schema({
   blurb: { type: String },
   content: { type: String, required: "Content is required" },
   publishDate: { type: Date, default: new Date() },
-  coverImage: { type: String, default: "assets/logo_square_blue.png" },
+  coverImage: { type: String, default: "/assets/logo_square_blue.png" },
 });
 
 TBookPubSchema.pre("save", function (next) {
