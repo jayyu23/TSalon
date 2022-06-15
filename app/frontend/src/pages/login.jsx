@@ -49,6 +49,9 @@ function LoginPage(props) {
           let data = acc.data;
           if (!data.registered) {
             navigate("/register", { state: { loginAddress: loginAddress } });
+          } else {
+            let user = data.user;
+            alert("Successfully logged in user: " + user.username);
           }
         },
         (rej) => {

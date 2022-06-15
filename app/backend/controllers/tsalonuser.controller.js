@@ -17,7 +17,11 @@ const checkWalletExists = (req, res, next) => {
           } else {
             return res
               .status(200)
-              .json({ walletAddress: walletAddress, registered: true });
+              .json({
+                walletAddress: walletAddress,
+                registered: true,
+                user: results[0],
+              });
           }
         },
         (rej) => {

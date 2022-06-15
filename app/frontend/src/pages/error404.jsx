@@ -27,6 +27,13 @@ class Error404 extends Component {
                 Error 404
               </h1>
               <h5 class="mb-4">Page Not Found</h5>
+              <a
+                className="btn btn-primary my-3"
+                href="/"
+                style={{ borderRadius: 25 }}
+              >
+                Return Home
+              </a>
             </div>
           </div>
         </div>

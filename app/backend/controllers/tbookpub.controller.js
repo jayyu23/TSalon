@@ -31,45 +31,46 @@ const list = (req, res, next) => {
     return res.status(400).json({ error: err });
   }
 };
+
 const getFromTBSN = (req, res, next, tbsn) => {
-  try {
-    tbookpubModel
-      .findOne({ tbsn: tbsn })
-      .exec()
-      .then((acc, rej) => {
+  tbookpubModel
+    .findOne({ tbsn: tbsn })
+    .exec()
+    .then(
+      (acc) => {
         let publication = acc;
         req.publication = publication;
         next();
-      });
-  } catch (err) {
-    return res.status(400).json({ error: err.message });
-  }
+      },
+      (rej) => {
+        return res.status(400).json({ error: rej.message });
+      }
+    );
 };
 
 const read = (req, res) => {
-  try {
-    let publication = req.publication;
+  let publication = req.publication;
+  if (publication) {
     return res.status(200).json(publication);
-  } catch (err) {
-    return res.status(400).json({ error: err.message });
+  } else {
+    return res.status(400).json({ error: "Invalid TBSN" });
   }
 };
 
 const deletePublication = (req, res) => {
-  try {
-    let publication = req.publication;
-    tbookpubModel
-      .findOneAndDelete({ tbsn: publication.tbsn })
-      .then((acc, rej) => {
-        if (acc) {
-          return res.status(200).json({ message: "delete success", acc: acc });
-        } else {
-          return res.status(400).json({ error: "error in delete" });
-        }
-      });
-  } catch (err) {
-    return res.status(400).json({ error: err.message });
-  }
+  let publication = req.publication;
+  tbookpubModel.findOneAndDelete({ tbsn: publication.tbsn }).then(
+    (acc) => {
+      if (acc) {
+        return res.status(200).json({ message: "delete success", acc: acc });
+      } else {
+        return res.status(400).json({ error: "error in delete" });
+      }
+    },
+    (rej) => {
+      return res.status(400).json({ error: rej.message });
+    }
+  );
 };
 
 const clear = (req, res) => {

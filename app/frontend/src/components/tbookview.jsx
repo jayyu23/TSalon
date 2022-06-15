@@ -1,32 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "./navbar";
 import parse from "html-react-parser";
 import sanitizeHTML from "sanitize-html";
 import axios from "axios";
 
 function TBookView(props) {
+  let navigate = useNavigate();
   const defaultSettings = {
-    author: "0x37849ab462373828c621de",
-    coverImage: "/assets/logo_square_blue.png",
-    title: "TSalon Manifesto",
-    content:
-      "<h3>Heya, you're an allstar!</h3><p>Am I right or am i right!!!!</p>",
+    author: "",
+    coverImage: "",
+    title: "",
+    content: "",
   };
 
   const [pub, setPub] = useState(defaultSettings);
   let { tbsn } = useParams();
   console.log(tbsn);
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/publication/" + tbsn)
-      .then((result) => {
-        if (result) {
-          let data = result.data;
-          console.log(data);
-          setPub(data);
-        }
-      });
+    axios.get("http://localhost:8000/api/publication/" + tbsn).then(
+      (result) => {
+        let data = result.data;
+        setPub(data);
+      },
+      (error) => {
+        console.log(error);
+        window.location = "/error";
+      }
+    );
   }, []);
 
   const getBodyHTML = () => {
