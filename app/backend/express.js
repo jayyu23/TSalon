@@ -5,6 +5,7 @@ import compress from "compression";
 import cors from "cors";
 import helmet from "helmet";
 import pubRoutes from "./routes/tbookpub.route.js";
+import memberRoutes from "./routes/tsalonmember.route.js";
 
 const app = express();
 
@@ -20,4 +21,5 @@ app.get("/", (req, res) => {
 });
 
 app.use("/", pubRoutes);
+app.use("/", memberRoutes);
 export default app;

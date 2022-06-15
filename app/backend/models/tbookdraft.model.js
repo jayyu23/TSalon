@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import tsalonvoteModel from "./tsalonvote.model";
+import tsalonvoteModel from "./tsalonvote.model.js";
 
 const TBookDraftSchema = new mongoose.Schema({
   // TSBN Starts at 75000

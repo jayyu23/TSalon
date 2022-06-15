@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
 import Web3 from "web3";
+import axios from "axios";
 
 function LoginPage(props) {
   let defaultLoginAddress = window.ethereum
@@ -10,6 +11,9 @@ function LoginPage(props) {
   const [loginAddress, setLoginAddress] = useState(defaultLoginAddress);
 
   useEffect(() => {
+    // upon init
+    setLoginAddress(window.ethereum.selectedAddress);
+    // upon change
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", () => {
         setLoginAddress(window.ethereum.selectedAddress);
@@ -35,6 +39,22 @@ function LoginPage(props) {
     }
   };
 
+  const checkUserExists = () => {
+    axios
+      .post("http://localhost:8000/api/checkuser", {
+        walletAddress: loginAddress,
+      })
+      .then(
+        (acc) => {
+          console.log(acc);
+          window.location = "/register";
+        },
+        (rej) => {
+          console.log(rej);
+        }
+      );
+  };
+
   return (
     <div>
       <NavBar showImage={"true"} />
@@ -47,6 +67,7 @@ function LoginPage(props) {
           <button
             className="btn btn-primary py-4 mx-5 w-25 text-center"
             onClick={loginETH}
+            style={{ borderRadius: 25 }}
           >
             Connect Using MetaMask
           </button>
@@ -57,6 +78,8 @@ function LoginPage(props) {
                 : "btn btn-success " + "py-4 px-5 w-25 text-center"
             }
             disabled={loginAddress == null}
+            onClick={checkUserExists}
+            style={{ borderRadius: 25 }}
           >
             Continue Login
           </button>

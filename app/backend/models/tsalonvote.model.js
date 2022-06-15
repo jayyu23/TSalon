@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
-import tsalonmemberModel from "./tsalonmember.model.js";
 
 const TSalonVoteSchema = new mongoose.Schema({
   member: {
-    type: [tsalonmemberModel.schema],
+    type: [String],
     default: [],
     required: "Vote count required",
   },

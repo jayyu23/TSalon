@@ -8,6 +8,7 @@ import Error404 from "./pages/error404";
 import UserMenu from "./components/usermenu";
 import TBookStore from "./components/tbookstore";
 import LoginPage from "./pages/login";
+import RegisterPage from "./pages/register";
 
 class App extends Component {
   constructor(props) {
@@ -25,6 +26,7 @@ class App extends Component {
           <Route path="/error" element={<Error404 />} />
           <Route path="/bookstore" element={<TBookStore />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="*" element={<Navigate to="/error" />} />
         </Routes>
       </BrowserRouter>
