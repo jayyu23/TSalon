@@ -38,7 +38,6 @@ const getFromTBSN = (req, res, next, tbsn) => {
       .exec()
       .then((acc, rej) => {
         let publication = acc;
-        console.log(publication);
         req.publication = publication;
         next();
       });
