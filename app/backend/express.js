@@ -5,7 +5,7 @@ import compress from "compression";
 import cors from "cors";
 import helmet from "helmet";
 import pubRoutes from "./routes/tbookpub.route.js";
-import memberRoutes from "./routes/tsalonmember.route.js";
+import memberRoutes from "./routes/tsalonuser.route.js";
 
 const app = express();
 
@@ -15,10 +15,6 @@ app.use(cookieParser());
 app.use(compress());
 app.use(helmet());
 app.use(cors());
-
-app.get("/", (req, res) => {
-  res.status(200).send("Hello World");
-});
 
 app.use("/", pubRoutes);
 app.use("/", memberRoutes);

@@ -1,7 +1,51 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
+import { useLocation } from "react-router-dom";
 
 function RegisterPage(props) {
+  const location = useLocation();
+  let loginAddress = location.state.loginAddress;
+  const checkValid = () => {
+    // Client validation
+    let usernameEntered = document.getElementById("username").value;
+    let lengthCheck =
+      usernameEntered.length >= 3 && usernameEntered.length <= 30;
+    let valueCheck = usernameEntered.match(/^[a-z\d]+([ ]{1}[a-z0-9]+)*$/i);
+    let usernameErrorMessage = document.getElementById("usernameError");
+
+    if (lengthCheck && valueCheck) {
+      // Passed client validation
+      // now query the database
+      axios
+        .post("http://localhost:8000/api/createUser", {
+          username: usernameEntered,
+          walletAddress: loginAddress,
+        })
+        .then(
+          (acc) => {
+            let data = acc.data;
+            if (data.success) {
+              alert("Login Success");
+              // TODO: Now log the user in.
+            } else {
+              usernameErrorMessage.hidden = false;
+              usernameErrorMessage.innerText =
+                "Username exists. Please select a different username.";
+            }
+          },
+          (rej) => {
+            usernameErrorMessage.hidden = false;
+            usernameErrorMessage.innerText =
+              "Server Error. Please try again later.";
+          }
+        );
+    } else {
+      usernameErrorMessage.hidden = false;
+      usernameErrorMessage.innerText = "Invalid Entry. Please retry.";
+    }
+  };
+
   return (
     <div>
       <NavBar />
@@ -14,17 +58,23 @@ function RegisterPage(props) {
         <p className="text-muted mt-1 mb-1">Your Unique Identifier on TSalon</p>
         <div className="row">
           <input
+            id="username"
             type="text"
             className="form-control w-50 ml-3 mr-4"
             style={{ maxWidth: "600px", height: 60 }}
           />
-          <button className="btn btn-success w-25" style={{ borderRadius: 25 }}>
+          <button
+            className="btn btn-success w-25"
+            style={{ borderRadius: 25 }}
+            onClick={checkValid}
+          >
             Register
           </button>
         </div>
-        <p className="text-muted mt-2">
-          Requirements: Length 3-20, Numbers, Letters, and Space Bar
+        <p className="text-muted mt-2 mb-0">
+          Requirements: Length 3-30, Numbers, Letters, and Space Bar
         </p>
+        <p id="usernameError" className="text-danger mt-0" hidden={true}></p>
       </div>
     </div>
   );

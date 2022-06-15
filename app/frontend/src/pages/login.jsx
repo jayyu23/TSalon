@@ -2,17 +2,15 @@ import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
 import Web3 from "web3";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage(props) {
-  let defaultLoginAddress = window.ethereum
-    ? window.ethereum.selectedAddress
-    : null;
-
-  const [loginAddress, setLoginAddress] = useState(defaultLoginAddress);
+  let navigate = useNavigate();
+  const [loginAddress, setLoginAddress] = useState(null);
 
   useEffect(() => {
     // upon init
-    setLoginAddress(window.ethereum.selectedAddress);
+    setLoginAddress(window.ethereum ? window.ethereum.selectedAddress : null);
     // upon change
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", () => {
@@ -34,23 +32,27 @@ function LoginPage(props) {
         }
       );
     } else {
-      alert("Login Error. MetaMask Not Detected");
+      alert(
+        "Login Error. Please set up MetaMask first as a Google Chrome extension"
+      );
       return false;
     }
   };
 
   const checkUserExists = () => {
     axios
-      .post("http://localhost:8000/api/checkuser", {
+      .post("http://localhost:8000/api/checkWallet", {
         walletAddress: loginAddress,
       })
       .then(
         (acc) => {
-          console.log(acc);
-          window.location = "/register";
+          let data = acc.data;
+          if (!data.registered) {
+            navigate("/register", { state: { loginAddress: loginAddress } });
+          }
         },
         (rej) => {
-          console.log(rej);
+          alert(rej.mesage);
         }
       );
   };

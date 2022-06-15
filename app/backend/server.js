@@ -13,6 +13,6 @@ mongoose.Promise = global.Promise;
 mongoose
   .connect(config.mongoUri)
   .then(() => {
-    console.log("success");
+    console.log("Backend init success");
   })
   .catch((error) => console.log(error));

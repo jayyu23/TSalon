@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
-import tbookdraftModel from "./tbookdraft.model.js";
-import tbookpubModel from "./tbookpub.model.js";
 
-const TSalonMemberSchema = mongoose.Schema({
+const TSalonUserSchema = mongoose.Schema({
   username: {
     type: String,
     unique: "Username must be unique",
@@ -17,20 +15,20 @@ const TSalonMemberSchema = mongoose.Schema({
     type: String,
     default: null,
   },
-  active: {
+  member: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   tbooksPublished: {
-    type: [tbookpubModel.schema],
+    type: [Number],
     default: [],
   },
   tbooksCollected: {
-    type: [tbookpubModel.schema],
+    type: [Number],
     default: [],
   },
   tbooksDrafted: {
-    type: [tbookdraftModel.schema],
+    type: [Number],
     default: [],
   },
   dailyVotes: {
@@ -47,4 +45,4 @@ const TSalonMemberSchema = mongoose.Schema({
   },
 });
 
-export default mongoose.model("TSalonMember", TSalonMemberSchema);
+export default mongoose.model("TSalonUser", TSalonUserSchema);
