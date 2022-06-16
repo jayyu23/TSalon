@@ -20,7 +20,7 @@ const list = (req, res, next) => {
   try {
     tbookpubModel
       .find()
-      .select()
+      .sort({ tbsn: -1 })
       .exec()
       .then((acc, rej) => {
         let publications = acc;

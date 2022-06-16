@@ -47,17 +47,6 @@ class NavBar extends Component {
                   Login
                 </a>
               </li>
-
-              <li className="nav-item">
-                <a
-                  className="nav-link px-lg-3 py-3 py-lg-4"
-                  target="_blank"
-                  href="/editor"
-                >
-                  Editor
-                </a>
-              </li>
-
               <li className="nav-item">
                 <a
                   className="nav-link px-lg-3 py-3 py-lg-4"

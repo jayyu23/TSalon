@@ -1,15 +1,21 @@
 import axios from "axios";
 import { React, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SunEditor from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css"; // Import Sun Editor's CSS File
 import NavBar from "../components/navbar";
 import UserMenu from "../components/usermenu";
-
-const author = "Anonymous";
+import wordsCount from "words-count";
 
 function TSalonEditor(props) {
-  const blurbLength = 300;
+  const location = useLocation();
+  const author = location.state ? location.state.username : "Anonymous";
+  console.log(author);
+
+  const blurbLength = 100; // 100 words
+  const minContent = 300; // min word count for content
+  const maxContent = 2000; // max word count for content
+
   const imgUrl = "assets/logo_square_blue.png";
   const navigate = useNavigate();
   const editor = useRef();
@@ -17,18 +23,70 @@ function TSalonEditor(props) {
     editor.current = sunEditor;
   };
 
+  const getBlurbWordCount = () => {
+    let currentText = document.getElementById("postBlurb").value;
+    let currentLength = wordsCount(currentText, {
+      disableDefaultPunctuation: true,
+    });
+    let blurbWordCount = document.getElementById("blurbWordCount");
+    blurbWordCount.innerText =
+      "Word Count: " + currentLength + "/" + blurbLength + " words";
+    if (currentLength > blurbLength) {
+      blurbWordCount.className = "text-danger mt-1";
+      return false;
+    } else {
+      blurbWordCount.className = "text-muted mt-1";
+      return true;
+    }
+  };
+
+  const getContentWordCount = (content) => {
+    let currentText = editor.current.getText();
+    let currentLength = wordsCount(currentText, {
+      disableDefaultPunctuation: true,
+    });
+    let wordCountDisplay = document.getElementById("wordCount");
+    wordCountDisplay.innerHTML = "Word Count: " + currentLength;
+    if (currentLength < minContent || currentLength > maxContent) {
+      wordCountDisplay.className = "text-danger mt-0 mx-5";
+    } else {
+      wordCountDisplay.className = "text-muted mt-0 mx-5";
+    }
+    return currentLength;
+  };
+
+  const validateContentLength = () => {
+    // Blurb Check
+    let submitErrorMessage = document.getElementById("submitErrorMessage");
+    if (getBlurbWordCount()) {
+      // Content Check
+      let contentLength = getContentWordCount(null);
+      if (contentLength < minContent || contentLength > maxContent) {
+        submitErrorMessage.innerText = `Error - Content must be between ${minContent} to ${maxContent} words in length`;
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      submitErrorMessage.innerText = `Error - Blurb length must be under ${blurbLength} words`;
+      return false;
+    }
+  };
+
   const submitPost = () => {
     let apiURL = "http://localhost:8000/api/publications";
-    let postBody = {
-      title: document.getElementById("postTitle").value,
-      blurb: document.getElementById("postBlurb").value,
-      author: author,
-      content: editor.current.getContents(),
-    };
-    axios.post(apiURL, postBody).then((res) => {
-      let tbsn = res.data.publication.tbsn;
-      navigate("/view/" + tbsn, { replace: true });
-    });
+    if (validateContentLength()) {
+      let postBody = {
+        title: document.getElementById("postTitle").value,
+        blurb: document.getElementById("postBlurb").value,
+        author: author,
+        content: editor.current.getContents(),
+      };
+      axios.post(apiURL, postBody).then((res) => {
+        let tbsn = res.data.publication.tbsn;
+        navigate("/view/" + tbsn, { replace: true });
+      });
+    }
   };
 
   return (
@@ -57,6 +115,7 @@ function TSalonEditor(props) {
               <input
                 id="postTitle"
                 className="form-control"
+                maxLength={50}
                 style={{ fontSize: 32, fontWeight: "bold" }}
               ></input>
               <h4 className="font-weight-normal mt-5">Blurb</h4>
@@ -64,24 +123,28 @@ function TSalonEditor(props) {
                 id="postBlurb"
                 className="form-control"
                 rows="4"
-                maxLength={blurbLength}
+                onInput={getBlurbWordCount}
               ></textarea>
-              <p className="text-muted mt-1">
-                Max Length: {blurbLength} characters
+              <p id="blurbWordCount" className="text-muted mt-1">
+                Word Count: 0 /{blurbLength} words
               </p>
             </div>
           </div>
           <div className="px-5">
-            <h4 id="postContent" className="font-weight-normal pb-2">
+            <h4 id="postContent" className="font-weight-normal">
               Content
             </h4>
+            <p className="text-muted mb-0 mt-1">
+              Must be {minContent} - {maxContent} words
+            </p>
             <SunEditor
               name="postContent"
               getSunEditorInstance={getSunEditorInstance}
+              onChange={getContentWordCount}
               height="800px"
               width="100%"
               setDefaultStyle="font-family: Arial; font-size: 20px;"
-              defaultValue="Start your next masterpiece here..."
+              setContents="Start your next masterpiece here..."
               setOptions={{
                 buttonList: [
                   [
@@ -104,8 +167,12 @@ function TSalonEditor(props) {
               }}
             />
           </div>
+          <p id="wordCount" className="text-muted mt-0 mx-5">
+            Word Count: 0
+          </p>
+          <p id="submitErrorMessage" className="text-danger mt-0 mx-5"></p>
           <div className="row justify-content-center my-5">
-            <button className="btn btn-primary col-3 mx-3">Save</button>
+            <button className="btn btn-primary col-3 mx-3">Save Draft</button>
             <button
               onClick={submitPost}
               type="submit"

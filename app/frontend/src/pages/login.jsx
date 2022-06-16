@@ -51,7 +51,11 @@ function LoginPage(props) {
             navigate("/register", { state: { loginAddress: loginAddress } });
           } else {
             let user = data.user;
+            // Redirect to user homepage
             alert("Successfully logged in user: " + user.username);
+            navigate("/editor", {
+              state: { username: user.username, walletAddress: loginAddress },
+            });
           }
         },
         (rej) => {

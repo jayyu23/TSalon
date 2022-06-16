@@ -14,16 +14,23 @@ contract Article is Ownable, ERC721 {
 
     string private _currentBaseURI;
     uint256 numTokens = 0;
-    
-    constructor() ERC721("Article", "ARTICLE") {   
+
+    constructor() ERC721("Article", "ARTICLE") {
         _currentBaseURI = "http://localhost/token/";
     }
 
-    function claim(string memory title, string memory author_name, string memory content_url) external {
-        uint tokenId = numTokens;
+    function claim(
+        string memory title,
+        string memory author_name,
+        string memory content_url
+    ) external {
+        uint256 tokenId = numTokens;
         id_map[tokenId] = Metadata(title, author_name, content_url);
         numTokens++;
         _safeMint(msg.sender, tokenId);
     }
-    
+
+    function getName() external pure returns (string memory) {
+        return "Test";
+    }
 }
