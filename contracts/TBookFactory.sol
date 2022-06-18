@@ -68,15 +68,15 @@ contract TBookFactory is Ownable, ERC721 {
         return id;
     }
 
-    function tbsnFromId(uint256 id) internal view returns (uint256) {
+    function tbsnFromId(uint256 id) public view returns (uint256) {
         return id / _maxCopies;
     }
 
-    function copyNumberFromId(uint256 id) internal view returns (uint256) {
+    function copyNumberFromId(uint256 id) public view returns (uint256) {
         return id % _maxCopies;
     }
 
-    function mint(uint256 tbsn, address mintAddress) internal {
+    function mint(uint256 tbsn, address mintAddress) public {
         require(_tbsnToBook[tbsn].exists);
         uint256 currentCopy = _tbsnToBook[tbsn].numCopies;
 
@@ -130,7 +130,7 @@ contract TBookFactory is Ownable, ERC721 {
 
         _addressToUser[to].books[tbsn] += 1;
         _addressToUser[to].collectionSize += 1;
-        _safeTransfer(from, to, tokenId, "");
+        _safeTransfer(from, to, tokenId, " ");
     }
 
     function publish(uint256 tbsn, address payable author) external {

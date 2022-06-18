@@ -43,18 +43,18 @@ contract("Greeter: update Greeting", (accounts) => {
     assert.equal(owner, expected, "matches address used to deploy contract");
   });
 
-  describe("when message is sent by another account", () => {
-    it("does not set the greeting", async () => {
-      const greeter = await GreeterContract.deployed();
-      const expected = await greeter.greet();
-      try {
-        await greeter.setGreeting("Not the owner", { from: accounts[1] });
-      } catch (err) {
-        const errorMessage = "Ownable: caller is not the owner";
-        assert.equal(err.reason, errorMessage, "greeting should not update");
-        return;
-      }
-      assert(false, "greeting should not update");
-    });
-  });
+  // describe("when message is sent by another account", () => {
+  //   it("does not set the greeting", async () => {
+  //     const greeter = await GreeterContract.deployed();
+  //     const expected = await greeter.greet();
+  //     try {
+  //       await greeter.setGreeting("Not the owner", { from: accounts[1] });
+  //     } catch (err) {
+  //       const errorMessage = "Ownable: caller is not the owner";
+  //       assert.equal(err.reason, errorMessage, "greeting should not update");
+  //       return;
+  //     }
+  //     assert(false, "greeting should not update");
+  //   });
+  // });
 });
