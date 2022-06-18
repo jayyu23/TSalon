@@ -54,6 +54,10 @@ contract TBookFactory is Ownable, ERC721 {
         _maxCopies = 10**9;
     }
 
+    function getTotalCopies() public view returns (uint256) {
+        return _totalCopies;
+    }
+
     /**
     Gets the ID from the TBSN and the Copy Number
     Copy 1 of 75025 would be 75025000000001
@@ -101,6 +105,8 @@ contract TBookFactory is Ownable, ERC721 {
         // Update BookInfo
         _tbsnToBook[tbsn].numCopies += 1;
         _tbsnToBook[tbsn].collectors[mintAddress] += 1;
+
+        _totalCopies += 1;
         _safeMint(msg.sender, id);
     }
 
