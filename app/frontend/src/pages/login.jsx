@@ -7,11 +7,18 @@ import { useNavigate } from "react-router-dom";
 function LoginPage(props) {
   let navigate = useNavigate();
   const [loginAddress, setLoginAddress] = useState(null);
+  const [chainId, setChainId] = useState(null);
+  const chainIdToName = new Map();
+
+  chainIdToName.set("0x1", "Ethereum Mainnet");
+  chainIdToName.set("0x539", "Ganache");
+  chainIdToName.set("0x4", "Rinkeby Testnet");
 
   useEffect(() => {
     // upon init
     setLoginAddress(window.ethereum ? window.ethereum.selectedAddress : null);
-    // upon change
+    setChainId(window.ethereum ? window.ethereum.chainId : null);
+
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", () => {
         setLoginAddress(window.ethereum.selectedAddress);
@@ -19,6 +26,10 @@ function LoginPage(props) {
 
       window.ethereum.on("disconnect", () => {
         setLoginAddress(null);
+      });
+
+      window.ethereum.on("chainChanged", () => {
+        setChainId(window.ethereum.chainId);
       });
     }
   });
@@ -35,6 +46,8 @@ function LoginPage(props) {
           return false;
         }
       );
+      setLoginAddress(window.ethereum ? window.ethereum.selectedAddress : null);
+      setChainId(window.ethereum ? window.ethereum.chainId : null);
     } else {
       alert(
         "Login Error. Please set up MetaMask first as a Google Chrome extension"
@@ -75,6 +88,9 @@ function LoginPage(props) {
         <div className="h1 text-center pt-3 mt-5">Login</div>
         <p className="text-center font-weight-light">
           Account: {loginAddress || "Not Connected"}
+        </p>
+        <p className="text-center font-weight-light">
+          Chain: {chainIdToName.get(chainId) || chainId || "Not Connected"}
         </p>
         <div className="d-flex justify-content-center py-5 px-4">
           <button

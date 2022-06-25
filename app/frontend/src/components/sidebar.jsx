@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
-import "react-pro-sidebar/dist/css/styles.css";
 
 function Sidebar(props) {
   const sidebar_options = [

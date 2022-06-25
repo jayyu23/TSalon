@@ -51,9 +51,9 @@ class NavBar extends Component {
                 <a
                   className="nav-link px-lg-3 py-3 py-lg-4"
                   target="_blank"
-                  href="/blueprint"
+                  href="https://trapezoidal-nephew-39b.notion.site/TSalon-Whitepaper-9d27f5c901bc4dcaa53bace710421fce"
                 >
-                  Project Blueprint
+                  Whitepaper
                 </a>
               </li>
               <li className="nav-item">
@@ -98,9 +98,9 @@ class NavBar extends Component {
                 className="btn btn-success mt-lg-3 px-lg-3 mx-2 mb-3"
                 style={{ borderRadius: 15 }}
                 target="_blank"
-                href="/blueprint"
+                href="https://trapezoidal-nephew-39b.notion.site/TSalon-Whitepaper-9d27f5c901bc4dcaa53bace710421fce"
               >
-                Read the Blueprint
+                Read the Whitepaper
               </a>
             </div>
           </div>

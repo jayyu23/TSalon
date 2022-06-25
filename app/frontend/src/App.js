@@ -5,7 +5,7 @@ import TBook from "./components/tbook";
 import TSalonEditor from "./pages/editor";
 import TBookView from "./components/tbookview";
 import Error404 from "./pages/error404";
-import UserMenu from "./components/sidebar";
+import TBookPub from "./pages/tbookpub";
 import TBookStore from "./components/tbookstore";
 import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
@@ -23,7 +23,7 @@ class App extends Component {
           <Route path="/" element={<HomePage />} />
           <Route path="/sidebar" element={<SideBar />} />
           <Route path="/editor" element={<TSalonEditor />} />
-          <Route path="/view/:tbsn" element={<TBookView />} />
+          <Route path="/view/:tbsn" element={<TBookPub />} />
           <Route path="/error" element={<Error404 />} />
           <Route path="/bookstore" element={<TBookStore />} />
           <Route path="/login" element={<LoginPage />} />
