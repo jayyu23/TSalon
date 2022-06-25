@@ -34,29 +34,30 @@ contract TBookFactory is Ownable, ERC721 {
         mapping(uint256 => uint256) books; // Maps TBSN to whether the number of copies the user has collected.
     }
 
-    uint256 private _numUsers;
-    mapping(address => UserInfo) private _addressToUser;
+    uint256 numUsers;
+    mapping(address => UserInfo) addressToUser;
 
     // This ID is the NFT ID, is completely seperate from TBSN and Copy Number
-    mapping(uint256 => CopyInfo) private _idToCopy;
+    mapping(uint256 => CopyInfo) idToCopy;
 
     // Maps TBSN to TBook Info
-    mapping(uint256 => TBookInfo) private _tbsnToBook;
+    mapping(uint256 => TBookInfo) tbsnToBook;
 
-    uint256 private _totalCopies;
+    uint256 totalCopies;
 
     // Max copies of a single TBook
     uint256 private _maxCopies;
 
     constructor() ERC721("TBook", "TBK") {
-        _numUsers = 0;
-        _totalCopies = 0;
         _maxCopies = 10**9;
     }
 
-    function getTotalCopies() public view returns (uint256) {
-        return _totalCopies;
+    // -------- Test functions -----------
+    function getOwnerOf(uint256 tokenId) public view returns (address) {
+        return idToCopy[tokenId].currentHolder;
     }
+
+    // -----------------------------------
 
     /**
     Gets the ID from the TBSN and the Copy Number
@@ -81,32 +82,32 @@ contract TBookFactory is Ownable, ERC721 {
     }
 
     function mint(uint256 tbsn, address mintAddress) public {
-        require(_tbsnToBook[tbsn].exists);
-        uint256 currentCopy = _tbsnToBook[tbsn].numCopies;
+        require(tbsnToBook[tbsn].exists);
+        uint256 currentCopy = tbsnToBook[tbsn].numCopies;
 
         // Generate the ID from the TBSN + Copy Number
         uint256 id = getId(tbsn, currentCopy);
 
         // Update CopyInfo
-        _idToCopy[id].exists = true;
-        _idToCopy[id].tbsn = tbsn;
-        _idToCopy[id].copyNumber = currentCopy;
-        _idToCopy[id].initHolder = mintAddress;
-        _idToCopy[id].currentHolder = mintAddress;
+        idToCopy[id].exists = true;
+        idToCopy[id].tbsn = tbsn;
+        idToCopy[id].copyNumber = currentCopy;
+        idToCopy[id].initHolder = mintAddress;
+        idToCopy[id].currentHolder = mintAddress;
 
         // Update UserInfo
-        if (!_addressToUser[mintAddress].exists) {
-            _addressToUser[mintAddress].exists = true;
-            _addressToUser[mintAddress].userAddress = mintAddress;
+        if (!addressToUser[mintAddress].exists) {
+            addressToUser[mintAddress].exists = true;
+            addressToUser[mintAddress].userAddress = mintAddress;
         }
-        _addressToUser[mintAddress].books[tbsn] += 1;
-        _addressToUser[mintAddress].collectionSize += 1;
+        addressToUser[mintAddress].books[tbsn] += 1;
+        addressToUser[mintAddress].collectionSize += 1;
 
         // Update BookInfo
-        _tbsnToBook[tbsn].numCopies += 1;
-        _tbsnToBook[tbsn].collectors[mintAddress] += 1;
+        tbsnToBook[tbsn].numCopies += 1;
+        tbsnToBook[tbsn].collectors[mintAddress] += 1;
 
-        _totalCopies += 1;
+        totalCopies += 1;
         _safeMint(msg.sender, id);
     }
 
@@ -117,25 +118,25 @@ contract TBookFactory is Ownable, ERC721 {
     ) public override {
         uint256 tbsn = tbsnFromId(tokenId);
         require(
-            (_tbsnToBook[tbsn].collectors[from] > 0) &&
-                (_addressToUser[from].books[tbsn] > 0)
+            (tbsnToBook[tbsn].collectors[from] > 0) &&
+                (addressToUser[from].books[tbsn] > 0)
         );
 
         // Update CopyInfo
-        _idToCopy[tokenId].lastHolder = from;
-        _idToCopy[tokenId].currentHolder = to;
-        _idToCopy[tokenId].numTransactions += 1;
+        idToCopy[tokenId].lastHolder = from;
+        idToCopy[tokenId].currentHolder = to;
+        idToCopy[tokenId].numTransactions += 1;
 
         // Update TBookInfo
-        _tbsnToBook[tbsn].collectors[from] -= 1;
-        _tbsnToBook[tbsn].collectors[to] += 1;
+        tbsnToBook[tbsn].collectors[from] -= 1;
+        tbsnToBook[tbsn].collectors[to] += 1;
 
         // Update UserInfo
-        _addressToUser[from].books[tbsn] -= 1;
-        _addressToUser[from].collectionSize -= 1;
+        addressToUser[from].books[tbsn] -= 1;
+        addressToUser[from].collectionSize -= 1;
 
-        _addressToUser[to].books[tbsn] += 1;
-        _addressToUser[to].collectionSize += 1;
+        addressToUser[to].books[tbsn] += 1;
+        addressToUser[to].collectionSize += 1;
         _safeTransfer(from, to, tokenId, " ");
     }
 
@@ -143,8 +144,8 @@ contract TBookFactory is Ownable, ERC721 {
         // Only the Foundation can Publish
         require(msg.sender == owner());
         // Update BookInfo
-        _tbsnToBook[tbsn].exists = true;
-        _tbsnToBook[tbsn].author = author;
+        tbsnToBook[tbsn].exists = true;
+        tbsnToBook[tbsn].author = author;
         // Free mint for the author
         mint(tbsn, author);
     }

@@ -16,6 +16,10 @@ function LoginPage(props) {
       window.ethereum.on("accountsChanged", () => {
         setLoginAddress(window.ethereum.selectedAddress);
       });
+
+      window.ethereum.on("disconnect", () => {
+        setLoginAddress(null);
+      });
     }
   });
 

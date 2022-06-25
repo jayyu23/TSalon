@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import SunEditor from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css"; // Import Sun Editor's CSS File
 import NavBar from "../components/navbar";
-import UserMenu from "../components/usermenu";
+import Sidebar from "../components/sidebar";
 import wordsCount from "words-count";
 
 function TSalonEditor(props) {
@@ -90,96 +90,99 @@ function TSalonEditor(props) {
   };
 
   return (
-    <div>
-      <NavBar />
-      <div className="row container-fixed h-100">
-        <div className="col-3 h-100">
-          <UserMenu active={1} />
-        </div>
-        <div className="col-9">
-          <h1 className="my-5 pt-5 text-center">TSalon Editor</h1>
-          <div className="form-group container-fluid px-5 py-4 row">
-            <div className="col-xl-5">
-              <h4 className="font-weight-normal">Image Cover</h4>
-              <img src={imgUrl} alt="Cover Image" height="300" width="300" />
-              <input
-                className="mt-1"
-                type="file"
-                accept="image/png"
-                disabled={true}
-              />
-              <p className="text-muted mb-3 mt-2">300x300 PNG</p>
+    <div className="h-100">
+      <div className="container h-100 mx-0 px-0 mt-3 w-100">
+        <NavBar />
+        <div className="row h-100 w-100">
+          <div className="col-md-3 col-xs-12" style={{ minWidth: 100 }}>
+            <Sidebar active={1} />
+          </div>
+
+          <div className="col-xs-12 col-md-9">
+            <h1 className="my-5 pt-5 text-center">TSalon Editor</h1>
+            <div className="form-group container-fluid px-5 py-4 row">
+              <div className="col-xl-5">
+                <h4 className="font-weight-normal">Image Cover</h4>
+                <img src={imgUrl} alt="Cover Image" height="300" width="300" />
+                <input
+                  className="mt-1"
+                  type="file"
+                  accept="image/png"
+                  disabled={true}
+                />
+                <p className="text-muted mb-3 mt-2">300x300 PNG</p>
+              </div>
+              <div className="col-xl-7">
+                <h4 className="font-weight-normal">Title</h4>
+                <input
+                  id="postTitle"
+                  className="form-control"
+                  maxLength={50}
+                  style={{ fontSize: 32, fontWeight: "bold" }}
+                ></input>
+                <h4 className="font-weight-normal mt-5">Blurb</h4>
+                <textarea
+                  id="postBlurb"
+                  className="form-control"
+                  rows="4"
+                  onInput={getBlurbWordCount}
+                ></textarea>
+                <p id="blurbWordCount" className="text-muted mt-1">
+                  Word Count: 0 /{blurbLength} words
+                </p>
+              </div>
             </div>
-            <div className="col-xl-7">
-              <h4 className="font-weight-normal">Title</h4>
-              <input
-                id="postTitle"
-                className="form-control"
-                maxLength={50}
-                style={{ fontSize: 32, fontWeight: "bold" }}
-              ></input>
-              <h4 className="font-weight-normal mt-5">Blurb</h4>
-              <textarea
-                id="postBlurb"
-                className="form-control"
-                rows="4"
-                onInput={getBlurbWordCount}
-              ></textarea>
-              <p id="blurbWordCount" className="text-muted mt-1">
-                Word Count: 0 /{blurbLength} words
+            <div className="px-5">
+              <h4 id="postContent" className="font-weight-normal">
+                Content
+              </h4>
+              <p className="text-muted mb-0 mt-1">
+                Must be {minContent} - {maxContent} words
               </p>
-            </div>
-          </div>
-          <div className="px-5">
-            <h4 id="postContent" className="font-weight-normal">
-              Content
-            </h4>
-            <p className="text-muted mb-0 mt-1">
-              Must be {minContent} - {maxContent} words
-            </p>
-            <SunEditor
-              name="postContent"
-              getSunEditorInstance={getSunEditorInstance}
-              onChange={getContentWordCount}
-              height="800px"
-              width="100%"
-              setDefaultStyle="font-family: Arial; font-size: 20px;"
-              setContents="Start your next masterpiece here..."
-              setOptions={{
-                buttonList: [
-                  [
-                    "formatBlock",
-                    "paragraphStyle",
-                    "bold",
-                    "underline",
-                    "italic",
-                    "strike",
-                    "list",
-                    "blockquote",
-                    "align",
-                    "font",
-                    "fontColor",
-                    "fontSize",
-                    "undo",
-                    "redo",
+              <SunEditor
+                name="postContent"
+                getSunEditorInstance={getSunEditorInstance}
+                onChange={getContentWordCount}
+                height="800px"
+                width="100%"
+                setDefaultStyle="font-family: Arial; font-size: 20px;"
+                setContents="Start your next masterpiece here..."
+                setOptions={{
+                  buttonList: [
+                    [
+                      "formatBlock",
+                      "paragraphStyle",
+                      "bold",
+                      "underline",
+                      "italic",
+                      "strike",
+                      "list",
+                      "blockquote",
+                      "align",
+                      "font",
+                      "fontColor",
+                      "fontSize",
+                      "undo",
+                      "redo",
+                    ],
                   ],
-                ],
-              }}
-            />
-          </div>
-          <p id="wordCount" className="text-muted mt-0 mx-5">
-            Word Count: 0
-          </p>
-          <p id="submitErrorMessage" className="text-danger mt-0 mx-5"></p>
-          <div className="row justify-content-center my-5">
-            <button className="btn btn-primary col-3 mx-3">Save Draft</button>
-            <button
-              onClick={submitPost}
-              type="submit"
-              className="btn btn-primary col-3 mx-3"
-            >
-              Preview
-            </button>
+                }}
+              />
+            </div>
+            <p id="wordCount" className="text-muted mt-0 mx-5">
+              Word Count: 0
+            </p>
+            <p id="submitErrorMessage" className="text-danger mt-0 mx-5"></p>
+            <div className="row justify-content-center my-5">
+              <button className="btn btn-primary col-3 mx-3">Save Draft</button>
+              <button
+                onClick={submitPost}
+                type="submit"
+                className="btn btn-primary col-3 mx-3"
+              >
+                Preview
+              </button>
+            </div>
           </div>
         </div>
       </div>
