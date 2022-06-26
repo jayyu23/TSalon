@@ -70,7 +70,7 @@ function LoginPage(props) {
             let user = data.user;
             // Redirect to user homepage
             alert("Successfully logged in user: " + user.username);
-            navigate("/editor", {
+            navigate("/drafts", {
               state: { username: user.username, walletAddress: loginAddress },
             });
           }

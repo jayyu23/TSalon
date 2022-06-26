@@ -10,6 +10,8 @@ import TBookStore from "./components/tbookstore";
 import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
 import SideBar from "./components/sidebar";
+import CollectPage from "./pages/collect";
+import UserDrafts from "./pages/userdrafts";
 
 class App extends Component {
   constructor(props) {
@@ -21,13 +23,14 @@ class App extends Component {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/sidebar" element={<SideBar />} />
+          <Route path="/collect" element={<CollectPage />} />
           <Route path="/editor" element={<TSalonEditor />} />
           <Route path="/view/:tbsn" element={<TBookPub />} />
           <Route path="/error" element={<Error404 />} />
           <Route path="/bookstore" element={<TBookStore />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/drafts" element={<UserDrafts />} />
           <Route path="*" element={<Navigate to="/error" />} />
         </Routes>
       </BrowserRouter>

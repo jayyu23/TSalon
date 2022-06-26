@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -7,11 +7,15 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract TBookFactory is Ownable, ERC721 {
     // A Copy of a Book
     struct CopyInfo {
+        // Basics
         bool exists;
         uint256 tbsn;
         uint256 copyNumber;
         uint256 numTransactions; // How many times sold/transacted
-        string title;
+        // Linked List info;
+        uint256 nextLinkId;
+        uint256 prevLinkId;
+        // Holder Info
         address initHolder; // Who minted this
         address currentHolder;
         address lastHolder; // Who was the last person to hold this NFT
@@ -31,7 +35,10 @@ contract TBookFactory is Ownable, ERC721 {
         bool exists;
         address userAddress;
         uint256 collectionSize;
-        mapping(uint256 => uint256) books; // Maps TBSN to whether the number of copies the user has collected.
+        mapping(uint256 => uint256) bookToCopies; // Maps TBSN to whether the number of copies the user has collected.
+        // LinkedList Info
+        uint256 firstLinkId;
+        uint256 lastLinkId;
     }
 
     uint256 numUsers;
@@ -64,7 +71,7 @@ contract TBookFactory is Ownable, ERC721 {
     Copy 1 of 75025 would be 75025000000001
      */
     function getId(uint256 tbsn, uint256 copyNumber)
-        internal
+        public
         view
         returns (uint256)
     {
@@ -81,6 +88,8 @@ contract TBookFactory is Ownable, ERC721 {
         return id % _maxCopies;
     }
 
+    // Mint a copy of the book
+    // Temporarily Public
     function mint(uint256 tbsn, address mintAddress) public {
         require(tbsnToBook[tbsn].exists);
         uint256 currentCopy = tbsnToBook[tbsn].numCopies;
@@ -97,15 +106,26 @@ contract TBookFactory is Ownable, ERC721 {
 
         // Update UserInfo
         if (!addressToUser[mintAddress].exists) {
+            // Init userInfo
             addressToUser[mintAddress].exists = true;
             addressToUser[mintAddress].userAddress = mintAddress;
+            addressToUser[mintAddress].firstLinkId = id;
         }
-        addressToUser[mintAddress].books[tbsn] += 1;
-        addressToUser[mintAddress].collectionSize += 1;
+        addressToUser[mintAddress].bookToCopies[tbsn]++;
+        addressToUser[mintAddress].collectionSize++;
+        // Update the LinkedList
+        bool hasCollected = addressToUser[mintAddress].lastLinkId != 0;
+        if (hasCollected) {
+            uint256 lastLink = addressToUser[mintAddress].lastLinkId;
+            idToCopy[lastLink].nextLinkId = id;
+            idToCopy[id].prevLinkId = lastLink;
+        } else {
+            addressToUser[mintAddress].lastLinkId = id;
+        }
 
         // Update BookInfo
-        tbsnToBook[tbsn].numCopies += 1;
-        tbsnToBook[tbsn].collectors[mintAddress] += 1;
+        tbsnToBook[tbsn].numCopies++;
+        tbsnToBook[tbsn].collectors[mintAddress]++;
 
         totalCopies += 1;
         _safeMint(msg.sender, id);
@@ -119,7 +139,7 @@ contract TBookFactory is Ownable, ERC721 {
         uint256 tbsn = tbsnFromId(tokenId);
         require(
             (tbsnToBook[tbsn].collectors[from] > 0) &&
-                (addressToUser[from].books[tbsn] > 0)
+                (addressToUser[from].bookToCopies[tbsn] > 0)
         );
 
         // Update CopyInfo
@@ -132,21 +152,64 @@ contract TBookFactory is Ownable, ERC721 {
         tbsnToBook[tbsn].collectors[to] += 1;
 
         // Update UserInfo
-        addressToUser[from].books[tbsn] -= 1;
+        addressToUser[from].bookToCopies[tbsn] -= 1;
         addressToUser[from].collectionSize -= 1;
 
-        addressToUser[to].books[tbsn] += 1;
+        addressToUser[to].bookToCopies[tbsn]++;
         addressToUser[to].collectionSize += 1;
+        // TODO: Handle Linked List Stuff
         _safeTransfer(from, to, tokenId, " ");
     }
 
-    function publish(uint256 tbsn, address payable author) external {
+    function publish(uint256 tbsn, address payable author)
+        external
+        returns (uint256)
+    {
+        // Use an oracle to check that this is a valid call with correct author (valid tbsn)
+        // TODO
+
         // Only the Foundation can Publish
-        require(msg.sender == owner());
+        // require(msg.sender == owner());
         // Update BookInfo
         tbsnToBook[tbsn].exists = true;
         tbsnToBook[tbsn].author = author;
         // Free mint for the author
         mint(tbsn, author);
+        return 1384;
+    }
+
+    // ----------------------------
+    // Public Gets
+    // Can use this in order to iterate through an entire user's collection
+    function getCopyInfo(uint256 tbsn, uint256 id)
+        external
+        view
+        returns (CopyInfo memory)
+    {
+        uint256 copyId = getId(tbsn, id);
+        return idToCopy[copyId];
+    }
+
+    function returnTrue() public pure returns (bool) {
+        return true;
+    }
+
+    function getUserInfo(address userAddress)
+        public
+        view
+        returns (
+            bool,
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        UserInfo storage info = addressToUser[userAddress];
+        return (
+            info.exists,
+            info.collectionSize,
+            tbsnFromId(info.firstLinkId),
+            copyNumberFromId(info.firstLinkId)
+        );
     }
 }

@@ -3,9 +3,9 @@ import React, { Component } from "react";
 function Sidebar(props) {
   const sidebar_options = [
     { index: 0, text: "Collections", link: "#", icon: "fa fa-book" },
-    { index: 1, text: "Draft", link: "#", icon: "fa fa-pencil" },
+    { index: 1, text: "Drafts", link: "/drafts", icon: "fa fa-pencil" },
     { index: 2, text: "Review", link: "#", icon: "fa fa-check-to-slot" },
-    { index: 2, text: "Settings", link: "#", icon: "fa fa-cog" },
+    { index: 3, text: "Settings", link: "#", icon: "fa fa-cog" },
   ];
 
   const currentActive = props.active || -1;
