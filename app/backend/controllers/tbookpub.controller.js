@@ -5,31 +5,32 @@ const create = (req, res, next) => {
   let fields = req.body;
   fields.tbsn = 0; // dummy
   const publication = new tbookpubModel(fields);
-  publication.save().then((acc, rej) => {
-    if (acc) {
+  publication.save().then(
+    (acc) => {
       return res
         .status(200)
         .json({ message: "Publication success", publication: acc });
-    } else {
+    },
+    (rej) => {
       return res.status(400).json({ error: rej });
     }
-  });
+  );
 };
 
 const list = (req, res, next) => {
-  try {
-    tbookpubModel
-      .find()
-      .sort({ tbsn: -1 })
-      .exec()
-      .then((acc, rej) => {
+  tbookpubModel
+    .find()
+    .sort({ tbsn: -1 })
+    .exec()
+    .then(
+      (acc) => {
         let publications = acc;
         return res.json(publications);
-      });
-  } catch (err) {
-    console.log(err);
-    return res.status(400).json({ error: err });
-  }
+      },
+      (rej) => {
+        return res.status(400).json({ error: err });
+      }
+    );
 };
 
 const getFromTBSN = (req, res, next, tbsn) => {

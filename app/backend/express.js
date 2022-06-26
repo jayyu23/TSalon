@@ -6,6 +6,7 @@ import cors from "cors";
 import helmet from "helmet";
 import pubRoutes from "./routes/tbookpub.route.js";
 import memberRoutes from "./routes/tsalonuser.route.js";
+import draftRoutes from "./routes/tbookdraft.route.js";
 
 const app = express();
 
@@ -18,4 +19,6 @@ app.use(cors());
 
 app.use("/", pubRoutes);
 app.use("/", memberRoutes);
+app.use("/", draftRoutes);
+
 export default app;
