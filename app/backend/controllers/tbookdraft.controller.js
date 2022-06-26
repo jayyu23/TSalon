@@ -33,7 +33,6 @@ const list = (req, res, next) => {
 
 const getFromUsername = (req, res, next, username) => {
   let usernameFiltered = username.replace(/_/g, " ");
-  console.log(usernameFiltered);
   tbookdraftModel
     .find({
       author: { $regex: usernameFiltered, $options: "i" },

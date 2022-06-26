@@ -1,6 +1,6 @@
 import axios from "axios";
-import { React, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { React, useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SunEditor from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css"; // Import Sun Editor's CSS File
 import NavBar from "../components/navbar";
@@ -9,8 +9,15 @@ import wordsCount from "words-count";
 
 function TSalonEditor(props) {
   const location = useLocation();
+  let { tbsn } = useParams();
   const author = location.state ? location.state.username : "Anonymous";
   console.log(author);
+
+  useEffect(() => {
+    if (tbsn) {
+      // Post request and load content.
+    }
+  }, []);
 
   const blurbLength = 100; // 100 words
   const minContent = 300; // min word count for content

@@ -2,8 +2,29 @@ import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
 import Sidebar from "../components/sidebar";
 import TBook from "../components/tbook";
+import axios from "axios";
+
+const username = "Johannes de Silentio";
+const apiRoute = "http://localhost:8000/api/drafts/";
 
 function UserDrafts() {
+  const [stage1, setStage1] = useState([]);
+  const [stage2, setStage2] = useState([]);
+
+  useEffect(() => {
+    let u = username.replace(/ /g, "_").toLowerCase();
+    axios.get(apiRoute + u).then(
+      (acc) => {
+        let data = acc.data;
+        setStage1(data.stage1);
+        setStage2(data.stage2);
+      },
+      (rej) => {
+        console.log(rej);
+      }
+    );
+  }, []);
+
   // Javascript to manage tabs
   const showTab1 = () => {
     document.getElementById("t2").className = "nav-link";
@@ -31,14 +52,19 @@ function UserDrafts() {
           <div className="col-xs-12 col-md-9 my-0 " style={{ minHeight: 800 }}>
             <h1 className="my-5 pt-5 text-center">My Drafts</h1>
 
-            <ul class="nav nav-pills nav-fill mb-5">
-              <li class="nav-item">
-                <a id="t1" class="nav-link active" href="#" onClick={showTab1}>
+            <ul className="nav nav-pills nav-fill mb-5">
+              <li className="nav-item">
+                <a
+                  id="t1"
+                  className="nav-link active"
+                  href="#"
+                  onClick={showTab1}
+                >
                   Unpublished Drafts
                 </a>
               </li>
-              <li class="nav-item">
-                <a id="t2" class="nav-link" href="#" onClick={showTab2}>
+              <li className="nav-item">
+                <a id="t2" className="nav-link" href="#" onClick={showTab2}>
                   Under Peer Review
                 </a>
               </li>
@@ -61,18 +87,32 @@ function UserDrafts() {
                   Start your next masterpiece here...
                 </h5>
               </div>
-              <TBook short={true} buttonText={"Continue Draft"} />
-              <TBook short={true} buttonText={"Continue Draft"} />
-              <TBook short={true} buttonText={"Continue Draft"} />
+              {stage1.map((data) => (
+                <TBook
+                  key={data.tbsn}
+                  title={data.title}
+                  author={data.author}
+                  imageCover={data.coverImage}
+                  short={true}
+                  buttonText={"Continue Draft"}
+                />
+              ))}
             </span>
             <span
               id="tab2"
               className="row mx-3 my-2 justify-content-center"
               style={{ display: "none" }}
             >
-              <TBook short={true} buttonText={"Continue Draft"} />
-              <TBook short={true} buttonText={"Continue Draft"} />
-              <TBook short={true} buttonText={"Continue Draft"} />
+              {stage2.map((data) => (
+                <TBook
+                  key={data.tbsn}
+                  title={data.title}
+                  author={data.author}
+                  imageCover={data.coverImage}
+                  short={true}
+                  buttonText={"Continue Draft"}
+                />
+              ))}
             </span>
           </div>
         </div>

@@ -25,6 +25,7 @@ class App extends Component {
           <Route path="/" element={<HomePage />} />
           <Route path="/collect" element={<CollectPage />} />
           <Route path="/editor" element={<TSalonEditor />} />
+          <Route path="/editor/:tbsn" element={<TSalonEditor />} />
           <Route path="/view/:tbsn" element={<TBookPub />} />
           <Route path="/error" element={<Error404 />} />
           <Route path="/bookstore" element={<TBookStore />} />
