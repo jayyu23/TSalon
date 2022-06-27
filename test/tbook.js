@@ -4,22 +4,59 @@ contract("TBookFactory", () => {
   it("has been deployed successfully", async () => {
     const contract = await TBookContract.deployed();
     assert(contract, "Contract not deployed");
-
-    // await contract.publish(75025, "0xb1944fdc36962958b471aCeD0699ADbad3B39D1e");
-    // expected = 1;
-    // actual = await contract.getTotalCopies();
-    // assert.equal(expected, actual, "Not Published right.");
-
-    // actual = await contract.getOwnerOf(75025000000000);
-    // expected = "0xb1944fdc36962958b471aCeD0699ADbad3B39D1e";
-    // assert.equal(expected, actual, "Owner matches");
   });
 
-  it("has published successfully", async () => {
+  it("Test publish and get user collection in a list", async () => {
+    const defaultWallet = "0x1B952d4C29f552318BD166065F66423f6665e2E4";
     const contract = await TBookContract.deployed();
-    let actual = await contract.returnTrue();
-    let expected = true;
-    console.log(actual);
-    assert.equal(actual, expected, "did not return true");
+    await contract.publish(75030, defaultWallet);
+    await contract.publish(75031, defaultWallet);
+    await contract.publish(75035, defaultWallet);
+
+    // Returns it into a human-readable form
+    const parseUserInfo = (data) => {
+      return {
+        exists: data[0],
+        bookNum: data[1].words[0],
+        firstBook: data[2],
+        lastBook: data[3],
+      };
+    };
+
+    const parseBookInfo = (data) => {
+      return {
+        exists: data[0],
+        tbsn: data[1],
+        copyNumber: data[2],
+        numTransactions: data[3],
+        nextLinkId: data[4],
+        prevLinkId: data[5],
+        initHolder: data[6],
+        currentHolder: data[7],
+        lastHolder: data[8],
+      };
+    };
+
+    let rawInfo = await contract.getUserInfo(defaultWallet);
+    let parseInfo = parseUserInfo(rawInfo);
+    let dataArray = [];
+    // For loop
+    currentBook = parseInfo.firstBook;
+    console.log(parseInfo.firstBook);
+    console.log(parseInfo.lastBook);
+    while (true) {
+      let bookInfo = await contract.getCopyInfo(currentBook);
+      console.log(bookInfo);
+      let pBookInfo = parseBookInfo(bookInfo);
+      dataArray.push(pBookInfo);
+      currentBook = pBookInfo.nextLinkId;
+      console.log(currentBook);
+      if (currentBook == 0) {
+        break;
+      }
+    }
+
+    console.log(dataArray);
+    assert(dataArray, "Info access error");
   });
 });

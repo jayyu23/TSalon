@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract TBookFactory is Ownable, ERC721 {
     // A Copy of a Book
@@ -90,7 +91,7 @@ contract TBookFactory is Ownable, ERC721 {
 
     // Mint a copy of the book
     // Temporarily Public
-    function mint(uint256 tbsn, address mintAddress) public {
+    function mint(uint256 tbsn, address mintAddress) internal {
         require(tbsnToBook[tbsn].exists);
         uint256 currentCopy = tbsnToBook[tbsn].numCopies;
 
@@ -111,17 +112,17 @@ contract TBookFactory is Ownable, ERC721 {
             addressToUser[mintAddress].userAddress = mintAddress;
             addressToUser[mintAddress].firstLinkId = id;
         }
-        addressToUser[mintAddress].bookToCopies[tbsn]++;
-        addressToUser[mintAddress].collectionSize++;
+
         // Update the LinkedList
-        bool hasCollected = addressToUser[mintAddress].lastLinkId != 0;
+        bool hasCollected = addressToUser[mintAddress].collectionSize != 0;
         if (hasCollected) {
             uint256 lastLink = addressToUser[mintAddress].lastLinkId;
             idToCopy[lastLink].nextLinkId = id;
             idToCopy[id].prevLinkId = lastLink;
-        } else {
-            addressToUser[mintAddress].lastLinkId = id;
         }
+        addressToUser[mintAddress].lastLinkId = id;
+        addressToUser[mintAddress].bookToCopies[tbsn]++;
+        addressToUser[mintAddress].collectionSize++;
 
         // Update BookInfo
         tbsnToBook[tbsn].numCopies++;
@@ -161,10 +162,7 @@ contract TBookFactory is Ownable, ERC721 {
         _safeTransfer(from, to, tokenId, " ");
     }
 
-    function publish(uint256 tbsn, address payable author)
-        external
-        returns (uint256)
-    {
+    function publish(uint256 tbsn, address payable author) external {
         // Use an oracle to check that this is a valid call with correct author (valid tbsn)
         // TODO
 
@@ -175,23 +173,13 @@ contract TBookFactory is Ownable, ERC721 {
         tbsnToBook[tbsn].author = author;
         // Free mint for the author
         mint(tbsn, author);
-        return 1384;
     }
 
     // ----------------------------
     // Public Gets
     // Can use this in order to iterate through an entire user's collection
-    function getCopyInfo(uint256 tbsn, uint256 id)
-        external
-        view
-        returns (CopyInfo memory)
-    {
-        uint256 copyId = getId(tbsn, id);
-        return idToCopy[copyId];
-    }
-
-    function returnTrue() public pure returns (bool) {
-        return true;
+    function getCopyInfo(uint256 id) external view returns (CopyInfo memory) {
+        return idToCopy[id];
     }
 
     function getUserInfo(address userAddress)
@@ -200,16 +188,16 @@ contract TBookFactory is Ownable, ERC721 {
         returns (
             bool,
             uint256,
-            uint256,
-            uint256
+            string memory,
+            string memory
         )
     {
         UserInfo storage info = addressToUser[userAddress];
         return (
             info.exists,
             info.collectionSize,
-            tbsnFromId(info.firstLinkId),
-            copyNumberFromId(info.firstLinkId)
+            Strings.toString(info.firstLinkId),
+            Strings.toString(info.lastLinkId)
         );
     }
 }
