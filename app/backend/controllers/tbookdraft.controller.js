@@ -1,21 +1,47 @@
 import tbookdraftModel from "../models/tbookdraft.model.js";
 import extend from "lodash/extend.js";
 
-const create = (req, res, next) => {
+const update = (req, res, next) => {
   let fields = req.body;
-  fields.tbsn = 0; // dummy
-  console.log(req.body);
-  const draft = new tbookdraftModel(fields);
-  console.log(draft);
-  draft.save().then(
-    (acc) => {
-      return res.status(200).json({ message: "Draft success", draft: acc });
-    },
-    (rej) => {
-      console.log(rej);
-      return res.status(400).json({ error: rej.message });
-    }
-  );
+
+  if (fields.tbsn == 0) {
+    // create
+    const draft = new tbookdraftModel(fields);
+    console.log(draft);
+    draft.save().then(
+      (acc) => {
+        return res.status(200).json({ message: "Draft success", draft: acc });
+      },
+      (rej) => {
+        console.log(rej);
+        return res.status(400).json({ error: rej.message });
+      }
+    );
+  } else {
+    // update
+    tbookdraftModel
+      .findOneAndUpdate(
+        { tbsn: fields.tbsn },
+        {
+          $set: {
+            title: fields.title,
+            blurb: fields.blurb,
+            content: fields.content,
+          },
+        }
+      )
+      .exec()
+      .then(
+        (acc) => {
+          return res
+            .status(200)
+            .json({ message: "Update success", draft: fields });
+        },
+        (rej) => {
+          return res.status(400).json({ error: rej.mesage });
+        }
+      );
+  }
 };
 
 const list = (req, res, next) => {
@@ -29,6 +55,21 @@ const list = (req, res, next) => {
   return res
     .status(200)
     .json({ status: "success", stage1: stage1, stage2: stage2 });
+};
+
+const getFromTBSN = (req, res, next, tbsn) => {
+  tbookdraftModel
+    .findOne({ tbsn: tbsn })
+    .exec()
+    .then(
+      (acc) => {
+        req.draft = acc;
+        next();
+      },
+      (rej) => {
+        return res.status(400).json({ error: rej.message });
+      }
+    );
 };
 
 const getFromUsername = (req, res, next, username) => {
@@ -51,4 +92,13 @@ const getFromUsername = (req, res, next, username) => {
     );
 };
 
-export default { create, list, getFromUsername };
+const read = (req, res) => {
+  let publication = req.draft;
+  if (publication) {
+    return res.status(200).json(publication);
+  } else {
+    return res.status(400).json({ error: "Invalid TBSN" });
+  }
+};
+
+export default { update, list, read, getFromUsername, getFromTBSN };

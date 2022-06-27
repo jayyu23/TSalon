@@ -1,3 +1,4 @@
+const utils = require("../utils.js");
 const TBookContract = artifacts.require("TBookFactory.sol");
 
 contract("TBookFactory", () => {
@@ -13,32 +14,8 @@ contract("TBookFactory", () => {
     await contract.publish(75031, defaultWallet);
     await contract.publish(75035, defaultWallet);
 
-    // Returns it into a human-readable form
-    const parseUserInfo = (data) => {
-      return {
-        exists: data[0],
-        bookNum: data[1].words[0],
-        firstBook: data[2],
-        lastBook: data[3],
-      };
-    };
-
-    const parseBookInfo = (data) => {
-      return {
-        exists: data[0],
-        tbsn: data[1],
-        copyNumber: data[2],
-        numTransactions: data[3],
-        nextLinkId: data[4],
-        prevLinkId: data[5],
-        initHolder: data[6],
-        currentHolder: data[7],
-        lastHolder: data[8],
-      };
-    };
-
     let rawInfo = await contract.getUserInfo(defaultWallet);
-    let parseInfo = parseUserInfo(rawInfo);
+    let parseInfo = utils.parseUserInfo(rawInfo);
     let dataArray = [];
     // For loop
     currentBook = parseInfo.firstBook;
@@ -47,7 +24,7 @@ contract("TBookFactory", () => {
     while (true) {
       let bookInfo = await contract.getCopyInfo(currentBook);
       console.log(bookInfo);
-      let pBookInfo = parseBookInfo(bookInfo);
+      let pBookInfo = utils.parseBookInfo(bookInfo);
       dataArray.push(pBookInfo);
       currentBook = pBookInfo.nextLinkId;
       console.log(currentBook);

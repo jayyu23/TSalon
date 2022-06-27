@@ -10,12 +10,29 @@ import wordsCount from "words-count";
 function TSalonEditor(props) {
   const location = useLocation();
   let { tbsn } = useParams();
+  const currentTBSN = tbsn || 0;
+
   const author = location.state ? location.state.username : "Anonymous";
   console.log(author);
+  const navigate = useNavigate();
+  const editor = useRef();
+  const getSunEditorInstance = (sunEditor) => {
+    editor.current = sunEditor;
+  };
 
+  console.log(editor.current);
   useEffect(() => {
     if (tbsn) {
-      // Post request and load content.
+      // Get request and load content.
+      axios.get("http://localhost:8000/api/drafts/" + tbsn).then(
+        (acc) => {
+          let data = acc.data;
+          document.getElementById("postTitle").value = data.title;
+          document.getElementById("postBlurb").value = data.blurb;
+          editor.current.setContents(data.content);
+        },
+        (rej) => {}
+      );
     }
   }, []);
 
@@ -24,11 +41,6 @@ function TSalonEditor(props) {
   const maxContent = 2000; // max word count for content
 
   const imgUrl = "assets/logo_square_blue.png";
-  const navigate = useNavigate();
-  const editor = useRef();
-  const getSunEditorInstance = (sunEditor) => {
-    editor.current = sunEditor;
-  };
 
   const getBlurbWordCount = () => {
     let currentText = document.getElementById("postBlurb").value;
@@ -80,20 +92,33 @@ function TSalonEditor(props) {
     }
   };
 
+  const getSubmitBody = () => {
+    return {
+      tbsn: currentTBSN,
+      title: document.getElementById("postTitle").value,
+      blurb: document.getElementById("postBlurb").value,
+      author: author,
+      content: editor.current.getContents(),
+    };
+  };
+
   const submitPost = () => {
     let apiURL = "http://localhost:8000/api/publications";
     if (validateContentLength()) {
-      let postBody = {
-        title: document.getElementById("postTitle").value,
-        blurb: document.getElementById("postBlurb").value,
-        author: author,
-        content: editor.current.getContents(),
-      };
+      let postBody = getSubmitBody();
       axios.post(apiURL, postBody).then((res) => {
         let tbsn = res.data.publication.tbsn;
         navigate("/view/" + tbsn, { replace: true });
       });
     }
+  };
+
+  const savePost = () => {
+    let apiURL = "http://localhost:8000/api/drafts";
+    let postBody = getSubmitBody();
+    axios.post(apiURL, postBody).then((res) => {
+      alert("Save Sucessful");
+    });
   };
 
   return (
@@ -153,7 +178,6 @@ function TSalonEditor(props) {
                 height="800px"
                 width="100%"
                 setDefaultStyle="font-family: Arial; font-size: 20px;"
-                setContents="Start your next masterpiece here..."
                 setOptions={{
                   buttonList: [
                     [
@@ -181,7 +205,9 @@ function TSalonEditor(props) {
             </p>
             <p id="submitErrorMessage" className="text-danger mt-0 mx-5"></p>
             <div className="row justify-content-center my-5">
-              <button className="btn btn-primary col-3 mx-3">Save Draft</button>
+              <button className="btn btn-primary col-3 mx-3" onClick={savePost}>
+                Save Draft
+              </button>
               <button
                 onClick={submitPost}
                 type="submit"

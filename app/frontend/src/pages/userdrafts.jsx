@@ -5,7 +5,7 @@ import TBook from "../components/tbook";
 import axios from "axios";
 
 const username = "Johannes de Silentio";
-const apiRoute = "http://localhost:8000/api/drafts/";
+const apiRoute = "http://localhost:8000/api/";
 
 function UserDrafts() {
   const [stage1, setStage1] = useState([]);
@@ -13,7 +13,7 @@ function UserDrafts() {
 
   useEffect(() => {
     let u = username.replace(/ /g, "_").toLowerCase();
-    axios.get(apiRoute + u).then(
+    axios.get(apiRoute + u + "/drafts").then(
       (acc) => {
         let data = acc.data;
         setStage1(data.stage1);
@@ -95,6 +95,7 @@ function UserDrafts() {
                   imageCover={data.coverImage}
                   short={true}
                   buttonText={"Continue Draft"}
+                  link={"/editor/" + data.tbsn}
                 />
               ))}
             </span>
@@ -111,6 +112,7 @@ function UserDrafts() {
                   imageCover={data.coverImage}
                   short={true}
                   buttonText={"Continue Draft"}
+                  link={"/editor/" + data.tbsn}
                 />
               ))}
             </span>
