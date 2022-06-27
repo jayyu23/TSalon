@@ -5,32 +5,33 @@ import Web3 from "web3";
 import TBookFactory from "../abi/TBookFactory.json";
 
 function CollectPage(props) {
-  const defaultWallet = "0xb1944fdc36962958b471aCeD0699ADbad3B39D1e";
+  const defaultWallet = "0x1B952d4C29f552318BD166065F66423f6665e2E4";
+  const contractAddress = "0x8146cD312CB3BAc63D2C6c20711D8c2CD0910961";
+  const infuraToken = "c79eec7f045b4dab93931eb64ef7b967";
+  const web3 = new Web3(
+    new Web3.providers.HttpProvider(
+      "https://rinkeby.infura.io/v3/" + infuraToken
+    )
+  );
+
   const testPublication = async () => {
     try {
-      const contractAddress = "0x42f507A2cC60C26074a89F3c14809767716bc2D2";
-
-      const web3 = new Web3(
-        new Web3.providers.HttpProvider("http://127.0.0.1:7545")
-      );
       const networkId = await web3.eth.net.getId();
       let contract = new web3.eth.Contract(
         TBookFactory.abi,
         TBookFactory.networks[networkId].address
       );
+      let returnTrue = await contract.methods.returnTrue().call();
+      console.log(returnTrue);
 
-      let estimatedGas = await contract.methods
-        .publish(75030, defaultWallet)
-        .estimateGas({ from: defaultWallet });
-      console.log(estimatedGas);
-      let result = await contract.methods
-        .publish(75030, defaultWallet)
-        .call({ from: defaultWallet, gas: Math.round(estimatedGas * 1.2) });
+      // let estimatedGas = await contract.methods
+      //   .publish(75030, defaultWallet)
+      //   .estimateGas({ from: defaultWallet });
+      // console.log(estimatedGas);
+      // let result = await contract.methods
+      //   .publish(75030, defaultWallet)
+      //   .call({ from: defaultWallet, gas: Math.round(estimatedGas * 1.2) });
       console.log("Publication successful");
-      console.log(result);
-      //   console.log(contract.methods);
-      //   let returnTrue = await contract.methods.returnTrue().call();
-      //   console.log(returnTrue);
     } catch (err) {
       console.log(err);
     }
