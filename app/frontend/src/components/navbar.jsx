@@ -148,11 +148,11 @@ function NavBar(props) {
       </a>
       <div className="dropdown-menu" aria-labelledby="navbarDropdown">
         <a className="dropdown-item" href="#">
-          <i class="fa-solid fa-address-card mx-2"></i>
+          <i className="fa-solid fa-address-card mx-2"></i>
           {getShortAddress(loginAddress) || "Not Connected"}
         </a>
         <a className="dropdown-item" href="#">
-          <i class="fa-solid fa-share-nodes mx-2"></i>
+          <i className="fa-solid fa-share-nodes mx-2"></i>
           {chainIdToName.get(chainId) || chainId || "Not Connected"}
         </a>
         <div className="dropdown-divider"></div>
@@ -164,7 +164,7 @@ function NavBar(props) {
             style={{ borderRadius: 25 }}
           >
             <i
-              class="iconify"
+              className="iconify"
               data-icon="logos:metamask-icon"
               style={{ fontSize: 20, paddingRight: 5 }}
             ></i>
@@ -178,7 +178,7 @@ function NavBar(props) {
             }
           >
             <i
-              class="fa-solid fa-circle-arrow-right text-success mr-2"
+              className="fa-solid fa-circle-arrow-right text-success mr-2"
               style={{ fontSize: 25 }}
               onClick={login}
             ></i>
@@ -199,20 +199,20 @@ function NavBar(props) {
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <i class="fa-solid fa-circle mx-2 text-success"></i>
+        <i className="fa-solid fa-circle mx-2 text-success"></i>
         {sessionStorage.getItem("username")}
       </a>
       <div className="dropdown-menu" aria-labelledby="navbarDropdown">
         <a className="dropdown-item" href="/drafts">
-          <i class="fa-solid fa-house mx-2"></i>
+          <i className="fa-solid fa-house mx-2"></i>
           Home
         </a>
         <a className="dropdown-item" href="#">
-          <i class="fa-solid fa-address-card mx-2"></i>
+          <i className="fa-solid fa-address-card mx-2"></i>
           {getShortAddress(loginAddress) || "Not Connected"}
         </a>
         <a className="dropdown-item" href="#">
-          <i class="fa-solid fa-share-nodes mx-2"></i>
+          <i className="fa-solid fa-share-nodes mx-2"></i>
           {chainIdToName.get(chainId) || chainId || "Not Connected"}
         </a>
         <div className="dropdown-divider"></div>
@@ -222,11 +222,11 @@ function NavBar(props) {
             href="#"
             onClick={copyLoginAddress}
           >
-            <i class="fa-solid fa-copy mr-2"></i>
+            <i className="fa-solid fa-copy mr-2"></i>
             Copy
           </a>
           <a className="btn btn-sm btn-danger mr-2" href="#" onClick={logout}>
-            <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>
+            <i className="fa-solid fa-arrow-right-from-bracket mr-2"></i>
             Logout
           </a>
         </div>

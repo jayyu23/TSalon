@@ -20,7 +20,7 @@ class AuthHandler {
     } else {
       // ping the auth-checker backend
       const authCheckerAPI = "http://localhost:8000/api/auth";
-      authData = this.getPostAuthData();
+      let authData = this.getPostAuthData();
       axios.post(authCheckerAPI, authData.body, authData.config).then(
         (acc) => {
           // All OK
