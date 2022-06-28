@@ -6,8 +6,11 @@ import "suneditor/dist/css/suneditor.min.css"; // Import Sun Editor's CSS File
 import NavBar from "../components/navbar";
 import Sidebar from "../components/sidebar";
 import wordsCount from "words-count";
+import auth from "../auth/authhandler";
 
 function TSalonEditor(props) {
+  auth.protectRoute();
+
   const location = useLocation();
   let { tbsn } = useParams();
   const currentTBSN = tbsn || 0;
@@ -30,8 +33,11 @@ function TSalonEditor(props) {
           document.getElementById("postTitle").value = data.title;
           document.getElementById("postBlurb").value = data.blurb;
           editor.current.setContents(data.content);
+          getBlurbWordCount();
         },
-        (rej) => {}
+        (rej) => {
+          console.log(rej);
+        }
       );
     }
   }, []);

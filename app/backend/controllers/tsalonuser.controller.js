@@ -1,8 +1,11 @@
 import tsalonuserModel from "../models/tsalonuser.model.js";
 import extend from "lodash/extend.js";
+import jwt from "jsonwebtoken";
+import { expressjwt } from "express-jwt";
+import config from "./../../config/config.js";
 
-const checkWalletExists = (req, res, next) => {
-  let walletAddress = req.body.walletAddress;
+const signin = (req, res, next) => {
+  let walletAddress = req.body.walletAddress.toLowerCase();
   if (walletAddress) {
     tsalonuserModel
       .find({ walletAddress: walletAddress })
@@ -15,13 +18,19 @@ const checkWalletExists = (req, res, next) => {
               .status(200)
               .json({ walletAddress: walletAddress, registered: false });
           } else {
-            return res
-              .status(200)
-              .json({
-                walletAddress: walletAddress,
-                registered: true,
-                user: results[0],
-              });
+            // Sign in the user with a JSON Web Token
+            const token = jwt.sign(
+              { address: walletAddress },
+              config.jwtSecret
+            );
+            res.cookie("t", token, { expire: new Date() + 9999 });
+
+            return res.status(200).json({
+              token,
+              walletAddress: walletAddress,
+              registered: true,
+              user: results[0],
+            });
           }
         },
         (rej) => {
@@ -52,10 +61,17 @@ const createUser = (req, res, next) => {
               })
               .then(
                 (acc) => {
+                  const token = jwt.sign(
+                    { address: walletAddress },
+                    config.jwtSecret
+                  );
+                  res.cookie("t", token, { expire: new Date() + 9999 });
+
                   return res.status(200).json({
-                    username: username,
+                    token,
                     walletAddress: walletAddress,
                     success: true,
+                    user: username,
                   });
                 },
                 (rej) => {
@@ -76,7 +92,35 @@ const createUser = (req, res, next) => {
   }
 };
 
+const requireSignin = expressjwt({
+  secret: config.jwtSecret,
+  userProperty: "auth",
+  algorithms: ["HS256"],
+});
+
+const hasAuthorization = (req, res, next) => {
+  const authorized =
+    req.body.walletAddress &&
+    req.auth &&
+    req.body.walletAddress.toLowerCase() == req.auth.address.toLowerCase();
+  if (!authorized) {
+    return res.status(403).json({
+      error: "User is not authorized",
+    });
+  }
+  next();
+};
+
+const passedAuthentication = (req, res, next) => {
+  return res.status(200).json({ success: true });
+};
+
+const signout = (req, res, next) => {};
+
 export default {
-  checkWalletExists: checkWalletExists,
   createUser: createUser,
+  signin: signin,
+  requireSignin: requireSignin,
+  hasAuthorization: hasAuthorization,
+  passedAuthentication: passedAuthentication,
 };

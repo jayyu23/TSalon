@@ -58,7 +58,7 @@ function LoginPage(props) {
 
   const checkUserExists = () => {
     axios
-      .post("http://localhost:8000/api/checkWallet", {
+      .post("http://localhost:8000/api/signin", {
         walletAddress: loginAddress,
       })
       .then(
@@ -69,6 +69,11 @@ function LoginPage(props) {
           } else {
             let user = data.user;
             // Redirect to user homepage
+            console.log(data);
+            sessionStorage.setItem("t", data.token);
+            sessionStorage.setItem("username", data.user.username);
+            sessionStorage.setItem("address", data.walletAddress);
+
             alert("Successfully logged in user: " + user.username);
             navigate("/drafts", {
               state: { username: user.username, walletAddress: loginAddress },

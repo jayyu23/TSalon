@@ -1,11 +1,19 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function RegisterPage(props) {
   const location = useLocation();
-  let loginAddress = location.state.loginAddress;
+  const navigate = useNavigate();
+  console.log(location);
+  let loginAddress = location.state ? location.state.loginAddress : null;
+  useEffect(() => {
+    if (loginAddress == null) {
+      navigate("/error");
+    }
+  });
+
   const checkValid = () => {
     // Client validation
     let usernameEntered = document.getElementById("username").value;

@@ -1,28 +1,246 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
+import Web3 from "web3";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-class NavBar extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { showImage: "false" };
-  }
-  imgUrl = "/assets/cafedeflore.jpg";
-  logoUrl = "/assets/logo_circle.png";
-  baseNavBar = "navbar navbar-expand-lg fixed-top";
+// NavBar also handles Login
+function NavBar(props) {
+  const navigate = useNavigate();
+  const [loginAddress, setLoginAddress] = useState(null);
+  const [chainId, setChainId] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const chainIdToName = new Map();
 
-  getNavBarHTML(showImage) {
-    let darkHeader = " navbar-dark bg-dark";
-    let lightHeader = " navbar-light";
-    let modifier = showImage === "true" ? lightHeader : darkHeader;
+  chainIdToName.set("0x1", "Ethereum Mainnet");
+  chainIdToName.set("0x539", "Ganache");
+  chainIdToName.set("0x4", "Rinkeby Testnet");
+  const logoUrl = "/assets/logo_circle.png";
 
-    let navbarHTML = (
-      <nav
-        className={"navbar navbar-expand-lg fixed-top" + modifier}
-        id="mainNav"
+  useEffect(() => {
+    // upon init
+    // check sessionStorage
+    if (sessionStorage.getItem("t")) {
+      setIsLoggedIn(true);
+    }
+
+    setLoginAddress(window.ethereum ? window.ethereum.selectedAddress : null);
+    setChainId(window.ethereum ? window.ethereum.chainId : null);
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", () => {
+        setLoginAddress(window.ethereum.selectedAddress);
+        if (isLoggedIn) {
+          logout();
+        }
+      });
+
+      window.ethereum.on("disconnect", () => {
+        setLoginAddress(null);
+        document.getElementById("statusIcon").className =
+          "fa-solid fa-circle mx-2 text-danger";
+        if (isLoggedIn) {
+          logout();
+          // alert("Chain Changed detected. Please login again");
+        }
+      });
+
+      window.ethereum.on("chainChanged", () => {
+        setChainId(window.ethereum.chainId);
+        if (isLoggedIn) {
+          logout();
+          // alert("Chain Changed detected. Please login again");
+        }
+      });
+    }
+  });
+
+  const getShortAddress = (address) => {
+    if (address == null) {
+      return "Not Connected";
+    }
+    return (
+      address.substring(0, 5) + "..." + address.substring(address.length - 4)
+    );
+  };
+
+  const copyLoginAddress = () => {
+    if (loginAddress) {
+      navigator.clipboard.writeText(loginAddress);
+      alert("Copied address to clipboard");
+    }
+  };
+
+  const logout = () => {
+    // Log out from server
+    sessionStorage.clear();
+    setIsLoggedIn(false);
+    navigate("/");
+  };
+
+  const connectAccount = () => {
+    if (window.ethereum) {
+      window.ethereum.request({ method: "eth_requestAccounts" }).then(
+        (acc) => {
+          window.web3 = new Web3(window.ethereum);
+          return true;
+        },
+        (rej) => {
+          alert("Login Error. " + rej.message);
+          return false;
+        }
+      );
+      setLoginAddress(window.ethereum ? window.ethereum.selectedAddress : null);
+      setChainId(window.ethereum ? window.ethereum.chainId : null);
+      document.getElementById("statusIcon").className =
+        "fa-solid fa-circle mx-2 text-warning";
+    } else {
+      alert(
+        "Login Error. Please set up MetaMask first as a Google Chrome extension"
+      );
+      return false;
+    }
+  };
+
+  const login = () => {
+    axios
+      .post("http://localhost:8000/api/signin", {
+        walletAddress: loginAddress,
+      })
+      .then(
+        (acc) => {
+          let data = acc.data;
+          if (!data.registered) {
+            navigate("/register", { state: { loginAddress: loginAddress } });
+          } else {
+            let user = data.user;
+            // Redirect to user homepage
+            console.log(data);
+            sessionStorage.setItem("t", data.token);
+            sessionStorage.setItem("username", data.user.username);
+            sessionStorage.setItem("address", data.walletAddress);
+            setIsLoggedIn(true);
+            // alert("Successfully logged in user: " + user.username);
+            navigate("/drafts", {
+              state: { username: user.username, walletAddress: loginAddress },
+            });
+          }
+        },
+        (rej) => {
+          console.log(rej);
+          alert(rej.message);
+        }
+      );
+  };
+
+  const notLoggedInData = (
+    <li className="nav-item dropdown">
+      <a
+        className="nav-link dropdown-toggle px-lg-3 py-3 py-lg-4"
+        href="#"
+        id="navbarDropdown"
+        role="button"
+        data-bs-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
       >
+        <i id="statusIcon" className="fa-solid fa-circle mx-2 text-danger"></i>
+        Log In
+      </a>
+      <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+        <a className="dropdown-item" href="#">
+          <i class="fa-solid fa-address-card mx-2"></i>
+          {getShortAddress(loginAddress) || "Not Connected"}
+        </a>
+        <a className="dropdown-item" href="#">
+          <i class="fa-solid fa-share-nodes mx-2"></i>
+          {chainIdToName.get(chainId) || chainId || "Not Connected"}
+        </a>
+        <div className="dropdown-divider"></div>
+        <div container="row justify-content-center">
+          <a
+            className="btn btn-sm btn-primary justify-content-center mx-2"
+            href="#"
+            onClick={connectAccount}
+            style={{ borderRadius: 25 }}
+          >
+            <i
+              class="iconify"
+              data-icon="logos:metamask-icon"
+              style={{ fontSize: 20, paddingRight: 5 }}
+            ></i>
+            Connect
+          </a>
+          <a
+            className={
+              loginAddress == null
+                ? "btn btn-sm px-2 disabled"
+                : "btn btn-sm px-2"
+            }
+          >
+            <i
+              class="fa-solid fa-circle-arrow-right text-success mr-2"
+              style={{ fontSize: 25 }}
+              onClick={login}
+            ></i>
+          </a>
+        </div>
+      </div>
+    </li>
+  );
+
+  const loggedInData = (
+    <li className="nav-item dropdown">
+      <a
+        className="nav-link dropdown-toggle px-lg-3 py-3 py-lg-4"
+        href="#"
+        id="navbarDropdown"
+        role="button"
+        data-bs-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <i class="fa-solid fa-circle mx-2 text-success"></i>
+        {sessionStorage.getItem("username")}
+      </a>
+      <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+        <a className="dropdown-item" href="/drafts">
+          <i class="fa-solid fa-house mx-2"></i>
+          Home
+        </a>
+        <a className="dropdown-item" href="#">
+          <i class="fa-solid fa-address-card mx-2"></i>
+          {getShortAddress(loginAddress) || "Not Connected"}
+        </a>
+        <a className="dropdown-item" href="#">
+          <i class="fa-solid fa-share-nodes mx-2"></i>
+          {chainIdToName.get(chainId) || chainId || "Not Connected"}
+        </a>
+        <div className="dropdown-divider"></div>
+        <div container="row justify-content-center">
+          <a
+            className="btn btn-sm btn-secondary justify-content-center mx-2"
+            href="#"
+            onClick={copyLoginAddress}
+          >
+            <i class="fa-solid fa-copy mr-2"></i>
+            Copy
+          </a>
+          <a className="btn btn-sm btn-danger mr-2" href="#" onClick={logout}>
+            <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>
+            Logout
+          </a>
+        </div>
+      </div>
+    </li>
+  );
+
+  return (
+    <div className="mb-5">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark" id="mainNav">
         <div className="container px-4 px-lg">
           <img
             className="navbar-brand m-x-2 d-inline-block align-top"
-            src={this.logoUrl}
+            src={logoUrl}
             width="45px"
           ></img>
           <a className="navbar-brand" href="/">
@@ -43,11 +261,6 @@ class NavBar extends Component {
           <div className="collapse navbar-collapse" id="navbarResponsive">
             <ul className="navbar-nav ms-auto py-4 py-lg-0">
               <li className="nav-item">
-                <a className="nav-link px-lg-3 py-3 py-lg-4" href="/login">
-                  Login
-                </a>
-              </li>
-              <li className="nav-item">
                 <a
                   className="nav-link px-lg-3 py-3 py-lg-4"
                   target="_blank"
@@ -65,72 +278,14 @@ class NavBar extends Component {
                   Join Discord
                 </a>
               </li>
+              {isLoggedIn ? loggedInData : notLoggedInData}
             </ul>
           </div>
         </div>
       </nav>
-    );
-    return navbarHTML;
-  }
-
-  bgImageHTML = (
-    <header
-      className="masthead"
-      style={{ backgroundImage: `url(${this.imgUrl})` }}
-    >
-      <div className="container position-relative px-4 px-lg-5">
-        <div className="row gx-4 gx-lg-5 justify-content-center">
-          <div className="col-md-10 col-lg-8 col-xl-7">
-            <div className="page-heading">
-              <h1>TSalon</h1>
-              <span className="subheading mb-5">
-                A Web 3.0 Publishing House
-              </span>
-              <a
-                className="btn btn-primary mt-lg-3 px-lg-4 mb-3"
-                style={{ borderRadius: 15 }}
-                href="https://discord.gg/jABTq5RPNC"
-                target="_blank"
-              >
-                Join the Discord
-              </a>
-              <a
-                className="btn btn-success mt-lg-3 px-lg-3 mx-2 mb-3"
-                style={{ borderRadius: 15 }}
-                target="_blank"
-                href="https://trapezoidal-nephew-39b.notion.site/TSalon-Whitepaper-9d27f5c901bc4dcaa53bace710421fce"
-              >
-                Read the Whitepaper
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
+      <div style={{ padding: 5 }}></div>
+    </div>
   );
-
-  render() {
-    let outHTML = "";
-    let showImage = this.props.showImage
-      ? this.props.showImage
-      : this.state.showImage;
-
-    if (showImage === "true") {
-      outHTML = (
-        <div id="navBarHeader">
-          {this.getNavBarHTML(showImage)} {this.bgImageHTML}
-        </div>
-      );
-    } else {
-      outHTML = (
-        <div id="navBarHeader">
-          {this.getNavBarHTML(showImage)}
-          <div style={{ paddingTop: 50 }}></div>
-        </div>
-      );
-    }
-    return outHTML;
-  }
 }
 
 export default NavBar;

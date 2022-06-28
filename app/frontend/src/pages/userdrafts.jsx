@@ -3,17 +3,32 @@ import NavBar from "../components/navbar";
 import Sidebar from "../components/sidebar";
 import TBook from "../components/tbook";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import auth from "../auth/authhandler";
 
-const username = "Johannes de Silentio";
 const apiRoute = "http://localhost:8000/api/";
 
 function UserDrafts() {
   const [stage1, setStage1] = useState([]);
   const [stage2, setStage2] = useState([]);
+  auth.protectRoute();
 
   useEffect(() => {
+    let token = sessionStorage.getItem("t");
+    let username = sessionStorage.getItem("username");
     let u = username.replace(/ /g, "_").toLowerCase();
-    axios.get(apiRoute + u + "/drafts").then(
+    console.log(apiRoute + u + "/drafts");
+
+    let route = apiRoute + u + "/drafts";
+    let body = { walletAddress: sessionStorage.getItem("address") };
+    let config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+
+    console.log(route);
+    console.log(body);
+    console.log(config);
+    axios.post(route, body, config).then(
       (acc) => {
         let data = acc.data;
         setStage1(data.stage1);
@@ -50,7 +65,9 @@ function UserDrafts() {
           </div>
 
           <div className="col-xs-12 col-md-9 my-0 " style={{ minHeight: 800 }}>
-            <h1 className="my-5 pt-5 text-center">My Drafts</h1>
+            <h1 className="my-5 pt-5 text-center">
+              My Drafts: {sessionStorage.getItem("username")}
+            </h1>
 
             <ul className="nav nav-pills nav-fill mb-5">
               <li className="nav-item">
