@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import axios from "axios";
+import endpoints from "../auth/endpoints";
 import { useNavigate } from "react-router-dom";
 
 // NavBar also handles Login
@@ -103,7 +104,7 @@ function NavBar(props) {
 
   const login = () => {
     axios
-      .post("http://localhost:8000/api/signin", {
+      .post(endpoints.getSignInAPI(), {
         walletAddress: loginAddress,
       })
       .then(

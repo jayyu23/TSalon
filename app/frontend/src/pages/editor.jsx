@@ -8,6 +8,7 @@ import Sidebar from "../components/sidebar";
 import wordsCount from "words-count";
 import auth from "../auth/authhandler";
 import { extend } from "lodash";
+import endpoints from "../auth/endpoints";
 
 function TSalonEditor(props) {
   auth.protectRoute();
@@ -25,11 +26,11 @@ function TSalonEditor(props) {
     editor.current = sunEditor;
   };
 
-  console.log(editor.current);
   useEffect(() => {
     if (currentTBSN != 0) {
       // Get request and load content.
-      axios.get("http://localhost:8000/api/drafts/" + currentTBSN).then(
+      let route = endpoints.getDraftAPI(currentTBSN);
+      axios.get(route).then(
         (acc) => {
           let data = acc.data;
           document.getElementById("postTitle").value = data.title;
@@ -114,7 +115,7 @@ function TSalonEditor(props) {
   };
 
   const submitPost = () => {
-    let apiURL = "http://localhost:8000/api/publications";
+    let apiURL = endpoints.getDraftSubmitAPI();
     if (validateContentLength()) {
       let postBody = getSubmitBody();
       axios.post(apiURL, postBody).then((res) => {
@@ -125,7 +126,7 @@ function TSalonEditor(props) {
   };
 
   const savePost = () => {
-    let apiURL = "http://localhost:8000/api/drafts";
+    let apiURL = endpoints.getDraftSaveAPI();
     let authContent = auth.getPostAuthData();
     let postBody = getSubmitBody();
     extend(postBody, authContent.body);

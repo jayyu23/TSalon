@@ -1,4 +1,5 @@
 import axios from "axios";
+import endpoints from "./endpoints";
 
 class AuthHandler {
   constructor() {}
@@ -19,7 +20,7 @@ class AuthHandler {
       auth.redirectToError();
     } else {
       // ping the auth-checker backend
-      const authCheckerAPI = "http://localhost:8000/api/auth";
+      const authCheckerAPI = endpoints.getAuthAPI();
       let authData = this.getPostAuthData();
       axios.post(authCheckerAPI, authData.body, authData.config).then(
         (acc) => {

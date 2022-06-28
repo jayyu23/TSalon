@@ -5,8 +5,7 @@ import TBookDraft from "../components/tbookdraft";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import auth from "../auth/authhandler";
-
-const apiRoute = "http://localhost:8000/api/";
+import endpoints from "../auth/endpoints";
 
 function UserDrafts() {
   const [stage1, setStage1] = useState([]);
@@ -16,10 +15,8 @@ function UserDrafts() {
   useEffect(() => {
     let token = sessionStorage.getItem("t");
     let username = sessionStorage.getItem("username");
-    let u = username.replace(/ /g, "_").toLowerCase();
-    console.log(apiRoute + u + "/drafts");
 
-    let route = apiRoute + u + "/drafts";
+    let route = endpoints.getUserDraftAPI(username);
     let body = { walletAddress: sessionStorage.getItem("address") };
     let config = {
       headers: { Authorization: `Bearer ${token}` },

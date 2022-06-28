@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import parse from "html-react-parser";
 import sanitizeHTML from "sanitize-html";
 import axios from "axios";
+import endpoints from "../auth/endpoints";
 
 function TBookView(props) {
   const defaultSettings = {
@@ -19,7 +20,7 @@ function TBookView(props) {
   }
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/publication/" + tbsn).then(
+    axios.get(endpoints.getPublicationAPI(tbsn)).then(
       (result) => {
         let data = result.data;
         setPub(data);

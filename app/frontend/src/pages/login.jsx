@@ -3,6 +3,7 @@ import NavBar from "../components/navbar";
 import Web3 from "web3";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import endpoints from "../auth/endpoints";
 
 function LoginPage(props) {
   let navigate = useNavigate();
@@ -58,7 +59,7 @@ function LoginPage(props) {
 
   const checkUserExists = () => {
     axios
-      .post("http://localhost:8000/api/signin", {
+      .post(endpoints.getSignInAPI(), {
         walletAddress: loginAddress,
       })
       .then(

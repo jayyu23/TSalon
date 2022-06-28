@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
 import { useLocation, useNavigate } from "react-router-dom";
+import endpoints from "../auth/endpoints";
 
 function RegisterPage(props) {
   const location = useLocation();
@@ -26,7 +27,7 @@ function RegisterPage(props) {
       // Passed client validation
       // now query the database
       axios
-        .post("http://localhost:8000/api/createUser", {
+        .post(endpoints.getCreateUserAPI(), {
           username: usernameEntered,
           walletAddress: loginAddress,
         })

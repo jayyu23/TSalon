@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import TBook from "./tbook";
 import axios from "axios";
+import endpoints from "../auth/endpoints";
 
 class TBookStore extends Component {
   constructor(props) {
@@ -8,7 +9,7 @@ class TBookStore extends Component {
     this.state = { publications: [] };
   }
   componentDidMount() {
-    axios.get("http://localhost:8000/api/publications").then((pubs) => {
+    axios.get(endpoints.getAllPubAPI()).then((pubs) => {
       console.log(pubs);
       this.setState({ publications: pubs.data });
     });
