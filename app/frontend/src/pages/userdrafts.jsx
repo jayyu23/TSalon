@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
 import Sidebar from "../components/sidebar";
-import TBook from "../components/tbook";
+import TBookDraft from "../components/tbookdraft";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import auth from "../auth/authhandler";
@@ -61,12 +61,12 @@ function UserDrafts() {
         <NavBar />
         <div className="row h-100 w-100">
           <div className="col-md-3 col-xs-12">
-            <Sidebar active={1} />
+            <Sidebar active={2} />
           </div>
 
           <div className="col-xs-12 col-md-9 my-0 " style={{ minHeight: 800 }}>
             <h1 className="my-5 pt-5 text-center">
-              My Drafts: {sessionStorage.getItem("username")}
+              Welcome, {sessionStorage.getItem("username")}
             </h1>
 
             <ul className="nav nav-pills nav-fill mb-5">
@@ -94,7 +94,12 @@ function UserDrafts() {
             >
               <div className="card mx-3" style={{ width: "25rem" }}>
                 <h2 className="card-title text-center my-5"> New Draft </h2>
-                <a href="/editor">
+                <a
+                  href="/editor"
+                  onClick={() => {
+                    sessionStorage.setItem("draftTBSN", 0);
+                  }}
+                >
                   <i
                     className="card-img-top fa fa-light fa-pen-to-square text-center pt-4"
                     style={{ fontSize: 200, color: "grey" }}
@@ -105,14 +110,12 @@ function UserDrafts() {
                 </h5>
               </div>
               {stage1.map((data) => (
-                <TBook
+                <TBookDraft
                   key={data.tbsn}
+                  tbsn={data.tbsn}
                   title={data.title}
                   author={data.author}
                   imageCover={data.coverImage}
-                  short={true}
-                  buttonText={"Continue Draft"}
-                  link={"/editor/" + data.tbsn}
                 />
               ))}
             </span>
@@ -122,14 +125,12 @@ function UserDrafts() {
               style={{ display: "none" }}
             >
               {stage2.map((data) => (
-                <TBook
+                <TBookDraft
                   key={data.tbsn}
+                  tbsn={data.tbsn}
                   title={data.title}
                   author={data.author}
                   imageCover={data.coverImage}
-                  short={true}
-                  buttonText={"Continue Draft"}
-                  link={"/editor/" + data.tbsn}
                 />
               ))}
             </span>

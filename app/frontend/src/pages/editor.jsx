@@ -1,22 +1,24 @@
 import axios from "axios";
 import { React, useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SunEditor from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css"; // Import Sun Editor's CSS File
 import NavBar from "../components/navbar";
 import Sidebar from "../components/sidebar";
 import wordsCount from "words-count";
 import auth from "../auth/authhandler";
+import { extend } from "lodash";
 
 function TSalonEditor(props) {
   auth.protectRoute();
 
-  const location = useLocation();
-  let { tbsn } = useParams();
-  const currentTBSN = tbsn || 0;
+  const currentTBSN = sessionStorage.getItem("draftTBSN");
+  const author = sessionStorage.getItem("username");
 
-  const author = location.state ? location.state.username : "Anonymous";
-  console.log(author);
+  if (!(author && currentTBSN)) {
+    auth.redirectToError();
+  }
+
   const navigate = useNavigate();
   const editor = useRef();
   const getSunEditorInstance = (sunEditor) => {
@@ -25,9 +27,9 @@ function TSalonEditor(props) {
 
   console.log(editor.current);
   useEffect(() => {
-    if (tbsn) {
+    if (currentTBSN != 0) {
       // Get request and load content.
-      axios.get("http://localhost:8000/api/drafts/" + tbsn).then(
+      axios.get("http://localhost:8000/api/drafts/" + currentTBSN).then(
         (acc) => {
           let data = acc.data;
           document.getElementById("postTitle").value = data.title;
@@ -82,17 +84,20 @@ function TSalonEditor(props) {
 
   const validateContentLength = () => {
     // Blurb Check
-    let submitErrorMessage = document.getElementById("submitErrorMessage");
+    let submitErrorMessage = document.getElementById("submitMessage");
     if (getBlurbWordCount()) {
       // Content Check
       let contentLength = getContentWordCount(null);
       if (contentLength < minContent || contentLength > maxContent) {
+        submitErrorMessage.className = "text-danger mt-0 mx-5";
         submitErrorMessage.innerText = `Error - Content must be between ${minContent} to ${maxContent} words in length`;
+
         return false;
       } else {
         return true;
       }
     } else {
+      submitErrorMessage.className = "text-danger mt-0 mx-5";
       submitErrorMessage.innerText = `Error - Blurb length must be under ${blurbLength} words`;
       return false;
     }
@@ -114,17 +119,30 @@ function TSalonEditor(props) {
       let postBody = getSubmitBody();
       axios.post(apiURL, postBody).then((res) => {
         let tbsn = res.data.publication.tbsn;
-        navigate("/view/" + tbsn, { replace: true });
+        window.location.href = "/view/" + tbsn;
       });
     }
   };
 
   const savePost = () => {
     let apiURL = "http://localhost:8000/api/drafts";
+    let authContent = auth.getPostAuthData();
     let postBody = getSubmitBody();
-    axios.post(apiURL, postBody).then((res) => {
-      alert("Save Sucessful");
-    });
+    extend(postBody, authContent.body);
+
+    let submitMessage = document.getElementById("submitMessage");
+    let saveDate = new Date();
+    axios.post(apiURL, postBody, authContent.config).then(
+      (res) => {
+        submitMessage.className = "text-success mt-0 mx-5";
+        submitMessage.innerText =
+          "Save Successful at " + saveDate.toLocaleString();
+      },
+      (rej) => {
+        submitMessage.className = "text-danger mt-0 mx-5";
+        submitMessage.innerText = "Save Error: " + rej.message;
+      }
+    );
   };
 
   return (
@@ -133,7 +151,7 @@ function TSalonEditor(props) {
         <NavBar />
         <div className="row h-100 w-100">
           <div className="col-md-3 col-xs-12" style={{ minWidth: 100 }}>
-            <Sidebar active={1} />
+            <Sidebar active={2} />
           </div>
 
           <div className="col-xs-12 col-md-9">
@@ -209,7 +227,7 @@ function TSalonEditor(props) {
             <p id="wordCount" className="text-muted mt-0 mx-5">
               Word Count: 0
             </p>
-            <p id="submitErrorMessage" className="text-danger mt-0 mx-5"></p>
+            <p id="submitMessage" className="text-danger mt-0 mx-5"></p>
             <div className="row justify-content-center my-5">
               <button className="btn btn-primary col-3 mx-3" onClick={savePost}>
                 Save Draft
@@ -219,7 +237,7 @@ function TSalonEditor(props) {
                 type="submit"
                 className="btn btn-primary col-3 mx-3"
               >
-                Preview
+                Publish
               </button>
             </div>
           </div>

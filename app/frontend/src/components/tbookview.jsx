@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import parse from "html-react-parser";
 import sanitizeHTML from "sanitize-html";
 import axios from "axios";
 
 function TBookView(props) {
-  let navigate = useNavigate();
   const defaultSettings = {
     author: "",
     coverImage: "",
@@ -19,7 +18,6 @@ function TBookView(props) {
     tbsn = props.tbsn;
   }
 
-  console.log(tbsn);
   useEffect(() => {
     axios.get("http://localhost:8000/api/publication/" + tbsn).then(
       (result) => {

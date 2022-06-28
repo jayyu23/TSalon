@@ -204,17 +204,17 @@ function NavBar(props) {
       </a>
       <div className="dropdown-menu" aria-labelledby="navbarDropdown">
         <a className="dropdown-item" href="/drafts">
-          <i className="fa-solid fa-house mx-2"></i>
+          <i className="fa-solid fa-house-user mx-2"></i>
           Home
         </a>
-        <a className="dropdown-item" href="#">
+        <div className="dropdown-item" href="#">
           <i className="fa-solid fa-address-card mx-2"></i>
           {getShortAddress(loginAddress) || "Not Connected"}
-        </a>
-        <a className="dropdown-item" href="#">
+        </div>
+        <div className="dropdown-item" href="#">
           <i className="fa-solid fa-share-nodes mx-2"></i>
           {chainIdToName.get(chainId) || chainId || "Not Connected"}
-        </a>
+        </div>
         <div className="dropdown-divider"></div>
         <div container="row justify-content-center">
           <a
