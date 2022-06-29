@@ -2,7 +2,9 @@ import axios from "axios";
 import endpoints from "./endpoints";
 
 class AuthHandler {
-  constructor() {}
+  constructor() {
+    this.loggedIn = false;
+  }
 
   getPostAuthData() {
     // Assume that have the Session Storage Data

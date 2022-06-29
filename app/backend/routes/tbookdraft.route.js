@@ -6,7 +6,10 @@ const router = express.Router();
 router
   .route("/api/drafts")
   .post(auth.requireSignin, tbookdraftController.update);
-router.route("/api/drafts/:tbsn").get(tbookdraftController.read);
+router
+  .route("/api/drafts/:tbsn")
+  .post(auth.requireSignin, auth.hasAuthorization, tbookdraftController.read)
+  .delete(tbookdraftController.deleteDraft);
 router
   .route("/api/:username/drafts")
   .post(auth.requireSignin, auth.hasAuthorization, tbookdraftController.list);

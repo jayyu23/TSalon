@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import endpoints from "../auth/endpoints";
 
 function TBookDraft(props) {
   const tbsn = props.tbsn || 0;
@@ -9,6 +11,16 @@ function TBookDraft(props) {
 
   const setSession = () => {
     sessionStorage.setItem("draftTBSN", tbsn);
+  };
+  const deleteDraft = () => {
+    if (tbsn != 0) {
+      axios.delete(endpoints.getDraftAPI(tbsn)).then(
+        (acc) => {
+          window.location.reload();
+        },
+        (rej) => console.log(rej)
+      );
+    }
   };
 
   return (
@@ -21,13 +33,23 @@ function TBookDraft(props) {
       <div className="card-body d-flex w-100 justify-content-center">
         <h5 className="card-title">{props.title || "TBook Draft"}</h5>
       </div>
-      <span className="px-5 mt-auto w-100 text-center mb-4">
+      <span className="mt-auto w-100 text-center mb-4">
+        <a
+          href="#"
+          className="btn btn-danger px-0 col-4"
+          style={{ borderRadius: 50 }}
+          onClick={deleteDraft}
+        >
+          <i className="fa fa-xmark my-auto"></i> Delete
+        </a>
         <a
           href="/editor"
-          className="btn btn-primary m-2 px-5 text-center"
+          className="btn btn-primary m-2 text-center col-5"
           onClick={setSession}
+          style={{ borderRadius: 30 }}
         >
-          Continue Draft
+          Continue
+          <i className="fa fa-arrow-right mx-1"></i>
         </a>
       </span>
     </div>

@@ -1,6 +1,5 @@
 import axios from "axios";
 import { React, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import SunEditor from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css"; // Import Sun Editor's CSS File
 import NavBar from "../components/navbar";
@@ -20,7 +19,6 @@ function TSalonEditor(props) {
     auth.redirectToError();
   }
 
-  const navigate = useNavigate();
   const editor = useRef();
   const getSunEditorInstance = (sunEditor) => {
     editor.current = sunEditor;
@@ -30,7 +28,8 @@ function TSalonEditor(props) {
     if (currentTBSN != 0) {
       // Get request and load content.
       let route = endpoints.getDraftAPI(currentTBSN);
-      axios.get(route).then(
+      let authData = auth.getPostAuthData();
+      axios.post(route, authData.body, authData.config).then(
         (acc) => {
           let data = acc.data;
           document.getElementById("postTitle").value = data.title;

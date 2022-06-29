@@ -4,6 +4,7 @@ import parse from "html-react-parser";
 import sanitizeHTML from "sanitize-html";
 import axios from "axios";
 import endpoints from "../auth/endpoints";
+import auth from "../auth/authhandler";
 
 function TBookView(props) {
   const defaultSettings = {
@@ -19,17 +20,29 @@ function TBookView(props) {
     tbsn = props.tbsn;
   }
 
+  const API =
+    props.mode == "draft"
+      ? endpoints.getDraftAPI(tbsn)
+      : endpoints.getPublicationAPI(tbsn);
+
   useEffect(() => {
-    axios.get(endpoints.getPublicationAPI(tbsn)).then(
-      (result) => {
-        let data = result.data;
-        setPub(data);
-      },
-      (error) => {
-        console.log(error);
-        window.location = "/error";
-      }
-    );
+    let res = (acc) => {
+      let data = acc.data;
+      setPub(data);
+    };
+    let err = (rej) => {
+      console.log(rej);
+      window.location = "/error";
+    };
+
+    if (props.mode == "draft") {
+      let authData = auth.getPostAuthData();
+      axios
+        .post(endpoints.getDraftAPI(tbsn), authData.body, authData.config)
+        .then(res, err);
+    } else {
+      axios.get(endpoints.getPublicationAPI(tbsn)).then(res, err);
+    }
   }, []);
 
   const getBodyHTML = () => {
@@ -48,7 +61,9 @@ function TBookView(props) {
           src={pub.coverImage}
           alt="Cover Image for Article"
         />
-        <p className="font-italic my-2">By: {pub.author}</p>
+        <p className="font-italic my-2">
+          {props.mode == "draft" ? "" : "By: " + pub.author}
+        </p>
         <p className="font-weight-light font-italic my-2 px-5 mx-5">
           {pub.blurb}
         </p>

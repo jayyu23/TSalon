@@ -12,6 +12,7 @@ import RegisterPage from "./pages/register";
 import SideBar from "./components/sidebar";
 import CollectPage from "./pages/collect";
 import UserDrafts from "./pages/userdrafts";
+import ReviewPage from "./pages/review";
 
 class App extends Component {
   constructor(props) {
@@ -31,6 +32,7 @@ class App extends Component {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/drafts" element={<UserDrafts />} />
+          <Route path="/review" element={<ReviewPage />} />
           <Route path="*" element={<Navigate to="/error" />} />
         </Routes>
       </BrowserRouter>

@@ -3,6 +3,7 @@ import Web3 from "web3";
 import axios from "axios";
 import endpoints from "../auth/endpoints";
 import { useNavigate } from "react-router-dom";
+import auth from "../auth/authhandler";
 
 // NavBar also handles Login
 function NavBar(props) {
@@ -75,6 +76,7 @@ function NavBar(props) {
     // Log out from server
     sessionStorage.clear();
     setIsLoggedIn(false);
+    auth.isLoggedIn = false;
     navigate("/");
   };
 
@@ -120,6 +122,7 @@ function NavBar(props) {
             sessionStorage.setItem("username", data.user.username);
             sessionStorage.setItem("address", data.walletAddress);
             setIsLoggedIn(true);
+            auth.isLoggedIn = true;
             // alert("Successfully logged in user: " + user.username);
             navigate("/drafts", {
               state: { username: user.username, walletAddress: loginAddress },

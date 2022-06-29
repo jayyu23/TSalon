@@ -58,6 +58,7 @@ const list = (req, res, next) => {
 };
 
 const getFromTBSN = (req, res, next, tbsn) => {
+  console.log(tbsn);
   tbookdraftModel
     .findOne({ tbsn: tbsn })
     .exec()
@@ -101,4 +102,29 @@ const read = (req, res) => {
   }
 };
 
-export default { update, list, read, getFromUsername, getFromTBSN };
+const deleteDraft = (req, res) => {
+  let draft = req.draft;
+  if (draft) {
+    tbookdraftModel.deleteOne({ tbsn: draft.tbsn }).then(
+      (acc) => {
+        return res.status(200).json({ status: "success", data: acc });
+      },
+      (rej) => {
+        return res.status(400).json({ status: "reject", message: rej });
+      }
+    );
+  } else {
+    return res
+      .status(404)
+      .json({ status: "reject", message: "No draft found" });
+  }
+};
+
+export default {
+  update,
+  list,
+  read,
+  getFromUsername,
+  getFromTBSN,
+  deleteDraft,
+};

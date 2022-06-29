@@ -61,14 +61,21 @@ class TBook extends Component {
             By{" "}
             {this.props.author ? this.props.author : this.state.defaultAuthor}
           </p>
-          <span className="px-5 mt-auto">
+          <span className="px-3 mt-auto">
             <a
               href={this.props.link ? this.props.link : this.state.defaultLink}
               className="btn btn-primary m-2 px-auto"
+              style={{ borderRadius: 30 }}
             >
+              <i className="fa-solid fa-book-open mx-2"></i>
               Read
             </a>
-            <a href="#" className="btn btn-success m-2 px-auto">
+            <a
+              href="#"
+              className="btn btn-warning m-2 px-auto"
+              style={{ borderRadius: 30 }}
+            >
+              <i className="fa-solid fa-book-bookmark mx-2"></i>
               Collect
             </a>
           </span>
