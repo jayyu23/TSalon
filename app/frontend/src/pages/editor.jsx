@@ -6,7 +6,7 @@ import NavBar from "../components/navbar";
 import Sidebar from "../components/sidebar";
 import wordsCount from "words-count";
 import auth from "../auth/authhandler";
-import { extend } from "lodash";
+import { extend, update } from "lodash";
 import endpoints from "../auth/endpoints";
 
 function TSalonEditor(props) {
@@ -34,6 +34,7 @@ function TSalonEditor(props) {
           let data = acc.data;
           document.getElementById("postTitle").value = data.title;
           document.getElementById("postBlurb").value = data.blurb;
+          document.getElementById("img").src = data.coverImage;
           editor.current.setContents(data.content);
           getBlurbWordCount();
         },
@@ -48,7 +49,8 @@ function TSalonEditor(props) {
   const minContent = 300; // min word count for content
   const maxContent = 2000; // max word count for content
 
-  const imgUrl = "assets/logo_square_blue.png";
+  const imgUrl = "assets/logo_square_purple.png";
+  const watermark = "assets/logo_circle.png";
 
   const getBlurbWordCount = () => {
     let currentText = document.getElementById("postBlurb").value;
@@ -110,6 +112,7 @@ function TSalonEditor(props) {
       blurb: document.getElementById("postBlurb").value,
       author: author,
       content: editor.current.getContents(),
+      coverImage: document.getElementById("imgCanvas").toDataURL(),
     };
   };
 
@@ -117,10 +120,14 @@ function TSalonEditor(props) {
     let apiURL = endpoints.getDraftSubmitAPI();
     if (validateContentLength()) {
       let postBody = getSubmitBody();
+
+      /**
       axios.post(apiURL, postBody).then((res) => {
-        let tbsn = res.data.publication.tbsn;
-        window.location.href = "/view/" + tbsn;
+        window.location.href = "/drafts"
+        // let tbsn = res.data.publication.tbsn;
+        // window.location.href = "/view/" + tbsn;
       });
+      **/
     }
   };
 
@@ -145,6 +152,31 @@ function TSalonEditor(props) {
     );
   };
 
+  const uploadImage = (event) => {
+    let img = event.target.files[0];
+    let binaryData = [];
+    binaryData.push(img);
+    let url = URL.createObjectURL(
+      new Blob(binaryData, { type: "application/zip" })
+    );
+    document.getElementById("img").src = url;
+    updateCanvas();
+    // console.log(event.target.files);
+  };
+
+  const updateCanvas = () => {
+    let canvas = document.getElementById("imgCanvas");
+    let ctx = canvas.getContext("2d");
+    let img = document.getElementById("img");
+    let watermark = document.getElementById("watermark");
+    ctx.drawImage(img, 0, 0, 300, 300);
+    ctx.drawImage(watermark, 225, 225, 70, 70);
+    let coord = 225 + Math.floor((300 - 225) / 2) - 1;
+    ctx.beginPath();
+    ctx.arc(coord, coord, 30, 0, 2 * Math.PI, false);
+    // ctx.stroke();
+  };
+
   return (
     <div className="h-100">
       <div className="container h-100 mx-0 px-0 mt-3 w-100">
@@ -159,12 +191,28 @@ function TSalonEditor(props) {
             <div className="form-group container-fluid px-5 py-4 row">
               <div className="col-xl-5">
                 <h4 className="font-weight-normal">Image Cover</h4>
-                <img src={imgUrl} alt="Cover Image" height="300" width="300" />
+                <canvas id="imgCanvas" height="300" width="300"></canvas>
+                <img
+                  id="img"
+                  src={imgUrl}
+                  alt="Cover Image"
+                  height="300"
+                  width="300"
+                  onLoad={updateCanvas}
+                  onChange={updateCanvas}
+                  style={{ display: "none" }}
+                />
+                <img
+                  id="watermark"
+                  src={watermark}
+                  style={{ display: "none" }}
+                />
                 <input
+                  id="imgUpload"
                   className="mt-1"
                   type="file"
-                  accept="image/png"
-                  disabled={true}
+                  accept="image/png image/jpeg"
+                  onChange={uploadImage}
                 />
                 <p className="text-muted mb-3 mt-2">300x300 PNG</p>
               </div>

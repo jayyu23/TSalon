@@ -21,7 +21,7 @@ class TBook extends Component {
     // Short has no blurb
 
     let short = (
-      <div className="card mx-3" style={{ width: "25rem" }}>
+      <div className="card mx-2" style={{ width: "25rem" }}>
         <img
           className="card-img-top"
           src={this.props.imageCover ? this.props.imageCover : this.imageCover}
@@ -44,7 +44,7 @@ class TBook extends Component {
     );
 
     let card = (
-      <div className="card mx-3" style={{ width: "25rem" }}>
+      <div className="card mx-3 my-4" style={{ width: "25rem" }}>
         <img
           className="card-img-top"
           src={this.props.imageCover ? this.props.imageCover : this.imageCover}

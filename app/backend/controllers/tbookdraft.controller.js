@@ -27,6 +27,8 @@ const update = (req, res, next) => {
             title: fields.title,
             blurb: fields.blurb,
             content: fields.content,
+            lastSaveDate: new Date(),
+            coverImage: fields.coverImage,
           },
         }
       )
@@ -58,7 +60,6 @@ const list = (req, res, next) => {
 };
 
 const getFromTBSN = (req, res, next, tbsn) => {
-  console.log(tbsn);
   tbookdraftModel
     .findOne({ tbsn: tbsn })
     .exec()
@@ -79,7 +80,7 @@ const getFromUsername = (req, res, next, username) => {
     .find({
       author: { $regex: usernameFiltered, $options: "i" },
     })
-    .sort({ tbsn: -1 })
+    .sort({ lastSaveDate: -1 })
     .exec()
     .then(
       (acc) => {
@@ -118,6 +119,30 @@ const deleteDraft = (req, res) => {
       .status(404)
       .json({ status: "reject", message: "No draft found" });
   }
+};
+
+const submitForReview = (req, res) => {
+  let fields = req.body;
+  let tbsn = fields.tbsn;
+  if (!tbsn) {
+    res.status(400), json({ status: "reject", message: "No TBSN found" });
+  }
+  tbookdraftModel
+    .findOneAndUpdate(
+      { tbsn: tbsn },
+      {
+        $set: {
+          publishDraft: true,
+          publishDate: new Date(),
+        },
+      }
+    )
+    .then(
+      (acc) => {},
+      (rej) => {
+        res.status(400), json({ status: "reject", message: "TBSN not found" });
+      }
+    );
 };
 
 export default {

@@ -30,6 +30,11 @@ class TBookStore extends Component {
               imageCover={data.coverImage}
             />
           ))}
+          <TBook />
+          <TBook />
+          <TBook />
+          <TBook />
+          <TBook />
         </div>
       </div>
     );

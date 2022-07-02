@@ -21,13 +21,10 @@ function UserDrafts() {
     let config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-
-    console.log(route);
-    console.log(body);
-    console.log(config);
     axios.post(route, body, config).then(
       (acc) => {
         let data = acc.data;
+        console.log(data);
         setStage1(data.stage1);
         setStage2(data.stage2);
       },
@@ -74,12 +71,12 @@ function UserDrafts() {
                   href="#"
                   onClick={showTab1}
                 >
-                  Unpublished Drafts
+                  {`Unpublished Drafts (${stage1.length})`}
                 </a>
               </li>
               <li className="nav-item">
                 <a id="t2" className="nav-link" href="#" onClick={showTab2}>
-                  Under Peer Review
+                  {`Under Peer Review (${stage2.length})`}
                 </a>
               </li>
             </ul>

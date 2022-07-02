@@ -35,21 +35,20 @@ function TBookDraft(props) {
       </div>
       <span className="mt-auto w-100 text-center mb-4">
         <a
-          href="#"
-          className="btn btn-danger px-0 col-4"
-          style={{ borderRadius: 50 }}
-          onClick={deleteDraft}
-        >
-          <i className="fa fa-xmark my-auto"></i> Delete
-        </a>
-        <a
           href="/editor"
           className="btn btn-primary m-2 text-center col-5"
           onClick={setSession}
           style={{ borderRadius: 30 }}
         >
-          Continue
-          <i className="fa fa-arrow-right mx-1"></i>
+          <i className="fa fa-pencil mx-1"></i>Continue
+        </a>
+        <a
+          href="#"
+          className="btn btn-danger px-0 col-4"
+          style={{ borderRadius: 50 }}
+          onClick={deleteDraft}
+        >
+          <i className="fa fa-trash my-auto"></i> Delete
         </a>
       </span>
     </div>

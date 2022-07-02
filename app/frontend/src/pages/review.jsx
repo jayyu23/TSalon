@@ -18,8 +18,35 @@ function ReviewPage(props) {
         </div>
         <div className="col-xs-12 col-md-9 my-0 " style={{ minHeight: 800 }}>
           <h1 className="my-5 pt-5 text-center">Review TBook Drafts</h1>
-          <div className="card mx-3 w-100 h-auto px-4 mx-4">
+          <p className="mx-3" style={{ fontSize: 25 }}>
+            Votes Remaining: 10
+          </p>
+          <div className="card mx-3 w-100 h-auto px-4 py-auto mx-4">
             <TBookView mode="draft" tbsn={75031} />
+            <span className="container row d-flex">
+              <p className="mx-auto col-lg-4" style={{ fontSize: 25 }}>
+                Votes Remaining: 10
+              </p>
+              <div className="col-lg-4 py-auto mx-auto">
+                <input
+                  type="number"
+                  max={10}
+                  min={0}
+                  defaultValue={0}
+                  className="input form-control"
+                  style={{ borderRadius: 25 }}
+                />
+              </div>
+              <div className="col-lg-4">
+                <button
+                  className="btn btn-success px-4 mx-3 py-auto mb-5 mt-0"
+                  style={{ borderRadius: 25 }}
+                >
+                  Submit Votes
+                  <i className="fa fa-arrow-right mx-2"></i>
+                </button>
+              </div>
+            </span>
           </div>
         </div>
       </div>

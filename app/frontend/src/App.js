@@ -13,6 +13,8 @@ import SideBar from "./components/sidebar";
 import CollectPage from "./pages/collect";
 import UserDrafts from "./pages/userdrafts";
 import ReviewPage from "./pages/review";
+import UserCollection from "./components/collection";
+import PublicProfile from "./pages/publicprofile";
 
 class App extends Component {
   constructor(props) {
@@ -33,6 +35,7 @@ class App extends Component {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/drafts" element={<UserDrafts />} />
           <Route path="/review" element={<ReviewPage />} />
+          <Route path="/collection" element={<PublicProfile />} />
           <Route path="*" element={<Navigate to="/error" />} />
         </Routes>
       </BrowserRouter>
