@@ -35,9 +35,12 @@ const TSalonUserSchema = mongoose.Schema({
     type: Number,
     default: 10,
   },
-  currentVotes: {
+  votesUsed: {
     type: Number,
-    default: 10,
+    default: 0,
+  },
+  lastVoted: {
+    type: Date,
   },
   greenTokens: {
     type: Number,

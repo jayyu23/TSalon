@@ -22,6 +22,7 @@ class TBookStore extends Component {
         <div className="row justify-content-center p-3">
           {this.state.publications.map((data) => (
             <TBook
+              tbsn={data.tbsn}
               key={data.tbsn}
               title={data.title}
               blurb={data.blurb}
@@ -30,11 +31,6 @@ class TBookStore extends Component {
               imageCover={data.coverImage}
             />
           ))}
-          <TBook />
-          <TBook />
-          <TBook />
-          <TBook />
-          <TBook />
         </div>
       </div>
     );
