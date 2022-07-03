@@ -49,7 +49,11 @@ function TSalonEditor(props) {
   const minContent = 300; // min word count for content
   const maxContent = 2000; // max word count for content
 
-  const imgUrl = "assets/logo_square_purple.png";
+  const defaultImages = ["aqua", "green", "purple", "orange", "yellow"];
+  const imgUrl = `assets/logo_square_${
+    defaultImages[Math.floor(Math.random() * defaultImages.length)]
+  }.png`;
+
   const watermark = "assets/logo_circle.png";
 
   const getBlurbWordCount = () => {
@@ -116,22 +120,22 @@ function TSalonEditor(props) {
     };
   };
 
-  const submitPost = () => {
+  const submitPost = async () => {
+    await savePost();
     let apiURL = endpoints.getDraftSubmitAPI();
+    let authContent = auth.getPostAuthData();
     if (validateContentLength()) {
       let postBody = getSubmitBody();
-
-      /**
-      axios.post(apiURL, postBody).then((res) => {
-        window.location.href = "/drafts"
+      extend(postBody, authContent.body);
+      axios.post(apiURL, postBody, authContent.config).then((res) => {
+        window.location.href = "/drafts";
         // let tbsn = res.data.publication.tbsn;
         // window.location.href = "/view/" + tbsn;
       });
-      **/
     }
   };
 
-  const savePost = () => {
+  const savePost = async () => {
     let apiURL = endpoints.getDraftSaveAPI();
     let authContent = auth.getPostAuthData();
     let postBody = getSubmitBody();

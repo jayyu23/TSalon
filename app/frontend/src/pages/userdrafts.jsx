@@ -110,6 +110,7 @@ function UserDrafts() {
                   title={data.title}
                   author={data.author}
                   imageCover={data.coverImage}
+                  editable={true}
                 />
               ))}
             </span>
@@ -125,6 +126,7 @@ function UserDrafts() {
                   title={data.title}
                   author={data.author}
                   imageCover={data.coverImage}
+                  editable={false}
                 />
               ))}
             </span>

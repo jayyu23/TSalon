@@ -49,10 +49,10 @@ const update = (req, res, next) => {
 const list = (req, res, next) => {
   let drafts = req.drafts;
   let stage1 = drafts.filter((d) => {
-    return !d.publishDraft;
+    return !d.review;
   });
   let stage2 = drafts.filter((d) => {
-    return d.publishDraft;
+    return d.review;
   });
   return res
     .status(200)
@@ -132,8 +132,8 @@ const submitForReview = (req, res) => {
       { tbsn: tbsn },
       {
         $set: {
-          publishDraft: true,
-          publishDate: new Date(),
+          review: true,
+          reviewDate: new Date(),
         },
       }
     )
@@ -152,4 +152,5 @@ export default {
   getFromUsername,
   getFromTBSN,
   deleteDraft,
+  submitForReview,
 };

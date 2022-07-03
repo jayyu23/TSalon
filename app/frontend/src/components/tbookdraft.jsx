@@ -23,6 +23,7 @@ function TBookDraft(props) {
     }
   };
 
+  const editableHTML = props.editable ? "inline" : "none";
   return (
     <div className="card mx-3" style={{ width: "25rem" }}>
       <img
@@ -36,9 +37,9 @@ function TBookDraft(props) {
       <span className="mt-auto w-100 text-center mb-4">
         <a
           href="/editor"
-          className="btn btn-primary m-2 text-center col-5"
+          className={"btn btn-primary m-2 text-center col-5"}
           onClick={setSession}
-          style={{ borderRadius: 30 }}
+          style={{ borderRadius: 30, display: editableHTML }}
         >
           <i className="fa fa-pencil mx-1"></i>Continue
         </a>

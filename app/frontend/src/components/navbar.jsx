@@ -172,7 +172,7 @@ function NavBar(props) {
               data-icon="logos:metamask-icon"
               style={{ fontSize: 20, paddingRight: 5 }}
             ></i>
-            Connect
+            Launch
           </a>
           <a
             className={

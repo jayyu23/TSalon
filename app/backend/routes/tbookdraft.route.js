@@ -13,6 +13,10 @@ router
 router
   .route("/api/:username/drafts")
   .post(auth.requireSignin, auth.hasAuthorization, tbookdraftController.list);
+router
+  .route("/api/submitReview")
+  .post(auth.requireSignin, tbookdraftController.submitForReview);
+
 router.param("username", tbookdraftController.getFromUsername);
 router.param("tbsn", tbookdraftController.getFromTBSN);
 

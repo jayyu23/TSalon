@@ -10,7 +10,7 @@ class EndPoints {
       drafts: "/drafts",
       createUser: "createUser",
       draftTBSN: "drafts/",
-      submitDraft: "publications",
+      submitDraft: "submitReview",
       draftSave: "drafts",
     };
   }
