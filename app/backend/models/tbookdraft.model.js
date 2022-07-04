@@ -18,6 +18,7 @@ const TBookDraftSchema = new mongoose.Schema({
   coverImage: { type: String, default: "assets/logo_square_blue.png" },
   review: { type: Boolean, default: false },
   reviewDate: { type: Date },
+  lastReviewDate: { type: Date },
   numVotes: { type: Number, default: 0 },
   numViews: { type: Number, default: 0 },
   voters: { type: [tsalonvoteModel.Schema] },

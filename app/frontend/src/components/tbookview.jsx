@@ -20,10 +20,7 @@ function TBookView(props) {
     tbsn = props.tbsn;
   }
 
-  const API =
-    props.mode == "draft"
-      ? endpoints.getDraftAPI(tbsn)
-      : endpoints.getPublicationAPI(tbsn);
+  const API = props.mode == "draft" ? null : endpoints.getPublicationAPI(tbsn);
 
   useEffect(() => {
     let res = (acc) => {
@@ -36,10 +33,7 @@ function TBookView(props) {
     };
 
     if (props.mode == "draft") {
-      let authData = auth.getPostAuthData();
-      axios
-        .post(endpoints.getDraftAPI(tbsn), authData.body, authData.config)
-        .then(res, err);
+      setPub(props.draftContent);
     } else {
       axios.get(endpoints.getPublicationAPI(tbsn)).then(res, err);
     }

@@ -12,6 +12,7 @@ class EndPoints {
       draftTBSN: "drafts/",
       submitDraft: "submitReview",
       draftSave: "drafts",
+      getReview: "getReview",
     };
   }
 
@@ -42,6 +43,10 @@ class EndPoints {
   }
   getDraftSaveAPI() {
     return this.baseURL + this.urlMap.draftSave;
+  }
+
+  getReviewAPI() {
+    return this.baseURL + this.urlMap.getReview;
   }
 }
 

@@ -171,6 +171,7 @@ function TSalonEditor(props) {
   const updateCanvas = () => {
     let canvas = document.getElementById("imgCanvas");
     let ctx = canvas.getContext("2d");
+    ctx.imageSmoothingQuality = "high";
     let img = document.getElementById("img");
     let watermark = document.getElementById("watermark");
     ctx.drawImage(img, 0, 0, 300, 300);

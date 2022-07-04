@@ -9,7 +9,10 @@ class AuthHandler {
   getPostAuthData() {
     // Assume that have the Session Storage Data
     const token = sessionStorage.getItem("t");
-    let body = { walletAddress: sessionStorage.getItem("address") };
+    let body = {
+      walletAddress: sessionStorage.getItem("address"),
+      username: sessionStorage.getItem("username"),
+    };
     let config = {
       headers: { Authorization: `Bearer ${token}` },
     };

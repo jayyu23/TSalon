@@ -7,6 +7,7 @@ import helmet from "helmet";
 import pubRoutes from "./routes/tbookpub.route.js";
 import memberRoutes from "./routes/tsalonuser.route.js";
 import draftRoutes from "./routes/tbookdraft.route.js";
+import voteRoutes from "./routes/tbookvote.route.js";
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use(cors());
 app.use("/", pubRoutes);
 app.use("/", memberRoutes);
 app.use("/", draftRoutes);
+app.use("/", voteRoutes);
 
 app.use((err, req, res, next) => {
   console.log(err);
