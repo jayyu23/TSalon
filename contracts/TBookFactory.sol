@@ -90,7 +90,6 @@ contract TBookFactory is Ownable, ERC721 {
     }
 
     // Mint a copy of the book
-    // Temporarily Public
     function mint(uint256 tbsn, address mintAddress) internal {
         require(tbsnToBook[tbsn].exists);
         uint256 currentCopy = tbsnToBook[tbsn].numCopies;
@@ -160,6 +159,11 @@ contract TBookFactory is Ownable, ERC721 {
         addressToUser[to].collectionSize += 1;
         // TODO: Handle Linked List Stuff
         _safeTransfer(from, to, tokenId, " ");
+    }
+
+    // TODO
+    function getPrice(uint256 tbsn) external view {
+        uint256 floor = 10;
     }
 
     function publish(uint256 tbsn, address payable author) external {

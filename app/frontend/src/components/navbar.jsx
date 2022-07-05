@@ -117,7 +117,6 @@ function NavBar(props) {
           } else {
             let user = data.user;
             // Redirect to user homepage
-            console.log(data);
             sessionStorage.setItem("t", data.token);
             sessionStorage.setItem("username", data.user.username);
             sessionStorage.setItem("address", data.walletAddress);

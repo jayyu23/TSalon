@@ -35,7 +35,7 @@ class App extends Component {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/drafts" element={<UserDrafts />} />
           <Route path="/review" element={<ReviewPage />} />
-          <Route path="/collection" element={<PublicProfile />} />
+          <Route path="/collection/:username" element={<PublicProfile />} />
           <Route path="*" element={<Navigate to="/error" />} />
         </Routes>
       </BrowserRouter>

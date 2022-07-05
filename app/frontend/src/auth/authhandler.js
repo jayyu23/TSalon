@@ -33,7 +33,7 @@ class AuthHandler {
           return;
         },
         (rej) => {
-          window.location.href = "/error";
+          auth.redirectToError();
         }
       );
     }

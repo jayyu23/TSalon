@@ -9,7 +9,7 @@ function Error404() {
       <div
         className="bg img-fluid"
         style={{
-          backgroundImage: `url(${this.imgUrl})`,
+          backgroundImage: `url(${imgUrl})`,
           height: "100vh",
           backgroundSize: "cover",
           backgroundPosition: "center",
