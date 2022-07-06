@@ -161,9 +161,29 @@ contract TBookFactory is Ownable, ERC721 {
         _safeTransfer(from, to, tokenId, " ");
     }
 
-    // TODO
-    function getPrice(uint256 tbsn) external view {
+    function getPrice(uint256 tbsn) public view returns (uint256) {
         uint256 floor = 10;
+        uint256 step = 50;
+        uint256 copies = tbsnToBook[tbsn].numCopies;
+        uint256 power = copies / step;
+        return floor * (2**power); // returns in finneys
+    }
+
+    function collect(uint256 tbsn, address collector) public payable {
+        // Check if tbsn exists
+        require(tbsnToBook[tbsn].exists, "Book doesn't exist");
+
+        uint256 priceWei = getPrice(tbsn) * (10**15); // convert to Wei
+        require(
+            msg.value >= priceWei,
+            "Insufficient funds. Please check price."
+        );
+        uint256 authorPay = (priceWei * 80) / 100;
+        uint256 platformPay = priceWei - authorPay;
+        address payable author = tbsnToBook[tbsn].author;
+        mint(tbsn, collector);
+        author.transfer(authorPay);
+        payable(owner()).transfer(platformPay);
     }
 
     function publish(uint256 tbsn, address payable author) external {
