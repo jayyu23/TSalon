@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract TBookFactory is Ownable, ERC721 {
     // A Copy of a Book
@@ -89,6 +88,14 @@ contract TBookFactory is Ownable, ERC721 {
         return id % _maxCopies;
     }
 
+    function createUser(address userAddress) internal {
+        UserInfo storage newUser = addressToUser[userAddress];
+        if (!newUser.exists) {
+            newUser.exists = true;
+            newUser.userAddress = userAddress;
+        }
+    }
+
     // Mint a copy of the book
     function mint(uint256 tbsn, address mintAddress) internal {
         require(tbsnToBook[tbsn].exists);
@@ -98,30 +105,31 @@ contract TBookFactory is Ownable, ERC721 {
         uint256 id = getId(tbsn, currentCopy);
 
         // Update CopyInfo
-        idToCopy[id].exists = true;
-        idToCopy[id].tbsn = tbsn;
-        idToCopy[id].copyNumber = currentCopy;
-        idToCopy[id].initHolder = mintAddress;
-        idToCopy[id].currentHolder = mintAddress;
+        CopyInfo storage mintCopy = idToCopy[id];
+        mintCopy.exists = true;
+        mintCopy.tbsn = tbsn;
+        mintCopy.copyNumber = currentCopy;
+        mintCopy.initHolder = mintAddress;
+        mintCopy.currentHolder = mintAddress;
 
         // Update UserInfo
-        if (!addressToUser[mintAddress].exists) {
+        UserInfo storage mintUser = addressToUser[mintAddress];
+        if (!mintUser.exists) {
             // Init userInfo
-            addressToUser[mintAddress].exists = true;
-            addressToUser[mintAddress].userAddress = mintAddress;
-            addressToUser[mintAddress].firstLinkId = id;
+            createUser(mintAddress);
+            mintUser.firstLinkId = id;
         }
 
         // Update the LinkedList
-        bool hasCollected = addressToUser[mintAddress].collectionSize != 0;
+        bool hasCollected = mintUser.collectionSize != 0;
         if (hasCollected) {
             uint256 lastLink = addressToUser[mintAddress].lastLinkId;
             idToCopy[lastLink].nextLinkId = id;
-            idToCopy[id].prevLinkId = lastLink;
+            mintCopy.prevLinkId = lastLink;
         }
-        addressToUser[mintAddress].lastLinkId = id;
-        addressToUser[mintAddress].bookToCopies[tbsn]++;
-        addressToUser[mintAddress].collectionSize++;
+        mintUser.lastLinkId = id;
+        mintUser.bookToCopies[tbsn]++;
+        mintUser.collectionSize++;
 
         // Update BookInfo
         tbsnToBook[tbsn].numCopies++;
@@ -143,21 +151,51 @@ contract TBookFactory is Ownable, ERC721 {
         );
 
         // Update CopyInfo
-        idToCopy[tokenId].lastHolder = from;
-        idToCopy[tokenId].currentHolder = to;
-        idToCopy[tokenId].numTransactions += 1;
+        CopyInfo storage bookCopy = idToCopy[tokenId];
+        bookCopy.lastHolder = from;
+        bookCopy.currentHolder = to;
+        bookCopy.numTransactions++;
 
         // Update TBookInfo
-        tbsnToBook[tbsn].collectors[from] -= 1;
-        tbsnToBook[tbsn].collectors[to] += 1;
+        TBookInfo storage tbookInfo = tbsnToBook[tbsn];
+        tbookInfo.collectors[from]--;
+        tbookInfo.collectors[to]++;
 
         // Update UserInfo
-        addressToUser[from].bookToCopies[tbsn] -= 1;
-        addressToUser[from].collectionSize -= 1;
+        UserInfo storage fromUser = addressToUser[from];
+        UserInfo storage toUser = addressToUser[to];
 
-        addressToUser[to].bookToCopies[tbsn]++;
-        addressToUser[to].collectionSize += 1;
-        // TODO: Handle Linked List Stuff
+        fromUser.bookToCopies[tbsn]--;
+        fromUser.collectionSize--;
+        toUser.bookToCopies[tbsn]++;
+        toUser.collectionSize++;
+
+        // Handle Linked List Stuff
+
+        // Detach step
+        uint256 fromLinkPrev = bookCopy.prevLinkId;
+        uint256 fromLinkNext = bookCopy.nextLinkId;
+        if (fromLinkPrev == 0) {
+            // First book of the user
+            fromUser.firstLinkId = fromLinkNext;
+        } else {
+            idToCopy[fromLinkPrev].nextLinkId = fromLinkNext;
+        }
+        if (fromLinkNext == 0) {
+            fromUser.lastLinkId = fromLinkPrev;
+        }
+
+        // Attach step
+        uint256 toLastLink = toUser.lastLinkId;
+        bookCopy.prevLinkId = toLastLink;
+        bookCopy.nextLinkId = 0;
+        if (toLastLink == 0) {
+            toUser.firstLinkId = tokenId;
+        } else {
+            idToCopy[toLastLink].nextLinkId = tokenId;
+        }
+        toUser.lastLinkId = tokenId;
+
         _safeTransfer(from, to, tokenId, " ");
     }
 
@@ -169,7 +207,11 @@ contract TBookFactory is Ownable, ERC721 {
         return floor * (2**power); // returns in finneys
     }
 
-    function collect(uint256 tbsn, address collector) public payable {
+    function collect(uint256 tbsn, address collector)
+        public
+        payable
+        returns (uint256)
+    {
         // Check if tbsn exists
         require(tbsnToBook[tbsn].exists, "Book doesn't exist");
 
@@ -184,14 +226,16 @@ contract TBookFactory is Ownable, ERC721 {
         mint(tbsn, collector);
         author.transfer(authorPay);
         payable(owner()).transfer(platformPay);
+        return addressToUser[collector].lastLinkId;
     }
 
     function publish(uint256 tbsn, address payable author) external {
         // Use an oracle to check that this is a valid call with correct author (valid tbsn)
         // TODO
-
+        TBookInfo storage book = tbsnToBook[tbsn];
+        require(!book.exists, "Publication minted before.");
         // Only the Foundation can Publish
-        // require(msg.sender == owner());
+        require(msg.sender == owner());
         // Update BookInfo
         tbsnToBook[tbsn].exists = true;
         tbsnToBook[tbsn].author = author;
@@ -212,16 +256,16 @@ contract TBookFactory is Ownable, ERC721 {
         returns (
             bool,
             uint256,
-            string memory,
-            string memory
+            uint256,
+            uint256
         )
     {
         UserInfo storage info = addressToUser[userAddress];
         return (
             info.exists,
             info.collectionSize,
-            Strings.toString(info.firstLinkId),
-            Strings.toString(info.lastLinkId)
+            info.firstLinkId,
+            info.lastLinkId
         );
     }
 }
