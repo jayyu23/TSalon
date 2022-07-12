@@ -6,6 +6,10 @@ class AuthHandler {
     this.loggedIn = false;
   }
 
+  getWalletAddress() {
+    return sessionStorage.getItem("address");
+  }
+
   getPostAuthData() {
     // Assume that have the Session Storage Data
     const token = sessionStorage.getItem("t");

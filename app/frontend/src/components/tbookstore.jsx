@@ -27,8 +27,7 @@ class TBookStore extends Component {
               title={data.title}
               blurb={data.blurb}
               author={data.author}
-              link={"/view/" + data.tbsn}
-              imageCover={data.coverImage}
+              coverImage={data.coverImage}
             />
           ))}
         </div>

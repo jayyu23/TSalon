@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from "react";
 
 function TBook(props) {
+  const images = ["blue", "green", "orange", "purple"];
+  const coverImage = `/assets/logo_square_${
+    images[Math.floor(Math.random() * images.length)]
+  }.png`;
+
   const defaultSettings = {
+    tbsn: 0,
     title: "TSalon Publication",
     blurb:
       "TSalon is a Web 3.0 publishing house and literary salon, providing readers with quality-assured NFT essays called TBooks",
     author: "Anonymous",
     link: "#",
   };
-  const images = ["blue", "green", "orange", "purple"];
-  const imageCover = `/assets/logo_square_${
-    images[Math.floor(Math.random() * images.length)]
-  }.png`;
 
   const readCollectHTML = (
     <span className="px-3 mt-auto">
       <a
-        href={props.link ? props.link : defaultSettings.link}
+        href={props.tbsn ? "/view/" + props.tbsn : defaultSettings.link}
         className="btn btn-primary m-2 px-auto"
         style={{ borderRadius: 30 }}
       >
@@ -24,7 +26,7 @@ function TBook(props) {
         Read
       </a>
       <a
-        href="/collect"
+        href={props.tbsn ? "/collect/" + props.tbsn : defaultSettings.link}
         className="btn btn-warning m-2 px-auto"
         style={{ borderRadius: 30 }}
       >
@@ -51,7 +53,7 @@ function TBook(props) {
     <div className="card mx-3 my-4" style={{ width: "25rem" }}>
       <img
         className="card-img-top"
-        src={props.imageCover ? props.imageCover : imageCover}
+        src={props.coverImage ? props.coverImage : coverImage}
         alt="TBook Image Cap"
       ></img>
       <div className="card-body d-flex flex-column">

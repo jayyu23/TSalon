@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import NavBar from "../components/navbar";
 import TBook from "../components/tbook";
 import Web3 from "web3";
+import axios from "axios";
 import TBookFactory from "../abi/TBookFactory.json";
+import auth from "../auth/authhandler";
+import endpoints from "../auth/endpoints";
 
 function CollectPage(props) {
   const defaultWallet = "0x1B952d4C29f552318BD166065F66423f6665e2E4";
@@ -13,6 +17,21 @@ function CollectPage(props) {
       "https://rinkeby.infura.io/v3/" + infuraToken
     )
   );
+
+  let { tbsn } = useParams();
+  const [pub, setPub] = useState({});
+
+  useEffect(() => {
+    axios.get(endpoints.getPublicationAPI(tbsn)).then(
+      (acc) => {
+        let data = acc.data;
+        setPub(data);
+      },
+      (rej) => {
+        auth.redirectToError();
+      }
+    );
+  }, []);
 
   const testPublication = async () => {
     // try {
@@ -56,10 +75,17 @@ function CollectPage(props) {
   return (
     <div>
       <NavBar />
-      <div className="container row mt-5 pt-5">
+      <div className="container row mt-5 pt-5 pl-4 ml-4">
         <h1 className="m-3">Collect TBook NFT</h1>
         <div className="container col justify-content-center">
-          <TBook short={true} />
+          <TBook
+            short={true}
+            title={pub.title}
+            link={"/view/" + tbsn}
+            blurb={pub.blurb}
+            author={pub.author}
+            coverImage={pub.coverImage}
+          />
         </div>
         <div className="container col-lg">
           <input
@@ -70,16 +96,16 @@ function CollectPage(props) {
           />
           <div className="card my-4 p-4 mx-0">
             <div className="h2 mb-4">
-              TBook #75030{" "}
+              TBook #{tbsn}
               <i
-                class="iconify text-primary mx-auto"
+                className="iconify text-primary mx-auto"
                 data-icon="bxs:badge-check"
               ></i>{" "}
             </div>
             <p className="h6 text-muted">Current Floor Price</p>
             <div className="row my-3">
               <i
-                class="iconify text-center my-auto"
+                className="iconify text-center my-auto"
                 data-icon="mdi:ethereum"
                 style={{ fontSize: 40, width: 75 }}
               ></i>
@@ -92,7 +118,7 @@ function CollectPage(props) {
                 <i className="fa fa-rotate"></i> Refresh
               </a>
             </div>
-            <btn
+            <button
               className="btn btn-warning dropdown-toggle w-100"
               type="button"
               style={{ borderRadius: 25, fontSize: 20 }}
@@ -106,7 +132,7 @@ function CollectPage(props) {
                 style={{ fontSize: 20 }}
               ></i>
               Collect
-            </btn>
+            </button>
             <div className="collapse" id="checkoutCollapse">
               <p className="h5 mb-3 mt-5">Receiving Address</p>
               <input
@@ -117,7 +143,7 @@ function CollectPage(props) {
               <p className="h5 mb-3 mt-5">Payment Amount</p>
               <div className="row w-100">
                 <i
-                  class="iconify text-center my-auto"
+                  className="iconify text-center my-auto"
                   data-icon="mdi:ethereum"
                   style={{ fontSize: 20, width: 50 }}
                 ></i>

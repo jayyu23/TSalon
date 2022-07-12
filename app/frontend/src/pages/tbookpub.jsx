@@ -25,7 +25,7 @@ function TBookPub(props) {
             Back
           </a>
           <a
-            href="#"
+            href={"/collect/" + tbsn}
             className="btn btn-lg btn-warning col-4 py-4"
             style={{ borderRadius: 25 }}
           >
