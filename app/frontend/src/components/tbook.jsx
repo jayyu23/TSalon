@@ -24,7 +24,7 @@ function TBook(props) {
         Read
       </a>
       <a
-        href="#"
+        href="/collect"
         className="btn btn-warning m-2 px-auto"
         style={{ borderRadius: 30 }}
       >

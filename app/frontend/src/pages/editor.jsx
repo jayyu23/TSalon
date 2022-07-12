@@ -8,6 +8,7 @@ import wordsCount from "words-count";
 import auth from "../auth/authhandler";
 import { extend, update } from "lodash";
 import endpoints from "../auth/endpoints";
+import TBookView from "../components/tbookview";
 
 function TSalonEditor(props) {
   auth.protectRoute();
@@ -44,15 +45,18 @@ function TSalonEditor(props) {
       );
     }
   }, []);
+  const [previewHTML, setPreviewHTML] = useState("");
 
   const blurbLength = 100; // 100 words
   const minContent = 300; // min word count for content
   const maxContent = 2000; // max word count for content
 
   const defaultImages = ["aqua", "green", "purple", "orange", "yellow"];
-  const imgUrl = `assets/logo_square_${
+  const defaultImgUrl = `assets/logo_square_${
     defaultImages[Math.floor(Math.random() * defaultImages.length)]
   }.png`;
+
+  const [imgURL, setImgURL] = useState(defaultImgUrl);
 
   const watermark = "assets/logo_circle.png";
 
@@ -151,24 +155,24 @@ function TSalonEditor(props) {
       },
       (rej) => {
         submitMessage.className = "text-danger mt-0 mx-5";
-        submitMessage.innerText = "Save Error: " + rej.message;
       }
     );
   };
 
   const uploadImage = (event) => {
+    console.log("update image triggered");
     let img = event.target.files[0];
     let binaryData = [];
     binaryData.push(img);
     let url = URL.createObjectURL(
       new Blob(binaryData, { type: "application/zip" })
     );
-    document.getElementById("img").src = url;
+    setImgURL(url);
     updateCanvas();
-    // console.log(event.target.files);
   };
 
   const updateCanvas = () => {
+    console.log("update canvas triggered");
     let canvas = document.getElementById("imgCanvas");
     let ctx = canvas.getContext("2d");
     ctx.imageSmoothingQuality = "high";
@@ -180,6 +184,15 @@ function TSalonEditor(props) {
     ctx.beginPath();
     ctx.arc(coord, coord, 30, 0, 2 * Math.PI, false);
     // ctx.stroke();
+  };
+
+  const generatePreview = async () => {
+    await savePost();
+    let view = <TBookView mode="draft" draftContent={getSubmitBody()} />;
+    let previewMessage = document.getElementById("previewMessage");
+    setPreviewHTML(view);
+    previewMessage.innerText = "Preview generated. Scroll down to view.";
+    previewMessage.className = "text-success mt-0 mx-5";
   };
 
   return (
@@ -199,12 +212,11 @@ function TSalonEditor(props) {
                 <canvas id="imgCanvas" height="300" width="300"></canvas>
                 <img
                   id="img"
-                  src={imgUrl}
+                  src={imgURL}
                   alt="Cover Image"
                   height="300"
                   width="300"
                   onLoad={updateCanvas}
-                  onChange={updateCanvas}
                   style={{ display: "none" }}
                 />
                 <img
@@ -281,17 +293,32 @@ function TSalonEditor(props) {
               Word Count: 0
             </p>
             <p id="submitMessage" className="text-danger mt-0 mx-5"></p>
+            <p id="previewMessage" className="text-success mt-0 mx-5"></p>
             <div className="row justify-content-center my-5">
-              <button className="btn btn-primary col-3 mx-3" onClick={savePost}>
+              <button
+                className="btn btn-primary col-3 mx-3"
+                onClick={savePost}
+                style={{ borderRadius: 25 }}
+              >
                 Save Draft
               </button>
               <button
-                onClick={submitPost}
-                type="submit"
-                className="btn btn-primary col-3 mx-3"
+                onClick={generatePreview}
+                // onClick={submitPost}
+                className="btn btn-warning col-3 mx-3 dropdown-toggle"
+                style={{ borderRadius: 25 }}
               >
-                Publish
+                Preview
               </button>
+            </div>
+            <div className="card w-100">
+              {previewHTML}
+              <div
+                className="btn btn-success text-center m-auto mb-4 px-4"
+                style={{ borderRadius: 25 }}
+              >
+                Submit Draft
+              </div>
             </div>
           </div>
         </div>
