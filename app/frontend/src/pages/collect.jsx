@@ -15,26 +15,25 @@ function CollectPage(props) {
   );
 
   const testPublication = async () => {
-    try {
-      const networkId = await web3.eth.net.getId();
-      let contract = new web3.eth.Contract(
-        TBookFactory.abi,
-        TBookFactory.networks[networkId].address
-      );
-      let returnTrue = await contract.methods.returnTrue().call();
-      console.log(returnTrue);
-
-      // let estimatedGas = await contract.methods
-      //   .publish(75030, defaultWallet)
-      //   .estimateGas({ from: defaultWallet });
-      // console.log(estimatedGas);
-      // let result = await contract.methods
-      //   .publish(75030, defaultWallet)
-      //   .call({ from: defaultWallet, gas: Math.round(estimatedGas * 1.2) });
-      console.log("Publication successful");
-    } catch (err) {
-      console.log(err);
-    }
+    // try {
+    //   const networkId = await web3.eth.net.getId();
+    //   let contract = new web3.eth.Contract(
+    //     TBookFactory.abi,
+    //     TBookFactory.networks[networkId].address
+    //   );
+    //   let returnTrue = await contract.methods.returnTrue().call();
+    //   console.log(returnTrue);
+    //   // let estimatedGas = await contract.methods
+    //   //   .publish(75030, defaultWallet)
+    //   //   .estimateGas({ from: defaultWallet });
+    //   // console.log(estimatedGas);
+    //   // let result = await contract.methods
+    //   //   .publish(75030, defaultWallet)
+    //   //   .call({ from: defaultWallet, gas: Math.round(estimatedGas * 1.2) });
+    //   console.log("Publication successful");
+    // } catch (err) {
+    //   console.log(err);
+    // }
   };
 
   //   let estimatedGas = await contract.methods
@@ -58,19 +57,85 @@ function CollectPage(props) {
     <div>
       <NavBar />
       <div className="container row mt-5 pt-5">
-        <div className="container col">
-          <TBook />
+        <h1 className="m-3">Collect TBook NFT</h1>
+        <div className="container col justify-content-center">
+          <TBook short={true} />
         </div>
-        <div className="container col">
-          <p className="">Address</p>
+        <div className="container col-lg">
           <input
             type="text"
             className="form-control"
             defaultValue={defaultWallet}
+            style={{ display: "none" }}
           />
-          <button onClick={testPublication} className="btn btn-success my-5">
-            Test
-          </button>
+          <div className="card my-4 p-4 mx-0">
+            <div className="h2 mb-4">
+              TBook #75030{" "}
+              <i
+                class="iconify text-primary mx-auto"
+                data-icon="bxs:badge-check"
+              ></i>{" "}
+            </div>
+            <p className="h6 text-muted">Current Floor Price</p>
+            <div className="row my-3">
+              <i
+                class="iconify text-center my-auto"
+                data-icon="mdi:ethereum"
+                style={{ fontSize: 40, width: 75 }}
+              ></i>
+              <div className="col-3 h3 mx-0 my-auto">0.01</div>
+              <div className="text-muted mx-0 col-3 my-auto">$10.91 USD</div>
+              <a
+                className="btn btn-sm btn-primary col-3 my-auto"
+                style={{ borderRadius: 25 }}
+              >
+                <i className="fa fa-rotate"></i> Refresh
+              </a>
+            </div>
+            <btn
+              className="btn btn-warning dropdown-toggle w-100"
+              type="button"
+              style={{ borderRadius: 25, fontSize: 20 }}
+              data-bs-toggle="collapse"
+              data-bs-target="#checkoutCollapse"
+              aria-expanded="false"
+              aria-controls="#checkoutCollapse"
+            >
+              <i
+                className="fa fa-book-bookmark mx-3"
+                style={{ fontSize: 20 }}
+              ></i>
+              Collect
+            </btn>
+            <div className="collapse" id="checkoutCollapse">
+              <p className="h5 mb-3 mt-5">Receiving Address</p>
+              <input
+                className="form form-control"
+                type="text"
+                defaultValue={defaultWallet}
+              />
+              <p className="h5 mb-3 mt-5">Payment Amount</p>
+              <div className="row w-100">
+                <i
+                  class="iconify text-center my-auto"
+                  data-icon="mdi:ethereum"
+                  style={{ fontSize: 20, width: 50 }}
+                ></i>
+                <input
+                  className="form form-control col-6 w-50"
+                  type="number"
+                  step="0.01"
+                  defaultValue={0.01}
+                />
+                <div
+                  className="btn btn-success w-25 mx-auto"
+                  style={{ borderRadius: 25 }}
+                >
+                  Buy
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
