@@ -13,7 +13,9 @@ import TBookView from "../components/tbookview";
 function TSalonEditor(props) {
   auth.protectRoute();
 
-  const currentTBSN = sessionStorage.getItem("draftTBSN");
+  const [currentTBSN, setCurrentTBSN] = useState(
+    sessionStorage.getItem("draftTBSN")
+  );
   const author = sessionStorage.getItem("username");
 
   if (!(author && currentTBSN)) {
@@ -139,6 +141,21 @@ function TSalonEditor(props) {
     }
   };
 
+  const dangerouslyPublish = async () => {
+    await savePost();
+    let apiURL = endpoints.getAllPubAPI();
+    let postBody = getSubmitBody();
+    axios.post(apiURL, postBody).then(
+      (res) => {
+        let tbsn = res.data.publication.tbsn;
+        window.location.href = "/view/" + tbsn;
+      },
+      (rej) => {
+        console.log(rej);
+      }
+    );
+  };
+
   const savePost = async () => {
     let apiURL = endpoints.getDraftSaveAPI();
     let authContent = auth.getPostAuthData();
@@ -152,6 +169,8 @@ function TSalonEditor(props) {
         submitMessage.className = "text-success mt-0 mx-5";
         submitMessage.innerText =
           "Save Successful at " + saveDate.toLocaleString();
+        let draftData = res.data.draft;
+        setCurrentTBSN(draftData.tbsn);
       },
       (rej) => {
         submitMessage.className = "text-danger mt-0 mx-5";
@@ -160,7 +179,6 @@ function TSalonEditor(props) {
   };
 
   const uploadImage = (event) => {
-    console.log("update image triggered");
     let img = event.target.files[0];
     let binaryData = [];
     binaryData.push(img);
@@ -172,7 +190,6 @@ function TSalonEditor(props) {
   };
 
   const updateCanvas = () => {
-    console.log("update canvas triggered");
     let canvas = document.getElementById("imgCanvas");
     let ctx = canvas.getContext("2d");
     ctx.imageSmoothingQuality = "high";
@@ -316,6 +333,7 @@ function TSalonEditor(props) {
               <div
                 className="btn btn-success text-center m-auto mb-4 px-4"
                 style={{ borderRadius: 25 }}
+                onClick={dangerouslyPublish}
               >
                 Submit Draft
               </div>

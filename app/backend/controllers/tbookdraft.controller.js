@@ -37,7 +37,7 @@ const update = (req, res, next) => {
         (acc) => {
           return res
             .status(200)
-            .json({ message: "Update success", draft: fields });
+            .json({ message: "Update success", draft: draft });
         },
         (rej) => {
           return res.status(400).json({ error: rej.mesage });

@@ -58,10 +58,10 @@ function TBookView(props) {
         <p className="font-italic my-2">
           {props.mode == "draft" ? "" : "By: " + pub.author}
         </p>
-        <p className="font-weight-light font-italic my-2 px-5 mx-5">
+        <p className="font-weight-light font-italic my-3 px-5 mx-5 text-muted">
           {pub.blurb}
         </p>
-        <div className="row d-flex justify-content-center">
+        <div className="row d-flex justify-content-center mt-4">
           <div className="my-4 text-left mx-5 px-5" style={{ maxWidth: 800 }}>
             {parse(getBodyHTML())}
           </div>

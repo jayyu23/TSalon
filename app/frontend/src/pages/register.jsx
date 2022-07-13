@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
 import { useLocation, useNavigate } from "react-router-dom";
 import endpoints from "../auth/endpoints";
+import auth from "../auth/authhandler";
 
 function RegisterPage(props) {
   const location = useLocation();
@@ -35,8 +36,18 @@ function RegisterPage(props) {
           (acc) => {
             let data = acc.data;
             if (data.success) {
-              alert("Login Success");
+              // alert("Login Success");
               // TODO: Now log the user in.
+
+              // Redirect to user homepage
+              sessionStorage.setItem("t", data.token);
+              sessionStorage.setItem("username", data.user);
+              sessionStorage.setItem("address", data.walletAddress);
+              auth.isLoggedIn = true;
+              // alert("Successfully logged in user: " + user.username);
+              navigate("/drafts", {
+                state: { username: data.username, walletAddress: loginAddress },
+              });
             } else {
               usernameErrorMessage.hidden = false;
               usernameErrorMessage.innerText =
