@@ -5,11 +5,13 @@
   "main": "backend/server.js",
   "type": "module",
   "scripts": {
-    "test": "node backend/controllers/blockchain.controller.js",
+    "test": "node ./backend/controllers/blockchain.controller.js",
     "start": "node ./backend/server.js",
-    "dev": "nodemon server"
+    "dev": "nodemon server",
+    "abi-refresh": "cp ../build/contracts/TBookFactory.json ./backend/abi/TBookFactory.json"
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "body-parser": "^1.20.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",

@@ -200,6 +200,7 @@ contract TBookFactory is Ownable, ERC721 {
     }
 
     function getPrice(uint256 tbsn) public view returns (uint256) {
+        require(tbsnToBook[tbsn].exists, "TBook does not exist");
         uint256 floor = 10;
         uint256 step = 50;
         uint256 copies = tbsnToBook[tbsn].numCopies;

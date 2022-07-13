@@ -7,7 +7,6 @@ const update = (req, res, next) => {
   if (fields.tbsn == 0) {
     // create
     const draft = new tbookdraftModel(fields);
-    console.log(draft);
     draft.save().then(
       (acc) => {
         return res.status(200).json({ message: "Draft success", draft: acc });
@@ -138,7 +137,7 @@ const submitForReview = (req, res) => {
       }
     )
     .then(
-      (acc) => {},
+      (acc) => { },
       (rej) => {
         res.status(400), json({ status: "reject", message: "TBSN not found" });
       }
