@@ -13,6 +13,7 @@ class EndPoints {
       submitDraft: "submitReview",
       draftSave: "drafts",
       getReview: "getReview",
+      getPrice: "price/"
     };
   }
 
@@ -47,6 +48,9 @@ class EndPoints {
 
   getReviewAPI() {
     return this.baseURL + this.urlMap.getReview;
+  }
+  getPriceAPI(tbsn) {
+    return this.baseURL + this.urlMap.getPrice + tbsn;
   }
 }
 

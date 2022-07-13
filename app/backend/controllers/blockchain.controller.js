@@ -17,13 +17,12 @@ dotenv.config();
 
 class BlockchainController {
   constructor() {
-    this.init = false;
+    console.log("init called")
     this.exchangeAPI = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum";
     this.initWeb3();
   }
 
   initWeb3() {
-
     this.networkId = 4; // Rinkeby
     this.defaultWallet = process.env.DEFAULT_WALLET;
     this.infuraToken = process.env.INFURA_PROJECT_ID;
@@ -38,39 +37,42 @@ class BlockchainController {
     this.init = true;
   }
 
-  async publish(req, res, next, tbsn) {
+  async publish(req, res, next) {
     // Get the author address
-    await mongoose.connect(config.mongoUri);
-    const tbsnQuery = await tbookpubModel.findOne({ tbsn: tbsn });
-    assert(tbsnQuery, "Error – Bad TBSN")
-    const author = tbsnQuery.author
+    let pub = req.publication;
+    assert(pub, "Error – Bad TBSN")
+    const author = pub.author
     const authorQuery = await tsalonuserModel.findOne({ username: author });
     const authorAddress = authorQuery.walletAddress;
     assert(author, "Error – Invalid author wallet address")
-    let estimatedGas = await this.contract.methods
+    let estimatedGas = await instance.contract.methods
       .publish(tbsn, authorAddress)
-      .estimateGas({ from: this.defaultWallet });
+      .estimateGas({ from: instance.defaultWallet });
     console.log(estimatedGas);
-    await this.contract.methods
+    await instance.contract.methods
       .publish(tbsn, authorAddress)
-      .send({ from: this.defaultWallet, gas: Math.round(estimatedGas * 1.2) });
+      .send({ from: instance.defaultWallet, gas: Math.round(estimatedGas * 1.2) });
     console.log("Publication successful");
   }
 
-  async getPrice(req, res, next, tbsn) {
+  async getPrice(req, res, next) {
     try {
-      let priceFinney = await this.contract.methods.getPrice(tbsn).call();
-      let priceWei = this.web3.utils.toWei(priceFinney, "finney");
-      let priceETH = this.web3.utils.fromWei(priceWei, "ether");
+      let pub = req.publication;
+      let tbsn = pub.tbsn;
 
-      let exchangeData = (await axios.get(this.exchangeAPI)).data[0];
+      let priceFinney = await instance.contract.methods.getPrice(tbsn).call();
+      let priceWei = instance.web3.utils.toWei(priceFinney, "finney");
+      let priceETH = instance.web3.utils.fromWei(priceWei, "ether");
+
+      let exchangeData = (await axios.get(instance.exchangeAPI)).data[0];
       let eth_usd = exchangeData.current_price;
       let priceUSD = priceETH * eth_usd;
 
-      let data = { tbsn: tbsn, priceETH: priceETH, priceUSD: priceUSD }
-      console.log(data);
+      let data = { tbsn: tbsn, priceETH: priceETH, priceUSD: priceUSD.toFixed(2) }
+      return res.status(200).json({ success: true, priceData: data })
     } catch (err) {
       console.log(err);
+      return res.status(400).json({ success: false, error: err })
     }
   }
 
@@ -79,14 +81,14 @@ class BlockchainController {
     const userQuery = await tsalonuserModel.findOne({ username: username });
     assert(userQuery, "User Not Found");
     const walletAddress = userQuery.walletAddress;
-    let rawUserData = await this.contract.methods.getUserInfo(walletAddress).call();
-    let parseUserData = this.parseUserInfo(rawUserData);
+    let rawUserData = await instance.contract.methods.getUserInfo(walletAddress).call();
+    let parseUserData = instance.parseUserInfo(rawUserData);
     // Begin array loop
     let dataArray = []
     let currentBook = parseUserData.firstBook;
     while (currentBook != 0) {
-      let bookInfo = await this.contract.methods.getCopyInfo(currentBook).call();
-      let pBookInfo = this.parseBookInfo(bookInfo);
+      let bookInfo = await instance.contract.methods.getCopyInfo(currentBook).call();
+      let pBookInfo = instance.parseBookInfo(bookInfo);
       dataArray.push(pBookInfo);
       currentBook = pBookInfo.nextLinkId;
     }
@@ -118,9 +120,7 @@ class BlockchainController {
 
 }
 
-let bcController = new BlockchainController();
+const instance = new BlockchainController();
 
-bcController.getUserCollection(null, null, null, "TSalon Foundation");
-
-
-// export default bcController;
+// bcController.getUserCollection(null, null, null, "TSalon Foundation");
+export default instance;

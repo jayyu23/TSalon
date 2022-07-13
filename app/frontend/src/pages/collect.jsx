@@ -9,23 +9,21 @@ import auth from "../auth/authhandler";
 import endpoints from "../auth/endpoints";
 
 function CollectPage(props) {
-  const defaultWallet = "0x1B952d4C29f552318BD166065F66423f6665e2E4";
-  const contractAddress = "0x8146cD312CB3BAc63D2C6c20711D8c2CD0910961";
-  const infuraToken = "c79eec7f045b4dab93931eb64ef7b967";
-  const web3 = new Web3(
-    new Web3.providers.HttpProvider(
-      "https://rinkeby.infura.io/v3/" + infuraToken
-    )
-  );
-
   let { tbsn } = useParams();
   const [pub, setPub] = useState({});
+  const [prices, setPrices] = useState({ priceETH: null, priceUSD: null });
+  const [refreshDate, setRefreshDate] = useState(null);
+  const [defaultWallet, setDefaultWallet] = useState("");
+  const [buyError, setBuyError] = useState("");
+
+  const waitSeconds = 5;
 
   useEffect(() => {
     axios.get(endpoints.getPublicationAPI(tbsn)).then(
       (acc) => {
         let data = acc.data;
         setPub(data);
+        getPrice();
       },
       (rej) => {
         auth.redirectToError();
@@ -33,45 +31,51 @@ function CollectPage(props) {
     );
   }, []);
 
-  const testPublication = async () => {
-    // try {
-    //   const networkId = await web3.eth.net.getId();
-    //   let contract = new web3.eth.Contract(
-    //     TBookFactory.abi,
-    //     TBookFactory.networks[networkId].address
-    //   );
-    //   let returnTrue = await contract.methods.returnTrue().call();
-    //   console.log(returnTrue);
-    //   // let estimatedGas = await contract.methods
-    //   //   .publish(75030, defaultWallet)
-    //   //   .estimateGas({ from: defaultWallet });
-    //   // console.log(estimatedGas);
-    //   // let result = await contract.methods
-    //   //   .publish(75030, defaultWallet)
-    //   //   .call({ from: defaultWallet, gas: Math.round(estimatedGas * 1.2) });
-    //   console.log("Publication successful");
-    // } catch (err) {
-    //   console.log(err);
-    // }
+  useEffect(() => {
+    let payBox = document.getElementById("payAmount");
+    let buyButton = document.getElementById("buyButton");
+    let receiveAddress = document.getElementById("receiveAddress");
+
+    if (prices) {
+      if (sessionStorage.getItem("t")) {
+        setDefaultWallet(sessionStorage.getItem("address"));
+
+        payBox.defaultValue = prices.priceETH;
+        payBox.min = prices.priceETH;
+        payBox.disabled = false;
+        buyButton.disabled = false;
+        receiveAddress.disabled = false;
+        setBuyError("");
+      } else {
+        payBox.disabled = true;
+        buyButton.disabled = true;
+        receiveAddress.disabled = true;
+        setBuyError("Please login first, then click Refresh.");
+      }
+    } else {
+      payBox.disabled = true;
+      buyButton.disabled = true;
+      receiveAddress.disabled = true;
+      setBuyError("Prices not available.");
+    }
+  }, [prices]);
+
+  const getPrice = () => {
+    if (refreshDate) {
+      let nowDate = new Date();
+      if (nowDate.getTime() - refreshDate.getTime() < waitSeconds * 1000) {
+        return; // do nothing
+      }
+    }
+    setPrices({ priceETH: null, priceUSD: null });
+    axios.get(endpoints.getPriceAPI(tbsn)).then((acc) => {
+      let data = acc.data;
+      if (data.success) {
+        setPrices(data.priceData);
+        setRefreshDate(new Date());
+      }
+    });
   };
-
-  //   let estimatedGas = await contract.methods
-  //     .publish(75030, defaultWallet)
-  //     .estimateGas({ from: defaultWallet });
-  //   console.log(estimatedGas);
-  //   await contract.methods
-  //     .publish(75030, defaultWallet)
-  //     .send({ from: defaultWallet, gas: Math.round(estimatedGas * 1.2) });
-  //   console.log("Publication successful");
-
-  //   const testReadState = async () => {
-  //     // get the user
-  //     let userInfo = await contract.methods
-  //       .returnTrue()
-  //       .send({ from: defaultWallet });
-  //     console.log(userInfo);
-  //   };
-
   return (
     <div>
       <NavBar />
@@ -109,11 +113,16 @@ function CollectPage(props) {
                 data-icon="mdi:ethereum"
                 style={{ fontSize: 40, width: 75 }}
               ></i>
-              <div className="col-3 h3 mx-0 my-auto">0.01</div>
-              <div className="text-muted mx-0 col-3 my-auto">$10.91 USD</div>
+              <div className="col-3 h3 mx-0 my-auto">
+                {prices.priceETH || "--"}
+              </div>
+              <div className="text-muted mx-0 col-3 my-auto">
+                ${prices.priceUSD || "--"} USD
+              </div>
               <a
                 className="btn btn-sm btn-primary col-3 my-auto"
                 style={{ borderRadius: 25 }}
+                onClick={getPrice}
               >
                 <i className="fa fa-rotate"></i> Refresh
               </a>
@@ -136,6 +145,8 @@ function CollectPage(props) {
             <div className="collapse" id="checkoutCollapse">
               <p className="h5 mb-3 mt-5">Receiving Address</p>
               <input
+                id="receiveAddress"
+                disabled={true}
                 className="form form-control"
                 type="text"
                 defaultValue={defaultWallet}
@@ -148,17 +159,22 @@ function CollectPage(props) {
                   style={{ fontSize: 20, width: 50 }}
                 ></i>
                 <input
+                  id="payAmount"
                   className="form form-control col-6 w-50"
                   type="number"
                   step="0.01"
                   defaultValue={0.01}
+                  disabled={true}
                 />
-                <div
+                <button
+                  id="buyButton"
                   className="btn btn-success w-25 mx-auto"
+                  disabled={true}
                   style={{ borderRadius: 25 }}
                 >
                   Buy
-                </div>
+                </button>
+                <p className="text-danger my-3 mx-3">{buyError}</p>
               </div>
             </div>
           </div>

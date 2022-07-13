@@ -56,6 +56,14 @@ function NavBar(props) {
     }
   });
 
+  useEffect(() => {
+    if (sessionStorage.t) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [sessionStorage]);
+
   const getShortAddress = (address) => {
     if (address == null) {
       return "Not Connected";
@@ -123,9 +131,9 @@ function NavBar(props) {
             setIsLoggedIn(true);
             auth.isLoggedIn = true;
             // alert("Successfully logged in user: " + user.username);
-            navigate("/drafts", {
-              state: { username: user.username, walletAddress: loginAddress },
-            });
+            // navigate("/drafts", {
+            //   state: { username: user.username, walletAddress: loginAddress },
+            // });
           }
         },
         (rej) => {

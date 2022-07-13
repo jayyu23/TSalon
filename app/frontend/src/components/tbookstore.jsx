@@ -10,7 +10,6 @@ class TBookStore extends Component {
   }
   componentDidMount() {
     axios.get(endpoints.getAllPubAPI()).then((pubs) => {
-      console.log(pubs);
       this.setState({ publications: pubs.data });
     });
   }
