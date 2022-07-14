@@ -48,10 +48,10 @@ const update = (req, res, next) => {
 const list = (req, res, next) => {
   let drafts = req.drafts;
   let stage1 = drafts.filter((d) => {
-    return !d.stage == "draft";
+    return d.stage == "draft";
   });
   let stage2 = drafts.filter((d) => {
-    return d.review == "review";
+    return d.stage == "review";
   });
   return res
     .status(200)

@@ -12,6 +12,9 @@ router
     tsalonuserController.passedAuthentication
   );
 router.route("/api/createUser").post(tsalonuserController.createUser);
+router.route("/api/collection/:username").get(tsalonuserController.getCollection)
+
+router.param("username", tsalonuserController.getAddressFromUsername);
 
 
 

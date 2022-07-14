@@ -79,11 +79,10 @@ class BlockchainController {
     }
   }
 
-  async getUserCollection(req, res, next, username) {
-    await mongoose.connect(config.mongoUri);
-    const userQuery = await tsalonuserModel.findOne({ username: username });
-    assert(userQuery, "User Not Found");
-    const walletAddress = userQuery.walletAddress;
+  async getUserCollection(walletAddress) {
+    // await mongoose.connect(config.mongoUri);
+    // const userQuery = await tsalonuserModel.findOne({ username: username });
+    // assert(userQuery, "User Not Found");
     let rawUserData = await instance.contract.methods.getUserInfo(walletAddress).call();
     let parseUserData = instance.parseUserInfo(rawUserData);
     // Begin array loop
@@ -96,7 +95,7 @@ class BlockchainController {
       dataArray.push(pBookInfo);
       currentBook = pBookInfo.nextLinkId;
     }
-    console.log(dataArray);
+    return dataArray;
   }
 
   parseUserInfo = (data) => {

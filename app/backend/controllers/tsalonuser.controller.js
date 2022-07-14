@@ -3,6 +3,9 @@ import extend from "lodash/extend.js";
 import jwt from "jsonwebtoken";
 import { expressjwt } from "express-jwt";
 import config from "./../../config/config.js";
+import blockchainController from "./blockchain.controller.js";
+import tbookpubController from "./tbookpub.controller.js";
+import tbookpubModel from "../models/tbookpub.model.js";
 
 const signin = (req, res, next) => {
   let walletAddress = req.body.walletAddress.toLowerCase();
@@ -117,10 +120,43 @@ const passedAuthentication = (req, res, next) => {
 
 const signout = (req, res, next) => { };
 
+const getCollection = (req, res, next) => {
+  let walletAddress = req.walletAddress;
+  blockchainController.getUserCollection(walletAddress).then((acc) => {
+    const chainData = acc;
+    let tbooks = []
+    chainData.forEach((t) => { tbooks.push(t.tbsn) });
+    tbookpubModel.find({ tbsn: { $in: tbooks } }).sort({ tbsn: -1 }).exec().then((acc) => {
+      return res.status(200).json({ success: true, tbooks: acc, chainData: chainData });
+    }, (rej) => {
+      console.log(rej);
+      return res.status(400).json({ success: false, error: rej });
+    });
+
+  }, (rej) => {
+    console.log(rej);
+    return res.status(400), json({ success: false, error: rej });
+  });
+
+}
+
+const getAddressFromUsername = (req, res, next, username) => {
+  let usernameFiltered = username.replace(/_/g, " ");
+  tsalonuserModel.findOne({ username: { $regex: usernameFiltered, $options: "i" } }).exec().then((acc) => {
+    let walletAddress = acc.walletAddress;
+    req.walletAddress = walletAddress;
+    next();
+  }, (rej) => {
+    res.status(400).json({ success: false, error: rej });
+  })
+}
+
 export default {
   createUser: createUser,
   signin: signin,
   requireSignin: requireSignin,
   hasAuthorization: hasAuthorization,
   passedAuthentication: passedAuthentication,
+  getAddressFromUsername: getAddressFromUsername,
+  getCollection: getCollection
 };
