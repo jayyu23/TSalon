@@ -26,7 +26,7 @@ class AuthHandler {
   protectRoute() {
     const token = sessionStorage.getItem("t");
     if (!token) {
-      auth.redirectToError();
+      instance.redirectToError();
     } else {
       // ping the auth-checker backend
       const authCheckerAPI = endpoints.getAuthAPI();
@@ -37,7 +37,7 @@ class AuthHandler {
           return;
         },
         (rej) => {
-          auth.redirectToError();
+          instance.redirectToError();
         }
       );
     }
@@ -48,6 +48,6 @@ class AuthHandler {
   }
 }
 
-const auth = new AuthHandler();
+const instance = new AuthHandler();
 
-export default auth;
+export default instance;

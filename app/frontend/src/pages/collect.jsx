@@ -15,8 +15,19 @@ function CollectPage(props) {
   const [refreshDate, setRefreshDate] = useState(null);
   const [defaultWallet, setDefaultWallet] = useState("");
   const [buyError, setBuyError] = useState("");
+  const [buyStatus, setBuyStatus] = useState("");
 
-  const waitSeconds = 5;
+  const [seconds, setSeconds] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+
+  // const abiFile = fs.read//fs.readFileSync("./abi/TBookFactory.json");
+  // const TBookFactory = JSON.parse(abiFile);
+  const networkId = 4;
+  const waitRefreshSeconds = 5;
+
+  const web3 = new Web3(window.ethereum);
+  const abi = TBookFactory.abi;
+  const contractAddress = TBookFactory.networks[networkId].address;
 
   useEffect(() => {
     axios.get(endpoints.getPublicationAPI(tbsn)).then(
@@ -32,6 +43,19 @@ function CollectPage(props) {
   }, []);
 
   useEffect(() => {
+    let interval = null;
+    if (isActive) {
+      interval = setInterval(() => {
+        setSeconds((seconds) => seconds + 1);
+        setBuyStatus("Transaction Processing... (" + seconds + " seconds)");
+      }, 1000);
+    } else if (!isActive && seconds !== 0) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, seconds]);
+
+  useEffect(() => {
     let payBox = document.getElementById("payAmount");
     let buyButton = document.getElementById("buyButton");
     let receiveAddress = document.getElementById("receiveAddress");
@@ -43,7 +67,9 @@ function CollectPage(props) {
         payBox.defaultValue = prices.priceETH;
         payBox.min = prices.priceETH;
         payBox.disabled = false;
+
         buyButton.disabled = false;
+        buyButton.onclick = buyButtonAction;
         receiveAddress.disabled = false;
         setBuyError("");
       } else {
@@ -63,7 +89,10 @@ function CollectPage(props) {
   const getPrice = () => {
     if (refreshDate) {
       let nowDate = new Date();
-      if (nowDate.getTime() - refreshDate.getTime() < waitSeconds * 1000) {
+      if (
+        nowDate.getTime() - refreshDate.getTime() <
+        waitRefreshSeconds * 1000
+      ) {
         return; // do nothing
       }
     }
@@ -76,6 +105,46 @@ function CollectPage(props) {
       }
     });
   };
+
+  const resetTimer = () => {
+    setBuyError("");
+    setSeconds(0);
+    setIsActive(false);
+  };
+  const buyButtonAction = async () => {
+    let buyButton = document.getElementById("buyButton");
+    resetTimer();
+    setIsActive(true);
+
+    buyButton.disabled = true;
+    try {
+      let account = sessionStorage.getItem("address");
+      const contract = new web3.eth.Contract(abi, contractAddress);
+      console.log(contract);
+      let receiveAddress = document.getElementById("receiveAddress").value;
+      let valueETH = document.getElementById("payAmount").value;
+      if (valueETH < prices.priceETH) {
+        setBuyError("Error. Please enter at least the floor price.");
+        return;
+      }
+      let valueWei = web3.utils.toWei(valueETH, "ether");
+      let result = await contract.methods
+        .collect(tbsn, receiveAddress)
+        .send({ from: account, value: valueWei });
+      resetTimer();
+
+      buyButton.disabled = false;
+      setBuyStatus(
+        "Transaction Success! Completed " + new Date().toLocaleDateString()
+      );
+    } catch (err) {
+      resetTimer();
+      setBuyError("Transaction Error. Please try again.");
+      setBuyStatus("");
+      buyButton.disabled = false;
+    }
+  };
+
   return (
     <div>
       <NavBar />
@@ -175,6 +244,7 @@ function CollectPage(props) {
                   Buy
                 </button>
                 <p className="text-danger my-3 mx-3">{buyError}</p>
+                <p className="text-success my-3 mx-3">{buyStatus}</p>
               </div>
             </div>
           </div>

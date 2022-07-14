@@ -121,6 +121,4 @@ class BlockchainController {
 }
 
 const instance = new BlockchainController();
-
-// bcController.getUserCollection(null, null, null, "TSalon Foundation");
 export default instance;
