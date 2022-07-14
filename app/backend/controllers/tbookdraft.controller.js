@@ -36,7 +36,7 @@ const update = (req, res, next) => {
         (acc) => {
           return res
             .status(200)
-            .json({ message: "Update success", draft: draft });
+            .json({ message: "Update success", draft: acc });
         },
         (rej) => {
           return res.status(400).json({ error: rej.mesage });
@@ -48,10 +48,10 @@ const update = (req, res, next) => {
 const list = (req, res, next) => {
   let drafts = req.drafts;
   let stage1 = drafts.filter((d) => {
-    return !d.review;
+    return !d.stage == "draft";
   });
   let stage2 = drafts.filter((d) => {
-    return d.review;
+    return d.review == "review";
   });
   return res
     .status(200)
@@ -131,7 +131,7 @@ const submitForReview = (req, res) => {
       { tbsn: tbsn },
       {
         $set: {
-          review: true,
+          stage: "review",
           reviewDate: new Date(),
         },
       }

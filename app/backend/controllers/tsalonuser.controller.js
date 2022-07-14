@@ -115,7 +115,7 @@ const passedAuthentication = (req, res, next) => {
   return res.status(200).json({ success: true });
 };
 
-const signout = (req, res, next) => {};
+const signout = (req, res, next) => { };
 
 export default {
   createUser: createUser,

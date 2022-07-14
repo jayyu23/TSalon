@@ -16,7 +16,7 @@ const TBookDraftSchema = new mongoose.Schema({
   createDate: { type: Date, default: new Date() },
   lastSaveDate: { type: Date, default: new Date() },
   coverImage: { type: String, default: "assets/logo_square_blue.png" },
-  review: { type: Boolean, default: false },
+  stage: { type: String, default: "draft" }, // draft, review, publish
   reviewDate: { type: Date },
   lastReviewDate: { type: Date },
   numVotes: { type: Number, default: 0 },

@@ -1,12 +1,17 @@
 import tbookpubModel from "../models/tbookpub.model.js";
 import extend from "lodash/extend.js";
+import blockchainController from "../controllers/blockchain.controller.js"
+
+const readyToPub = (tbsn) => {
+  return true;
+}
 
 const create = (req, res, next) => {
   let fields = req.body;
-  fields.tbsn = 0; // dummy
   const publication = new tbookpubModel(fields);
   publication.save().then(
     (acc) => {
+      blockchainController.publish(fields.tbsn);
       return res
         .status(200)
         .json({ message: "Publication success", publication: acc });

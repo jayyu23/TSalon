@@ -60,7 +60,7 @@ function CollectPage(props) {
     let buyButton = document.getElementById("buyButton");
     let receiveAddress = document.getElementById("receiveAddress");
 
-    if (prices) {
+    if (prices && prices.priceETH) {
       if (sessionStorage.getItem("t")) {
         setDefaultWallet(sessionStorage.getItem("address"));
 
@@ -87,6 +87,10 @@ function CollectPage(props) {
   }, [prices]);
 
   const getPrice = () => {
+    let payBox = document.getElementById("payAmount");
+    let buyButton = document.getElementById("buyButton");
+    let receiveAddress = document.getElementById("receiveAddress");
+
     if (refreshDate) {
       let nowDate = new Date();
       if (
@@ -97,6 +101,7 @@ function CollectPage(props) {
       }
     }
     setPrices({ priceETH: null, priceUSD: null });
+
     axios.get(endpoints.getPriceAPI(tbsn)).then((acc) => {
       let data = acc.data;
       if (data.success) {

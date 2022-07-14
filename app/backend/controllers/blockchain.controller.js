@@ -37,9 +37,12 @@ class BlockchainController {
     this.init = true;
   }
 
-  async publish(req, res, next) {
+  async publish(tbsn) {
     // Get the author address
-    let pub = req.publication;
+    // let pub = req.publication;
+    await mongoose.connect(config.mongoUri);
+    const pub = await tbookpubModel.findOne({ tbsn: tbsn });
+    console.log(pub)
     assert(pub, "Error – Bad TBSN")
     const author = pub.author
     const authorQuery = await tsalonuserModel.findOne({ username: author });
@@ -52,7 +55,7 @@ class BlockchainController {
     await instance.contract.methods
       .publish(tbsn, authorAddress)
       .send({ from: instance.defaultWallet, gas: Math.round(estimatedGas * 1.2) });
-    console.log("Publication successful");
+    console.log("Publication successful " + tbsn);
   }
 
   async getPrice(req, res, next) {
@@ -89,6 +92,7 @@ class BlockchainController {
     while (currentBook != 0) {
       let bookInfo = await instance.contract.methods.getCopyInfo(currentBook).call();
       let pBookInfo = instance.parseBookInfo(bookInfo);
+      pBookInfo.id = currentBook; // add in the id number
       dataArray.push(pBookInfo);
       currentBook = pBookInfo.nextLinkId;
     }

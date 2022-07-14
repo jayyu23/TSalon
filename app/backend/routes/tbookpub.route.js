@@ -6,7 +6,7 @@ const router = express.Router();
 router
   .route("/api/publications")
   .get(tbookpubController.list)
-// .post(tbookpubController.create);
+  .post(tbookpubController.create);
 
 router.route("/api/publication/:tbsn").get(tbookpubController.read);
 router.route("/api/price/:tbsn").get(blockchainController.getPrice);

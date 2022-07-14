@@ -16,12 +16,12 @@ const TBookPubSchema = new mongoose.Schema({
   coverImage: { type: String, default: "/assets/logo_square_blue.png" },
 });
 
-TBookPubSchema.pre("save", function (next) {
-  if (!this.isNew) {
-    next();
-    return;
-  }
-  autoIncrementTBSN("TBookPub", this, next);
-});
+// TBookPubSchema.pre("save", function (next) {
+//   if (!this.isNew) {
+//     next();
+//     return;
+//   }
+//   autoIncrementTBSN("TBookPub", this, next);
+// });
 
 export default mongoose.model("TBookPub", TBookPubSchema);
