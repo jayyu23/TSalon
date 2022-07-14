@@ -127,7 +127,7 @@ const getCollection = (req, res, next) => {
     let tbooks = []
     chainData.forEach((t) => { tbooks.push(t.tbsn) });
     tbookpubModel.find({ tbsn: { $in: tbooks } }).sort({ tbsn: -1 }).exec().then((acc) => {
-      return res.status(200).json({ success: true, tbooks: acc, chainData: chainData });
+      return res.status(200).json({ success: true, tbooks: acc, chainData: chainData, username: req.username });
     }, (rej) => {
       console.log(rej);
       return res.status(400).json({ success: false, error: rej });
@@ -145,6 +145,7 @@ const getAddressFromUsername = (req, res, next, username) => {
   tsalonuserModel.findOne({ username: { $regex: usernameFiltered, $options: "i" } }).exec().then((acc) => {
     let walletAddress = acc.walletAddress;
     req.walletAddress = walletAddress;
+    req.username = acc.username;
     next();
   }, (rej) => {
     res.status(400).json({ success: false, error: rej });

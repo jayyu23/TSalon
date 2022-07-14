@@ -1,9 +1,15 @@
 import React, { Component } from "react";
 
 function Sidebar(props) {
+  const u = sessionStorage.getItem("username").replace(/ /g, "_").toLowerCase();
   const sidebar_options = [
     { index: 0, text: "Explore", link: "/", icon: "fa fa-compass" },
-    { index: 1, text: "Collections", link: "#", icon: "fa fa-book" },
+    {
+      index: 1,
+      text: "Collections",
+      link: "/collection/" + u,
+      icon: "fa fa-book",
+    },
     { index: 2, text: "Drafts", link: "/drafts", icon: "fa fa-pencil" },
     { index: 3, text: "Review", link: "/review", icon: "fa fa-check-to-slot" },
     { index: 4, text: "Settings", link: "#", icon: "fa fa-cog" },

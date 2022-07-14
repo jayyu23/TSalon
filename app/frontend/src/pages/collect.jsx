@@ -140,7 +140,7 @@ function CollectPage(props) {
 
       buyButton.disabled = false;
       setBuyStatus(
-        "Transaction Success! Completed " + new Date().toLocaleDateString()
+        "Transaction Success! Completed " + new Date().toLocaleString()
       );
     } catch (err) {
       resetTimer();

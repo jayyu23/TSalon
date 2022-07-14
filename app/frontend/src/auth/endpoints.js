@@ -13,7 +13,8 @@ class EndPoints {
       submitDraft: "submitReview",
       draftSave: "drafts",
       getReview: "getReview",
-      getPrice: "price/"
+      getPrice: "price/",
+      getCollection: "collection/"
     };
   }
 
@@ -33,6 +34,11 @@ class EndPoints {
     let u = username.replace(/ /g, "_").toLowerCase();
     return this.baseURL + u + this.urlMap.drafts;
   }
+  getUserCollectionAPI(username) {
+    let u = username.replace(/ /g, "_").toLowerCase();
+    return this.baseURL + this.urlMap.getCollection + u;
+  }
+
   getCreateUserAPI() {
     return this.baseURL + this.urlMap.createUser;
   }
