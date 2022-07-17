@@ -3,6 +3,8 @@ import auth from "../auth/authhandler";
 import NavBar from "../components/navbar";
 import Sidebar from "../components/sidebar";
 import TBookStore from "../components/tbookstore";
+import Poster from "../components/poster";
+import TBook from "../components/tbook";
 
 class HomePage extends Component {
   constructor(props) {
@@ -12,8 +14,9 @@ class HomePage extends Component {
   render() {
     return (
       <div className="App container-flex d-col">
-        <NavBar showImage="true" />
-        <div className="my-5 pt-5">
+        <NavBar className="my-0" showImage="true" />
+        <Poster />
+        <div id="store" className="my-5 pt-5">
           <TBookStore />
         </div>
       </div>

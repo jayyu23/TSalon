@@ -294,7 +294,6 @@ function NavBar(props) {
           </div>
         </div>
       </nav>
-      <div style={{ padding: 5 }}></div>
     </div>
   );
 }
