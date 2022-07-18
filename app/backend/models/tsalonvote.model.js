@@ -1,10 +1,13 @@
 import mongoose from "mongoose";
 
 const TSalonVoteSchema = new mongoose.Schema({
-  member: {
-    type: [String],
-    default: [],
-    required: "Vote count required",
+  username: {
+    type: String,
+    required: "Username required",
+  },
+  address: {
+    type: String,
+    required: "Wallet required",
   },
   tbsn: {
     type: Number,

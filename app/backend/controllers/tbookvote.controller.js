@@ -1,4 +1,5 @@
 import tbookdraftModel from "../models/tbookdraft.model.js";
+import tsalonvoteModel from "../models/tsalonvote.model.js";
 import extend from "lodash/extend.js";
 
 const getReview = (req, res) => {
@@ -46,9 +47,40 @@ const getReview = (req, res) => {
         }
       },
       (rej) => {
-        res.status(400).json({ success: 400 });
+        res.status(400).json({ success: false });
       }
     );
 };
 
-export default { getReview: getReview };
+const recordVotes = (req, res, next) => {
+  let votes = req.body.votes;
+  let username = req.body.username;
+  let address = req.body.walletAddress;
+  let tbsn = req.body.tbsn;
+
+  tsalonvoteModel.create({ username: username, address: address, tbsn: tbsn, numVotes: votes }).then((acc) => {
+    let newVote = acc;
+    tbookdraftModel.updateOne({ tbsn: tbsn }, { $push: { voters: newVote }, $inc: { numVotes: votes } }).then((acc) => {
+      // check if ready for publish
+      res.status(200).json({ success: true, draft: acc, vote: newVote })
+    }, (rej) => { res.status(400).json({ success: false, error: rej }) })
+  }, (rej) => { res.status(400).json({ success: false }) })
+
+}
+
+const passThreshold = (tbsn) => {
+  // If the number of votes > 10, then allow publcation
+  let voteThreshold = 10;
+  tbookdraftModel.find({ tbsn: tbsn }).exec().then((acc) => {
+    if (acc.numVotes >= voteThreshold) {
+      return true;
+    } else {
+      return false;
+    }
+  }, (rej) => {
+    return false;
+  })
+  return true;
+}
+
+export default { getReview: getReview, passThreshold: passThreshold, recordVotes: recordVotes };

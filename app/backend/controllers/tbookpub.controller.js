@@ -1,10 +1,7 @@
 import tbookpubModel from "../models/tbookpub.model.js";
+import tbookdraftModel from "../models/tbookdraft.model.js";
 import extend from "lodash/extend.js";
 import blockchainController from "../controllers/blockchain.controller.js"
-
-const readyToPub = (tbsn) => {
-  return true;
-}
 
 const create = (req, res, next) => {
   let fields = req.body;

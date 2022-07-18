@@ -17,9 +17,9 @@ dotenv.config();
 
 class BlockchainController {
   constructor() {
-    console.log("init called")
     this.exchangeAPI = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum";
     this.initWeb3();
+    console.log("Blockchain init status: " + this.init)
   }
 
   initWeb3() {
