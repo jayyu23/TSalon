@@ -14,7 +14,8 @@ class EndPoints {
       draftSave: "drafts",
       getReview: "getReview",
       getPrice: "price/",
-      getCollection: "collection/"
+      getCollection: "collection/",
+      submitVote: "submitVote"
     };
   }
 
@@ -30,9 +31,8 @@ class EndPoints {
   getAllPubAPI() {
     return this.baseURL + this.urlMap.allPub;
   }
-  getUserDraftAPI(username) {
-    let u = username.replace(/ /g, "_").toLowerCase();
-    return this.baseURL + u + this.urlMap.drafts;
+  getUserDraftAPI(usernameLink) {
+    return this.baseURL + usernameLink + this.urlMap.drafts;
   }
   getUserCollectionAPI(username) {
     let u = username.replace(/ /g, "_").toLowerCase();
@@ -58,6 +58,11 @@ class EndPoints {
   getPriceAPI(tbsn) {
     return this.baseURL + this.urlMap.getPrice + tbsn;
   }
+
+  getsubmitVoteAPI() {
+    return this.baseURL + this.urlMap.submitVote;
+  }
+
 }
 
 const endpoints = new EndPoints();

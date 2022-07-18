@@ -44,7 +44,6 @@ function TBookView(props) {
     // prevent XSS attacks
     return sanitizeHTML(rawHTML);
   };
-  console.log(pub.coverImage);
   return (
     <div>
       <div className="justify-content-center mt-5">

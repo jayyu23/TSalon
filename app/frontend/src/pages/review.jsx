@@ -5,9 +5,31 @@ import NavBar from "../components/navbar";
 import Sidebar from "../components/sidebar";
 import TBookView from "../components/tbookview";
 import endpoints from "../auth/endpoints";
+import { extend } from "lodash";
 
 function ReviewPage(props) {
   auth.protectRoute();
+
+  const submitVote = () => {
+    let votes = document.getElementById("voteCount").value;
+    let submitVoteAPI = endpoints.getsubmitVoteAPI();
+    let authData = auth.getPostAuthData();
+    let postBody = {
+      votes: votes,
+      username: auth.getUsername(),
+      wallet: auth.getWalletAddress(),
+      tbsn: reviewDraft.tbsn,
+    };
+
+    extend(postBody, authData.body);
+    axios.post(submitVoteAPI, postBody, authData.config).then(
+      (acc) => {
+        console.log(acc.data);
+      },
+      (rej) => {}
+    );
+  };
+
   const emptyReviewHTML = (
     <div
       className="card mx-3 w-100 h-auto px-4 py-auto mx-4"
@@ -24,20 +46,19 @@ function ReviewPage(props) {
 
   const [reviewDraft, setReviewDraft] = useState(null);
   const [reviewHTML, setReviewHTML] = useState(emptyReviewHTML);
+
   useEffect(() => {
     // On load make request to server
-    let authContent = auth.getPostAuthData();
-    axios
-      .post(endpoints.getReviewAPI(), authContent.body, authContent.config)
-      .then(
-        (acc) => {
-          let data = acc.data;
-          setReviewDraft(data.reviewDraft);
-        },
-        (rej) => {
-          console.log(rej);
-        }
-      );
+    let authData = auth.getPostAuthData();
+    axios.post(endpoints.getReviewAPI(), authData.body, authData.config).then(
+      (acc) => {
+        let data = acc.data;
+        setReviewDraft(data.reviewDraft);
+      },
+      (rej) => {
+        console.log(rej);
+      }
+    );
   }, []);
   useEffect(() => {
     if (reviewDraft) {
@@ -54,6 +75,7 @@ function ReviewPage(props) {
             </p>
             <div className="col-lg-4 py-auto mx-auto">
               <input
+                id="voteCount"
                 type="number"
                 max={10}
                 min={0}
@@ -66,6 +88,7 @@ function ReviewPage(props) {
               <button
                 className="btn btn-success px-4 mx-3 py-auto mb-5 mt-0"
                 style={{ borderRadius: 25 }}
+                onClick={submitVote}
               >
                 Submit Votes
                 <i className="fa fa-arrow-right mx-2"></i>

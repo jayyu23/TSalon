@@ -10,18 +10,15 @@ import endpoints from "../auth/endpoints";
 function UserDrafts() {
   const [stage1, setStage1] = useState([]);
   const [stage2, setStage2] = useState([]);
+  const [username, setUsername] = useState(null);
   auth.protectRoute();
 
   useEffect(() => {
-    let token = sessionStorage.getItem("t");
-    let username = sessionStorage.getItem("username");
-
-    let route = endpoints.getUserDraftAPI(username);
-    let body = { walletAddress: sessionStorage.getItem("address") };
-    let config = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
-    axios.post(route, body, config).then(
+    let authData = auth.getPostAuthData();
+    setUsername(auth.getUsername());
+    let usernameLink = auth.getUsernameLink();
+    let route = endpoints.getUserDraftAPI(usernameLink);
+    axios.post(route, authData.body, authData.config).then(
       (acc) => {
         let data = acc.data;
         console.log(data);
@@ -62,9 +59,7 @@ function UserDrafts() {
             className="col-xs-12 col-md-9 my-0 "
             style={{ minHeight: window.innerHeight }}
           >
-            <h1 className="my-5 pt-5 text-center">
-              Welcome, {sessionStorage.getItem("username")}
-            </h1>
+            <h1 className="my-5 pt-5 text-center">Welcome, {username}</h1>
 
             <ul className="nav nav-pills nav-fill mb-5">
               <li className="nav-item">

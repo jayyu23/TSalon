@@ -12,4 +12,7 @@ router
     tbookvoteController.getReview
   );
 
+// Submit the votes
+router.route("/api/submitVote").post(auth.requireSignin, auth.hasAuthorization, tbookvoteController.submitVote)
+
 export default router;

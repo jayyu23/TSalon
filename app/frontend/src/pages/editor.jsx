@@ -129,11 +129,11 @@ function TSalonEditor(props) {
   const submitPost = async () => {
     await savePost();
     let apiURL = endpoints.getDraftSubmitAPI();
-    let authContent = auth.getPostAuthData();
+    let authData = auth.getPostAuthData();
     if (validateContentLength()) {
       let postBody = getSubmitBody();
-      extend(postBody, authContent.body);
-      axios.post(apiURL, postBody, authContent.config).then((res) => {
+      extend(postBody, authData.body);
+      axios.post(apiURL, postBody, authData.config).then((res) => {
         window.location.href = "/drafts";
         // let tbsn = res.data.publication.tbsn;
         // window.location.href = "/view/" + tbsn;
@@ -158,13 +158,13 @@ function TSalonEditor(props) {
 
   const savePost = async () => {
     let apiURL = endpoints.getDraftSaveAPI();
-    let authContent = auth.getPostAuthData();
+    let authData = auth.getPostAuthData();
     let postBody = getSubmitBody();
-    extend(postBody, authContent.body);
+    extend(postBody, authData.body);
 
     let submitMessage = document.getElementById("submitMessage");
     let saveDate = new Date();
-    axios.post(apiURL, postBody, authContent.config).then(
+    axios.post(apiURL, postBody, authData.config).then(
       (res) => {
         submitMessage.className = "text-success mt-0 mx-5";
         submitMessage.innerText =

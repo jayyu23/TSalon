@@ -1,13 +1,16 @@
 import mongoose from "mongoose";
 
 const TSalonVoteSchema = new mongoose.Schema({
-  username: {
+  voter: {
     type: String,
     required: "Username required",
   },
   address: {
     type: String,
     required: "Wallet required",
+  },
+  comment: {
+    type: String,
   },
   tbsn: {
     type: Number,
@@ -17,6 +20,10 @@ const TSalonVoteSchema = new mongoose.Schema({
     type: Number,
     required: "Number of Votes required",
   },
+  date: {
+    type: Date,
+    required: "Date required",
+  }
 });
 
 export default mongoose.model("TSalonVote", TSalonVoteSchema);
