@@ -58,7 +58,10 @@ function UserDrafts() {
             <Sidebar active={2} />
           </div>
 
-          <div className="col-xs-12 col-md-9 my-0 " style={{ minHeight: 800 }}>
+          <div
+            className="col-xs-12 col-md-9 my-0 "
+            style={{ minHeight: window.innerHeight }}
+          >
             <h1 className="my-5 pt-5 text-center">
               Welcome, {sessionStorage.getItem("username")}
             </h1>

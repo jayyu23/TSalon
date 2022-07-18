@@ -4,16 +4,16 @@ import { useParams } from "react-router-dom";
 import UserCollection from "../components/collection";
 import NavBar from "../components/navbar";
 
-function PublicProfile() {
+function PublicShelf() {
   let { username } = useParams();
   return (
     <div>
       <NavBar />
-      <div className="mt-5 pt-5">
+      <div>
         <UserCollection username={username} />
       </div>
     </div>
   );
 }
 
-export default PublicProfile;
+export default PublicShelf;

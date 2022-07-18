@@ -1,20 +1,17 @@
 import React, { Component } from "react";
 import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
 import HomePage from "./pages/home";
-import TBook from "./components/tbook";
 import TSalonEditor from "./pages/editor";
-import TBookView from "./components/tbookview";
 import Error404 from "./pages/error404";
 import TBookPub from "./pages/tbookpub";
 import TBookStore from "./components/tbookstore";
 import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
-import SideBar from "./components/sidebar";
 import CollectPage from "./pages/collect";
 import UserDrafts from "./pages/userdrafts";
 import ReviewPage from "./pages/review";
-import UserCollection from "./components/collection";
-import PublicProfile from "./pages/publicprofile";
+import PublicShelf from "./pages/publicshelf";
+import PrivateShelf from "./pages/privateshelf";
 
 class App extends Component {
   constructor(props) {
@@ -35,7 +32,8 @@ class App extends Component {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/drafts" element={<UserDrafts />} />
           <Route path="/review" element={<ReviewPage />} />
-          <Route path="/collection/:username" element={<PublicProfile />} />
+          <Route path="/collection/:username" element={<PublicShelf />} />
+          <Route path="/collections" element={<PrivateShelf />} />
           <Route path="*" element={<Navigate to="/error" />} />
         </Routes>
       </BrowserRouter>

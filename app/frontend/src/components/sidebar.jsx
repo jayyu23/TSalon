@@ -7,7 +7,7 @@ function Sidebar(props) {
     {
       index: 1,
       text: "Collections",
-      link: "/collection/" + u,
+      link: "/collections",
       icon: "fa fa-book",
     },
     { index: 2, text: "Drafts", link: "/drafts", icon: "fa fa-pencil" },
@@ -25,7 +25,7 @@ function Sidebar(props) {
           className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none"
         >
           <span className="fs-4">
-            <i className="fa fa-bars mx-3 mb-4 mt-4"></i>Dashboard
+            <i className="fa fa-bars mx-3 mb-4 mt-5 pt-auto"></i>Dashboard
           </span>
         </a>
         <ul className="nav nav-pills flex-column mb-auto">

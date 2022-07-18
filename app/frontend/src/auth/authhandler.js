@@ -10,6 +10,19 @@ class AuthHandler {
     return sessionStorage.getItem("address");
   }
 
+  getUsername() {
+    return sessionStorage.getItem("username");
+  }
+
+  getUsernameLink() {
+    let username = instance.getUsername();
+    if (username) {
+      return username.replace(/ /g, "_").toLowerCase();
+    } else {
+      return "";
+    }
+  }
+
   getPostAuthData() {
     // Assume that have the Session Storage Data
     const token = sessionStorage.getItem("t");

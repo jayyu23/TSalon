@@ -211,12 +211,16 @@ function NavBar(props) {
         aria-expanded="false"
       >
         <i className="fa-solid fa-circle mx-2 text-success"></i>
-        {sessionStorage.getItem("username")}
+        {auth.getUsername()}
       </a>
       <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-        <a className="dropdown-item" href="/drafts">
-          <i className="fa-solid fa-house-user mx-2"></i>
-          Home
+        <a
+          className="dropdown-item"
+          href={"/collection/" + auth.getUsernameLink()}
+          target="_blank"
+        >
+          <i className="fa-solid fa-user mx-2"></i>
+          View Public Profile
         </a>
         <div className="dropdown-item" href="#">
           <i className="fa-solid fa-address-card mx-2"></i>
@@ -245,8 +249,16 @@ function NavBar(props) {
     </li>
   );
 
+  const loggedInHome = (
+    <li className="nav-item">
+      <a href="/drafts" className="nav-link px-lg-3 py-3 py-lg-4">
+        <i className="fas fa-house" style={{ fontSize: 16 }}></i>
+      </a>
+    </li>
+  );
+
   return (
-    <div className="mb-5">
+    <div className="mb-5 w-100">
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark" id="mainNav">
         <div className="container px-4 px-lg">
           <img
@@ -290,6 +302,7 @@ function NavBar(props) {
                 </a>
               </li>
               {isLoggedIn ? loggedInData : notLoggedInData}
+              {isLoggedIn ? loggedInHome : ""}
             </ul>
           </div>
         </div>
