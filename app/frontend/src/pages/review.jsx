@@ -10,6 +10,28 @@ import { extend } from "lodash";
 function ReviewPage(props) {
   auth.protectRoute();
 
+  const emptyReviewHTML = (
+    <div
+      className="card mx-3 w-100 h-auto px-4 py-auto mx-4"
+      style={{ minHeight: window.innerHeight }}
+    >
+      <div
+        className="text-center justify-content-center h3"
+        style={{ marginTop: "30%" }}
+      >
+        Nothing to Review!
+      </div>
+    </div>
+  );
+
+  const [reviewDraft, setReviewDraft] = useState(null);
+  const [votesLeft, setVotesLeft] = useState(0);
+  const [reviewHTML, setReviewHTML] = useState(emptyReviewHTML);
+
+  useEffect(() => {
+    getReview();
+  }, []);
+
   const submitVote = () => {
     let votes = document.getElementById("voteCount").value;
     let submitVoteAPI = endpoints.getsubmitVoteAPI();
@@ -25,43 +47,33 @@ function ReviewPage(props) {
     axios.post(submitVoteAPI, postBody, authData.config).then(
       (acc) => {
         console.log(acc.data);
-      },
-      (rej) => {}
-    );
-  };
-
-  const emptyReviewHTML = (
-    <div
-      className="card mx-3 w-100 h-auto px-4 py-auto mx-4"
-      style={{ minHeight: 800 }}
-    >
-      <div
-        className="text-center justify-content-center h3"
-        style={{ marginTop: "30%" }}
-      >
-        Nothing to Review!
-      </div>
-    </div>
-  );
-
-  const [reviewDraft, setReviewDraft] = useState(null);
-  const [reviewHTML, setReviewHTML] = useState(emptyReviewHTML);
-
-  useEffect(() => {
-    // On load make request to server
-    let authData = auth.getPostAuthData();
-    axios.post(endpoints.getReviewAPI(), authData.body, authData.config).then(
-      (acc) => {
-        let data = acc.data;
-        setReviewDraft(data.reviewDraft);
+        window.location.reload();
       },
       (rej) => {
         console.log(rej);
       }
     );
-  }, []);
+  };
+
+  const getReview = () => {
+    // On load make request to server
+    setReviewHTML(emptyReviewHTML);
+    let authData = auth.getPostAuthData();
+    axios.post(endpoints.getReviewAPI(), authData.body, authData.config).then(
+      (acc) => {
+        let data = acc.data;
+        setReviewDraft(data.reviewDraft);
+        setVotesLeft(data.currentVotes);
+        window.scrollTo(0, 0);
+      },
+      (rej) => {
+        console.log(rej);
+      }
+    );
+  };
+
   useEffect(() => {
-    if (reviewDraft) {
+    if (reviewDraft && votesLeft) {
       setReviewHTML(
         <div className="card mx-3 w-100 h-auto px-4 py-auto mx-4">
           <TBookView
@@ -71,13 +83,13 @@ function ReviewPage(props) {
           />
           <span className="container row d-flex">
             <p className="mx-auto col-lg-4" style={{ fontSize: 25 }}>
-              Votes Remaining: 10
+              Votes Remaining: {votesLeft}
             </p>
             <div className="col-lg-4 py-auto mx-auto">
               <input
                 id="voteCount"
                 type="number"
-                max={10}
+                max={votesLeft}
                 min={0}
                 defaultValue={0}
                 className="input form-control"
@@ -85,14 +97,14 @@ function ReviewPage(props) {
               />
             </div>
             <div className="col-lg-4">
-              <button
+              <a
                 className="btn btn-success px-4 mx-3 py-auto mb-5 mt-0"
                 style={{ borderRadius: 25 }}
                 onClick={submitVote}
               >
                 Submit Votes
                 <i className="fa fa-arrow-right mx-2"></i>
-              </button>
+              </a>
             </div>
           </span>
         </div>
@@ -115,9 +127,9 @@ function ReviewPage(props) {
         <div className="col-xs-12 col-md-9 my-0 " style={{ minHeight: 500 }}>
           <h1 className="my-5 pt-5 text-center">Review TBook Drafts</h1>
           <p className="mx-3" style={{ fontSize: 25 }}>
-            Votes Remaining: 10
+            Votes Remaining: {votesLeft}
           </p>
-          {reviewHTML}
+          <div id="content">{reviewHTML}</div>
         </div>
       </div>
     </div>
