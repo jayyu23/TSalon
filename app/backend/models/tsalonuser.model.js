@@ -11,10 +11,6 @@ const TSalonUserSchema = mongoose.Schema({
     unique: "Wallet address must be unique",
     required: "Wallet address is required",
   },
-  hashedPassword: {
-    type: String,
-    default: null,
-  },
   member: {
     type: Boolean,
     default: false,

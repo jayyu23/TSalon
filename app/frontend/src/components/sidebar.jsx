@@ -12,7 +12,13 @@ function Sidebar(props) {
     },
     { index: 2, text: "Drafts", link: "/drafts", icon: "fa fa-pencil" },
     { index: 3, text: "Review", link: "/review", icon: "fa fa-check-to-slot" },
-    { index: 4, text: "Settings", link: "#", icon: "fa fa-cog" },
+    {
+      index: 4,
+      text: "Notifications",
+      link: "/notifications",
+      icon: "fa fa-bell",
+    },
+    { index: 5, text: "Settings", link: "#", icon: "fa fa-cog" },
   ];
 
   const currentActive = props.active || -1;
@@ -30,7 +36,7 @@ function Sidebar(props) {
         </a>
         <ul className="nav nav-pills flex-column mb-auto">
           {sidebar_options.map((data) => (
-            <li key={data.index} className="nav-item my-auto">
+            <li key={data.index} className="nav-item my-1">
               <a
                 href={data.link}
                 className={

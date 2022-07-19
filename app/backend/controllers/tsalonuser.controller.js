@@ -61,6 +61,7 @@ const createUser = (req, res, next) => {
               .create({
                 username: username,
                 walletAddress: walletAddress,
+                greenTokens: 1,
               })
               .then(
                 (acc) => {
