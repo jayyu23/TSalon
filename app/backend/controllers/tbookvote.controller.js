@@ -2,6 +2,9 @@ import tbookdraftModel from "../models/tbookdraft.model.js";
 import tsalonvoteModel from "../models/tsalonvote.model.js";
 import extend from "lodash/extend.js";
 import tsalonuserModel from "../models/tsalonuser.model.js";
+import mongoose from "mongoose";
+import pkg from 'lodash';
+const { map } = pkg;
 
 const getReview = (req, res) => {
   // Get the user's vote num
@@ -26,14 +29,18 @@ const getReview = (req, res) => {
           // iterate until we find one that is suitable
           for (let i = 0; i < acc.length; i++) {
             let draft = acc[i];
-            if (draft.author != username) {
+            let voters = map(draft.voters, "voter");
+
+            if (draft.author != username && !voters.includes(username)) {
+
+
               reviewDraft = draft;
               break;
             }
           }
           // nothing to review
           if (reviewDraft == null) {
-            res.status(200).json({ success: true, reviewDraft: null });
+            res.status(200).json({ success: true, reviewDraft: null, currentVotes: currentVotes });
           } else {
             // otherwise update the model
             tbookdraftModel
