@@ -76,9 +76,10 @@ const submitVote = (req, res) => {
   let username = req.body.username;
   let address = req.body.walletAddress;
   let tbsn = req.body.tbsn;
+  let comment = req.body.comments
   let voteDate = new Date();
 
-  tsalonvoteModel.create({ voter: username, address: address, tbsn: tbsn, numVotes: votes, date: voteDate }).then((acc) => {
+  tsalonvoteModel.create({ voter: username, address: address, tbsn: tbsn, numVotes: votes, date: voteDate, comment: comment }).then((acc) => {
     let newVote = acc;
     // update user
     tsalonuserModel.findOneAndUpdate({ username: username }, { $set: { lastVotedDate: new Date() }, $inc: { votesUsed: votes } }).exec();

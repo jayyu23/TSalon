@@ -34,10 +34,12 @@ function ReviewPage(props) {
 
   const submitVote = () => {
     let votes = document.getElementById("voteCount").value;
+    let comments = document.getElementById("comments").value;
     let submitVoteAPI = endpoints.getsubmitVoteAPI();
     let authData = auth.getPostAuthData();
     let postBody = {
       votes: votes,
+      comments: comments,
       username: auth.getUsername(),
       wallet: auth.getWalletAddress(),
       tbsn: reviewDraft.tbsn,
@@ -81,7 +83,22 @@ function ReviewPage(props) {
             tbsn={reviewDraft}
             draftContent={reviewDraft}
           />
-          <span className="container row d-flex">
+          <p className="mx-4 text-left mt-0" style={{ fontSize: 25 }}>
+            Reviewer Comments
+          </p>
+
+          <div className="py-auto justify-content-center text-center mx-4">
+            <textarea
+              name="comments"
+              id="comments"
+              className="w-100 p-3"
+              rows={5}
+              maxLength={300}
+              style={{ borderRadius: 20 }}
+            ></textarea>
+          </div>
+          <p className="my-0 mx-4 text-muted">Max 300 characters</p>
+          <span className="container row d-flex mt-4">
             <p className="mx-auto col-lg-4" style={{ fontSize: 25 }}>
               Votes Remaining: {votesLeft}
             </p>
@@ -92,8 +109,10 @@ function ReviewPage(props) {
                 max={votesLeft}
                 min={0}
                 defaultValue={0}
-                className="input form-control"
-                style={{ borderRadius: 25 }}
+                className="input form-control m-auto p-auto"
+                style={{
+                  borderRadius: 25,
+                }}
               />
             </div>
             <div className="col-lg-4">
@@ -127,7 +146,7 @@ function ReviewPage(props) {
         <div className="col-xs-12 col-md-9 my-0 " style={{ minHeight: 500 }}>
           <h1 className="my-5 pt-5 text-center">Review TBook Drafts</h1>
           <p className="mx-3" style={{ fontSize: 25 }}>
-            Votes Remaining: {votesLeft}
+            Votes Remaining Today: {votesLeft}
           </p>
           <div id="content">{reviewHTML}</div>
         </div>
