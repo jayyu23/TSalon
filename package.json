@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "refresh": "cp build/contracts/TBookFactory.json app/frontend/src/abi/TBookFactory.json",
-    "rebuild": "truffle deploy && npm run refresh"
+    "refresh-abi": "cp build/contracts/TBookFactory.json app/frontend/src/abi/TBookFactory.json && cp build/contracts/TBookFactory.json app/backend/abi/TBookFactory.json",
+    "rebuild": "truffle deploy && npm run refresh-abi"
   },
   "repository": {
     "type": "git",

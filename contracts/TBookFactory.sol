@@ -96,6 +96,15 @@ contract TBookFactory is Ownable, ERC721 {
         }
     }
 
+    function isUserHolder(address userAddress) public view returns (bool) {
+        UserInfo storage user = addressToUser[userAddress];
+        if (user.exists && user.collectionSize > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     // Mint a copy of the book
     function mint(uint256 tbsn, address mintAddress) internal {
         require(tbsnToBook[tbsn].exists);
