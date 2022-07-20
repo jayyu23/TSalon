@@ -88,12 +88,12 @@ const submitVote = (req, res) => {
     // update user
     tsalonuserModel.findOneAndUpdate({ username: username }, { $set: { lastVotedDate: new Date() }, $inc: { votesUsed: votes } }).exec();
     tbookModel.updateOne({ tbsn: tbsn }, { $push: { voters: newVote }, $inc: { numVotes: votes, numViews: 1 } }).then((acc) => {
-      tsalonmessageController.logMessage(acc.author, username, `#${tbsn} Peer Review`, `Votes earned: ${votes} \n\n Comments: ${comment}`, new Date())
+      tsalonmessageController.logMessage(acc.author, username, `#${tbsn} Peer Review`, `Votes earned: ${votes} \n\n Comments: ${comment}`, new Date());
       // check if ready for publish
       passThreshold(tbsn).then((pass) => {
         if (pass) {
           tsalonmessageController.logMessage(acc.author, "TSalon", `#${tbsn} Published!`, `Congratulations! Your writing \"${acc.title}\" has passed peer review and been published as TBook #${tbsn}. 
-          As the author, you will receive a free mint of the NFT. Users can view this TBook publicly at tsalon.io/view/${tbsn}`)
+          As the author, you will receive a free mint of the NFT. Users can view this TBook publicly at tsalon.io/view/${tbsn}`, new Date())
           // console.log(`TBSN: ${tbsn} has passed publication threshold`);
           tbookModel.findOneAndUpdate({ tbsn: tbsn }, { stage: "publish" }).exec().then((acc) => {
             blockchainController.publish(tbsn); // run this async
