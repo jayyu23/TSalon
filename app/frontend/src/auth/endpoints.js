@@ -14,7 +14,7 @@ class EndPoints {
       draftSave: "drafts",
       getReview: "getReview",
       getPrice: "price/",
-      getCollection: "collection/",
+      getCollection: "profile/",
       submitVote: "submitVote",
       messages: "messages/"
     };

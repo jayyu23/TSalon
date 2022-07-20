@@ -13,7 +13,7 @@ router
     tsalonuserController.passedAuthentication
   );
 router.route("/api/createUser").post(tsalonuserController.createUser);
-router.route("/api/collection/:username").get(tsalonuserController.getCollection)
+router.route("/api/profile/:username").get(tsalonuserController.getCollection)
 router.route("/api/messages/:username").post(tsalonuserController.requireSignin, tsalonuserController.hasAuthorization,
   tsalonmessageController.getMessages)
 

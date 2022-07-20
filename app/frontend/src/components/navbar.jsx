@@ -216,8 +216,8 @@ function NavBar(props) {
       <div className="dropdown-menu" aria-labelledby="navbarDropdown">
         <a
           className="dropdown-item"
-          href={"/collection/" + auth.getUsernameLink()}
-          target="_blank"
+          href={"/profile/" + auth.getUsernameLink()}
+          // target="_blank"
         >
           <i className="fa-solid fa-user mx-2"></i>
           View Public Profile

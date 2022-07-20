@@ -30,7 +30,7 @@ function UserCollection(props) {
       {
         // Tab Headers
       }
-      <ul className="nav nav-pills nav-fill my-5">
+      {/* <ul className="nav nav-pills nav-fill my-5">
         <li className="nav-item">
           <a id="t1" className="nav-link active" href="#">
             {`Collected (${collected.length})`}
@@ -41,7 +41,7 @@ function UserCollection(props) {
             {`Published (${0})`}
           </a>
         </li>
-      </ul>
+      </ul> */}
 
       <div className="row justify-content-center px-0 w-100 py-3">
         {collected.map((data) => (

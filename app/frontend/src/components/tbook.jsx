@@ -83,9 +83,7 @@ function TBook(props) {
         <a
           className="card-text font-italic my-3"
           href={
-            props.author
-              ? "/collection/" + endpoints.getLink(props.author)
-              : "#"
+            props.author ? "/profile/" + endpoints.getLink(props.author) : "#"
           }
           style={{ textDecoration: "underline", fontWeight: "normal" }}
         >
