@@ -36,9 +36,6 @@ function RegisterPage(props) {
           (acc) => {
             let data = acc.data;
             if (data.success) {
-              // alert("Login Success");
-              // TODO: Now log the user in.
-
               // Redirect to user homepage
               sessionStorage.setItem("t", data.token);
               sessionStorage.setItem("username", data.user);
@@ -84,7 +81,7 @@ function RegisterPage(props) {
             style={{ maxWidth: "600px", height: 60 }}
           />
           <button
-            className="btn btn-success w-25"
+            className="btn btn-success w-25 mx-4"
             style={{ borderRadius: 25 }}
             onClick={checkValid}
           >

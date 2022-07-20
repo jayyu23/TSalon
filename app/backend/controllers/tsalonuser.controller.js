@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { expressjwt } from "express-jwt";
 import config from "./../../config/config.js";
 import blockchainController from "./blockchain.controller.js";
+import tbookModel from "../models/tbook.model.js";
 
 const signin = (req, res, next) => {
   let walletAddress = req.body.walletAddress.toLowerCase();
@@ -125,7 +126,7 @@ const getCollection = (req, res, next) => {
     const chainData = acc;
     let tbooks = []
     chainData.forEach((t) => { tbooks.push(t.tbsn) });
-    tbookpubModel.find({ tbsn: { $in: tbooks } }).sort({ tbsn: -1 }).exec().then((acc) => {
+    tbookModel.find({ tbsn: { $in: tbooks }, stage: "publish" }).sort({ tbsn: -1 }).exec().then((acc) => {
       return res.status(200).json({ success: true, tbooks: acc, chainData: chainData, username: req.username });
     }, (rej) => {
       console.log(rej);

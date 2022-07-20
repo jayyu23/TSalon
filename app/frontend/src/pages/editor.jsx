@@ -9,6 +9,7 @@ import auth from "../auth/authhandler";
 import { extend, update } from "lodash";
 import endpoints from "../auth/endpoints";
 import TBookView from "../components/tbookview";
+import { useNavigate } from "react-router-dom";
 
 function TSalonEditor(props) {
   auth.protectRoute();
@@ -127,17 +128,23 @@ function TSalonEditor(props) {
   };
 
   const submitPost = async () => {
-    await savePost();
+    console.log("submit");
     let apiURL = endpoints.getDraftSubmitAPI();
     let authData = auth.getPostAuthData();
     if (validateContentLength()) {
       let postBody = getSubmitBody();
       extend(postBody, authData.body);
-      axios.post(apiURL, postBody, authData.config).then((res) => {
-        window.location.href = "/drafts";
-        // let tbsn = res.data.publication.tbsn;
-        // window.location.href = "/view/" + tbsn;
-      });
+      axios.post(apiURL, postBody, authData.config).then(
+        (res) => {
+          console.log(res);
+          // window.location.href = "/drafts";
+          // let tbsn = res.data.publication.tbsn;
+          // window.location.href = "/view/" + tbsn;
+        },
+        (rej) => {
+          console.log(rej);
+        }
+      );
     }
   };
 
@@ -330,13 +337,14 @@ function TSalonEditor(props) {
             </div>
             <div className="card w-100">
               {previewHTML}
-              <div
+              <a
                 className="btn btn-success text-center m-auto mb-4 px-4"
                 style={{ borderRadius: 25 }}
-                onClick={dangerouslyPublish}
+                onClick={submitPost}
+                href="/drafts"
               >
                 Submit Draft
-              </div>
+              </a>
             </div>
           </div>
         </div>

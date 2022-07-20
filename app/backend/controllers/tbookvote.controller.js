@@ -79,6 +79,7 @@ const submitVote = (req, res) => {
   let tbsn = req.body.tbsn;
   let comment = req.body.comments
   let voteDate = new Date();
+  console.log("Vote Submitted")
 
   tsalonvoteModel.create({ voter: username, address: address, tbsn: tbsn, numVotes: votes, date: voteDate, comment: comment }).then((acc) => {
     let newVote = acc;
@@ -89,11 +90,14 @@ const submitVote = (req, res) => {
       passThreshold(tbsn).then((pass) => {
         if (pass) {
           console.log(`TBSN: ${tbsn} has passed publication threshold`);
-          blockchainController.publish(tbsn); // run this async
-          tbookModel.findOneAndUpdate({ tbsn: tbsn }, { stage: "publish" }); // update the stage data
+
+          tbookModel.findOneAndUpdate({ tbsn: tbsn }, { stage: "publish" }).exec().then((acc) => {
+            blockchainController.publish(tbsn); // run this async
+          }, (rej) => { console.log(rej) }); // update the stage data and then publish onto the blockchain
           // notify the author
           res.status(200).json({ success: true, published: true, draft: acc, vote: newVote })
         } else {
+          console.log("Did not pass vote threshold")
           res.status(200).json({ success: true, published: false, draft: acc, vote: newVote })
         }
       })
@@ -108,7 +112,7 @@ const submitVote = (req, res) => {
 const passThreshold = async (tbsn) => {
   // If the number of votes > 10, then allow publcation
   const voteThreshold = 10;
-  let result = await tbookModel.find({ tbsn: tbsn }).exec()
+  let result = await tbookModel.findOne({ tbsn: tbsn }).exec()
   if (result && result.numVotes >= voteThreshold) {
     return true
   } else {
