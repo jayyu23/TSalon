@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
 import Sidebar from "../components/sidebar";
-import TBookDraft from "../components/tbookdraft";
+import TBookDraft from "../components/tbook";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import auth from "../auth/authhandler";

@@ -1,7 +1,8 @@
-import tbookdraftModel from "../models/tbookdraft.model.js";
+import tbookModel from "../models/tbook.model.js";
 import tsalonvoteModel from "../models/tsalonvote.model.js";
 import extend from "lodash/extend.js";
 import tsalonuserModel from "../models/tsalonuser.model.js";
+import blockchainController from "../controllers/blockchain.controller.js"
 import mongoose from "mongoose";
 import pkg from 'lodash';
 const { map } = pkg;
@@ -19,7 +20,7 @@ const getReview = (req, res) => {
       tsalonuserModel.findOneAndUpdate({ username: username }, { votesUsed: 0, lastVoted: today }).exec();
     }
     // First get all the articles that review=true
-    tbookdraftModel
+    tbookModel
       .find({ review: true })
       .sort({ lastReviewDate: 1 })
       .exec()
@@ -43,7 +44,7 @@ const getReview = (req, res) => {
             res.status(200).json({ success: true, reviewDraft: null, currentVotes: currentVotes });
           } else {
             // otherwise update the model
-            tbookdraftModel
+            tbookModel
               .updateOne(
                 { tbsn: reviewDraft.tbsn },
                 {
@@ -83,9 +84,19 @@ const submitVote = (req, res) => {
     let newVote = acc;
     // update user
     tsalonuserModel.findOneAndUpdate({ username: username }, { $set: { lastVotedDate: new Date() }, $inc: { votesUsed: votes } }).exec();
-    tbookdraftModel.updateOne({ tbsn: tbsn }, { $push: { voters: newVote }, $inc: { numVotes: votes } }).then((acc) => {
+    tbookModel.updateOne({ tbsn: tbsn }, { $push: { voters: newVote }, $inc: { numVotes: votes, numViews: 1 } }).then((acc) => {
       // check if ready for publish
-      res.status(200).json({ success: true, published: false, draft: acc, vote: newVote })
+      passThreshold(tbsn).then((pass) => {
+        if (pass) {
+          console.log(`TBSN: ${tbsn} has passed publication threshold`);
+          blockchainController.publish(tbsn); // run this async
+          tbookModel.findOneAndUpdate({ tbsn: tbsn }, { stage: "publish" }); // update the stage data
+          // notify the author
+          res.status(200).json({ success: true, published: true, draft: acc, vote: newVote })
+        } else {
+          res.status(200).json({ success: true, published: false, draft: acc, vote: newVote })
+        }
+      })
     }, (rej) => { res.status(400).json({ success: false, error: rej }) })
   }, (rej) => {
     console.log(rej)
@@ -94,19 +105,16 @@ const submitVote = (req, res) => {
 
 }
 
-const passThreshold = (tbsn) => {
+const passThreshold = async (tbsn) => {
   // If the number of votes > 10, then allow publcation
   const voteThreshold = 10;
-  tbookdraftModel.find({ tbsn: tbsn }).exec().then((acc) => {
-    if (acc.numVotes >= voteThreshold) {
-      return true;
-    } else {
-      return false;
-    }
-  }, (rej) => {
-    return false;
-  })
-  return true;
+  let result = await tbookModel.find({ tbsn: tbsn }).exec()
+  if (result && result.numVotes >= voteThreshold) {
+    return true
+  } else {
+    return false
+  }
+
 }
 
 export default { getReview: getReview, passThreshold: passThreshold, submitVote: submitVote };

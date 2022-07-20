@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import Web3 from "web3";
 import fs from "fs";
-import tbookpubModel from "../models/tbookpub.model.js";
+import tbookModel from "../models/tbook.model.js";
 import config from "../../config/config.js";
 import mongoose from "mongoose";
 import { assert } from "console";
@@ -41,7 +41,7 @@ class BlockchainController {
     // Get the author address
     // let pub = req.publication;
     await mongoose.connect(config.mongoUri);
-    const pub = await tbookpubModel.findOne({ tbsn: tbsn });
+    const pub = await tbookModel.findOne({ tbsn: tbsn, stage: "publish" });
     console.log(pub)
     assert(pub, "Error – Bad TBSN")
     const author = pub.author

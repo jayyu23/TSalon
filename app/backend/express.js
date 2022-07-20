@@ -4,9 +4,8 @@ import cookieParser from "cookie-parser";
 import compress from "compression";
 import cors from "cors";
 import helmet from "helmet";
-import pubRoutes from "./routes/tbookpub.route.js";
 import memberRoutes from "./routes/tsalonuser.route.js";
-import draftRoutes from "./routes/tbookdraft.route.js";
+import draftRoutes from "./routes/tbook.route.js";
 import voteRoutes from "./routes/tbookvote.route.js";
 
 const app = express();
@@ -26,7 +25,6 @@ app.use(cors());
 
 // app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
-app.use("/", pubRoutes);
 app.use("/", memberRoutes);
 app.use("/", draftRoutes);
 app.use("/", voteRoutes);

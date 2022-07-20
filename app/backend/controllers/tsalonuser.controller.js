@@ -4,8 +4,6 @@ import jwt from "jsonwebtoken";
 import { expressjwt } from "express-jwt";
 import config from "./../../config/config.js";
 import blockchainController from "./blockchain.controller.js";
-import tbookpubController from "./tbookpub.controller.js";
-import tbookpubModel from "../models/tbookpub.model.js";
 
 const signin = (req, res, next) => {
   let walletAddress = req.body.walletAddress.toLowerCase();

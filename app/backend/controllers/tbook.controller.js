@@ -1,4 +1,4 @@
-import tbookdraftModel from "../models/tbookdraft.model.js";
+import tbookModel from "../models/tbook.model.js";
 import extend from "lodash/extend.js";
 
 const update = (req, res, next) => {
@@ -6,7 +6,7 @@ const update = (req, res, next) => {
 
   if (fields.tbsn == 0) {
     // create
-    const draft = new tbookdraftModel(fields);
+    const draft = new tbookModel(fields);
     draft.save().then(
       (acc) => {
         return res.status(200).json({ message: "Draft success", draft: acc });
@@ -18,7 +18,7 @@ const update = (req, res, next) => {
     );
   } else {
     // update
-    tbookdraftModel
+    tbookModel
       .findOneAndUpdate(
         { tbsn: fields.tbsn },
         {
@@ -58,8 +58,24 @@ const list = (req, res, next) => {
     .json({ status: "success", stage1: stage1, stage2: stage2 });
 };
 
+const publicList = (req, res, next) => {
+  tbookModel
+    .find({ stage: "publish" })
+    .sort({ tbsn: -1 })
+    .exec()
+    .then(
+      (acc) => {
+        let publications = acc;
+        return res.status(200).json(publications);
+      },
+      (rej) => {
+        return res.status(400).json({ error: err });
+      }
+    );
+}
+
 const getFromTBSN = (req, res, next, tbsn) => {
-  tbookdraftModel
+  tbookModel
     .findOne({ tbsn: tbsn })
     .exec()
     .then(
@@ -75,7 +91,7 @@ const getFromTBSN = (req, res, next, tbsn) => {
 
 const getFromUsername = (req, res, next, username) => {
   let usernameFiltered = username.replace(/_/g, " ");
-  tbookdraftModel
+  tbookModel
     .find({
       author: { $regex: usernameFiltered, $options: "i" },
     })
@@ -102,10 +118,19 @@ const read = (req, res) => {
   }
 };
 
+const publicRead = (req, res) => {
+  let publication = req.draft;
+  if (publication && publication.stage == "publish") {
+    return res.status(200).json(publication);
+  } else {
+    return res.status(400).json({ error: "Invalid TBSN" });
+  }
+}
+
 const deleteDraft = (req, res) => {
   let draft = req.draft;
   if (draft) {
-    tbookdraftModel.deleteOne({ tbsn: draft.tbsn }).then(
+    tbookModel.deleteOne({ tbsn: draft.tbsn }).then(
       (acc) => {
         return res.status(200).json({ status: "success", data: acc });
       },
@@ -126,7 +151,7 @@ const submitForReview = (req, res) => {
   if (!tbsn) {
     res.status(400), json({ status: "reject", message: "No TBSN found" });
   }
-  tbookdraftModel
+  tbookModel
     .findOneAndUpdate(
       { tbsn: tbsn },
       {
@@ -152,4 +177,6 @@ export default {
   getFromTBSN,
   deleteDraft,
   submitForReview,
+  publicList,
+  publicRead
 };
