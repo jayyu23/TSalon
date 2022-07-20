@@ -16,9 +16,12 @@ function CollectPage(props) {
   const [defaultWallet, setDefaultWallet] = useState("");
   const [buyError, setBuyError] = useState("");
   const [buyStatus, setBuyStatus] = useState("");
+  const [txHash, setTxHash] = useState("");
 
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
+
+  const etherscan = "https://rinkeby.etherscan.io/tx/";
 
   // const abiFile = fs.read//fs.readFileSync("./abi/TBookFactory.json");
   // const TBookFactory = JSON.parse(abiFile);
@@ -137,11 +140,12 @@ function CollectPage(props) {
         .collect(tbsn, receiveAddress)
         .send({ from: account, value: valueWei });
       resetTimer();
-
+      console.log(result);
       buyButton.disabled = false;
       setBuyStatus(
         "Transaction Success! Completed " + new Date().toLocaleString()
       );
+      setTxHash(result.transactionHash);
     } catch (err) {
       resetTimer();
       setBuyError("Transaction Error. Please try again.");
@@ -157,6 +161,7 @@ function CollectPage(props) {
         <h1 className="m-3">Collect TBook NFT</h1>
         <div className="container col justify-content-center">
           <TBook
+            tbsn={tbsn}
             short={true}
             title={pub.title}
             link={"/view/" + tbsn}
@@ -172,7 +177,7 @@ function CollectPage(props) {
             defaultValue={defaultWallet}
             style={{ display: "none" }}
           />
-          <div className="card my-4 p-4 mx-0">
+          <div className="card my-4 p-4 mx-0" style={{ maxWidth: 650 }}>
             <div className="h2 mb-4">
               TBook #{tbsn}
               <i
@@ -250,6 +255,13 @@ function CollectPage(props) {
                 </button>
                 <p className="text-danger my-3 mx-3">{buyError}</p>
                 <p className="text-success my-3 mx-3">{buyStatus}</p>
+                <a
+                  className="text-muted my-3 mx-3"
+                  href={txHash ? etherscan + txHash : "#"}
+                  style={{ fontSize: 14 }}
+                >
+                  {txHash ? "Receipt: " + txHash : ""}
+                </a>
               </div>
             </div>
           </div>

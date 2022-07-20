@@ -35,7 +35,7 @@ class EndPoints {
     return this.baseURL + usernameLink + this.urlMap.drafts;
   }
   getUserCollectionAPI(username) {
-    let u = username.replace(/ /g, "_").toLowerCase();
+    let u = this.getLink(username)
     return this.baseURL + this.urlMap.getCollection + u;
   }
 
@@ -63,6 +63,9 @@ class EndPoints {
     return this.baseURL + this.urlMap.submitVote;
   }
 
+  getLink(username) {
+    return username.replace(/ /g, "_").toLowerCase();
+  }
 }
 
 const endpoints = new EndPoints();

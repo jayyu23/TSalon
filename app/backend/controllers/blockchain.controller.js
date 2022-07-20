@@ -60,7 +60,7 @@ class BlockchainController {
 
   async getPrice(req, res, next) {
     try {
-      let pub = req.publication;
+      let pub = req.draft;
       let tbsn = pub.tbsn;
 
       let priceFinney = await instance.contract.methods.getPrice(tbsn).call();

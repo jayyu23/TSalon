@@ -211,6 +211,7 @@ function TSalonEditor(props) {
   };
 
   const generatePreview = async () => {
+    setPreviewHTML("");
     await savePost();
     let view = <TBookView mode="draft" draftContent={getSubmitBody()} />;
     let previewMessage = document.getElementById("previewMessage");
@@ -328,8 +329,7 @@ function TSalonEditor(props) {
               </button>
               <button
                 onClick={generatePreview}
-                // onClick={submitPost}
-                className="btn btn-warning col-3 mx-3 dropdown-toggle"
+                className="btn btn-warning col-3 mx-3"
                 style={{ borderRadius: 25 }}
               >
                 Preview
@@ -337,14 +337,13 @@ function TSalonEditor(props) {
             </div>
             <div className="card w-100">
               {previewHTML}
-              <a
+              <button
                 className="btn btn-success text-center m-auto mb-4 px-4"
                 style={{ borderRadius: 25 }}
                 onClick={submitPost}
-                href="/drafts"
               >
-                Submit Draft
-              </a>
+                Submit to Peer Review
+              </button>
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import endpoints from "../auth/endpoints";
 
 function TBook(props) {
   const images = ["blue", "green", "orange", "purple"];
@@ -57,11 +58,14 @@ function TBook(props) {
         alt="TBook Image Cap"
       ></img>
       <div className="card-body d-flex flex-column">
+        <h5 className="card-title my-2" style={{ fontSize: 25 }}>
+          {props.tbsn ? "#" + props.tbsn : ""}
+        </h5>
         <h5 className="card-title">
           {props.title ? props.title : defaultSettings.title}
         </h5>
         <a
-          className=""
+          className="mt-3"
           data-bs-toggle="collapse"
           role="button"
           aria-expanded="false"
@@ -76,9 +80,17 @@ function TBook(props) {
             {props.blurb ? props.blurb : defaultSettings.blurb}
           </p>
         </div>
-        <p className="card-text font-italic">
+        <a
+          className="card-text font-italic my-3"
+          href={
+            props.author
+              ? "/collection/" + endpoints.getLink(props.author)
+              : "#"
+          }
+          style={{ textDecoration: "underline", fontWeight: "normal" }}
+        >
           By {props.author ? props.author : defaultSettings.author}
-        </p>
+        </a>
         {props.short ? readHTML : readCollectHTML}
       </div>
     </div>
