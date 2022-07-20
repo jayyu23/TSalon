@@ -5,6 +5,7 @@ import tsalonuserModel from "../models/tsalonuser.model.js";
 import blockchainController from "../controllers/blockchain.controller.js"
 import mongoose from "mongoose";
 import pkg from 'lodash';
+import tsalonmessageController from "./tsalonmessage.controller.js";
 const { map } = pkg;
 
 const getReview = (req, res) => {
@@ -81,23 +82,26 @@ const submitVote = (req, res) => {
   let voteDate = new Date();
   console.log("Vote Submitted")
 
+
   tsalonvoteModel.create({ voter: username, address: address, tbsn: tbsn, numVotes: votes, date: voteDate, comment: comment }).then((acc) => {
     let newVote = acc;
     // update user
     tsalonuserModel.findOneAndUpdate({ username: username }, { $set: { lastVotedDate: new Date() }, $inc: { votesUsed: votes } }).exec();
     tbookModel.updateOne({ tbsn: tbsn }, { $push: { voters: newVote }, $inc: { numVotes: votes, numViews: 1 } }).then((acc) => {
+      tsalonmessageController.logMessage(acc.author, username, `#${tbsn} Peer Review`, `Votes earned: ${votes} \n\n Comments: ${comment}`, new Date())
       // check if ready for publish
       passThreshold(tbsn).then((pass) => {
         if (pass) {
-          console.log(`TBSN: ${tbsn} has passed publication threshold`);
-
+          tsalonmessageController.logMessage(acc.author, "TSalon", `#${tbsn} Published!`, `Congratulations! Your writing \"${acc.title}\" has passed peer review and been published as TBook #${tbsn}. 
+          As the author, you will receive a free mint of the NFT. Users can view this TBook publicly at tsalon.io/view/${tbsn}`)
+          // console.log(`TBSN: ${tbsn} has passed publication threshold`);
           tbookModel.findOneAndUpdate({ tbsn: tbsn }, { stage: "publish" }).exec().then((acc) => {
             blockchainController.publish(tbsn); // run this async
           }, (rej) => { console.log(rej) }); // update the stage data and then publish onto the blockchain
           // notify the author
           res.status(200).json({ success: true, published: true, draft: acc, vote: newVote })
         } else {
-          console.log("Did not pass vote threshold")
+          // console.log("Did not pass vote threshold")
           res.status(200).json({ success: true, published: false, draft: acc, vote: newVote })
         }
       })

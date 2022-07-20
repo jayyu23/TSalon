@@ -31,7 +31,11 @@ function TBookDraft(props) {
         src={props.imageCover || imageCover}
         alt="TBook Draft Image Cap"
       ></img>
-      <div className="card-body d-flex w-100 justify-content-center">
+
+      <div className="card-body w-100 justify-content-center">
+        <h5 className="card-title" style={{ fontSize: 25 }}>
+          {tbsn ? `#${tbsn}` : ""}
+        </h5>
         <h5 className="card-title">{props.title || "TBook Draft"}</h5>
       </div>
       <span className="mt-auto w-100 text-center mb-4">

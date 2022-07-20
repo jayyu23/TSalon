@@ -1,5 +1,6 @@
 import tbookModel from "../models/tbook.model.js";
 import extend from "lodash/extend.js";
+import tsalonmessageController from "./tsalonmessage.controller.js";
 
 const update = (req, res, next) => {
   let fields = req.body;
@@ -149,7 +150,7 @@ const submitForReview = (req, res) => {
   let fields = req.body;
   let tbsn = fields.tbsn;
   if (!tbsn) {
-    res.status(400), json({ status: "reject", message: "No TBSN found" });
+    res.status(400), json({ success: false, message: "No TBSN found" });
   }
   tbookModel
     .findOneAndUpdate(
@@ -162,9 +163,13 @@ const submitForReview = (req, res) => {
       }
     )
     .then(
-      (acc) => { },
+      (acc) => {
+        tsalonmessageController.logMessage(acc.author, "TSalon", `Draft #${acc.tbsn} – \"${acc.title}\" Submitted for Review`,
+          tsalonmessageController.reviewMessage, new Date());
+        res.status(200).json({ success: true })
+      },
       (rej) => {
-        res.status(400), json({ status: "reject", message: "TBSN not found" });
+        res.status(400), json({ success: false, message: "TBSN not found" });
       }
     );
 };

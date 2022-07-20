@@ -52,7 +52,7 @@ function TSalonEditor(props) {
 
   const blurbLength = 100; // 100 words
   const minContent = 300; // min word count for content
-  const maxContent = 2000; // max word count for content
+  const maxContent = 2500; // max word count for content
 
   const defaultImages = ["aqua", "green", "purple", "orange", "yellow"];
   const defaultImgUrl = `assets/logo_square_${
@@ -137,7 +137,7 @@ function TSalonEditor(props) {
       axios.post(apiURL, postBody, authData.config).then(
         (res) => {
           console.log(res);
-          // window.location.href = "/drafts";
+          window.location.href = "/drafts";
           // let tbsn = res.data.publication.tbsn;
           // window.location.href = "/view/" + tbsn;
         },

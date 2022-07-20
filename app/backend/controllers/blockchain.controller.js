@@ -98,6 +98,11 @@ class BlockchainController {
     return dataArray;
   }
 
+  async isUserHolder(walletAddress) {
+    let userHolder = await instance.contract.methods.isUserHolder(walletAddress).call();
+    return userHolder;
+  }
+
   parseUserInfo = (data) => {
     return {
       exists: data[0],

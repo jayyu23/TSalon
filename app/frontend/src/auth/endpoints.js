@@ -15,7 +15,8 @@ class EndPoints {
       getReview: "getReview",
       getPrice: "price/",
       getCollection: "collection/",
-      submitVote: "submitVote"
+      submitVote: "submitVote",
+      messages: "messages/"
     };
   }
 
@@ -65,6 +66,10 @@ class EndPoints {
 
   getLink(username) {
     return username.replace(/ /g, "_").toLowerCase();
+  }
+
+  getMessagesAPI(username) {
+    return this.baseURL + this.urlMap.messages + this.getLink(username)
   }
 }
 
