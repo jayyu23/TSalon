@@ -10,6 +10,8 @@ function Notifications() {
   auth.protectRoute();
 
   const [messages, setMessages] = useState([]);
+  const [username, setUsername] = useState(auth.getUsername());
+
   useEffect(() => {
     let authData = auth.getPostAuthData();
     axios
@@ -33,13 +35,13 @@ function Notifications() {
       <NavBar />
       <div className="row h-100 w-100">
         <div className="col-md-3 col-xs-12">
-          <Sidebar active={4} />
+          <Sidebar active={5} />
         </div>
         <div
           className="col-xs-12 col-md-9 justify-content-center"
           style={{ minHeight: window.innerHeight }}
         >
-          <h1 className="my-5 pt-3 text-center">Notifications</h1>
+          <h1 className="my-5 pt-5 text-center">Welcome, {username}</h1>
           {messages.map((data) => (
             <Notification
               key={data._id}

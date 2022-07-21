@@ -3,7 +3,19 @@ import React, { Component } from "react";
 function Sidebar(props) {
   const u = sessionStorage.getItem("username").replace(/ /g, "_").toLowerCase();
   const sidebar_options = [
-    { index: 0, text: "Explore", link: "/", icon: "fa fa-compass" },
+    {
+      index: 0,
+      text: "Explore",
+      link: "/",
+      icon: "fa fa-lines-leaning",
+      target: "_blank",
+    }, // because this index never actually shows
+    {
+      index: 5,
+      text: "Dashboard",
+      link: "/dashboard",
+      icon: "fa fa-compass",
+    },
     {
       index: 1,
       text: "Collections",
@@ -12,13 +24,7 @@ function Sidebar(props) {
     },
     { index: 2, text: "Drafts", link: "/drafts", icon: "fa fa-pencil" },
     { index: 3, text: "Review", link: "/review", icon: "fa fa-check-to-slot" },
-    {
-      index: 4,
-      text: "Notifications",
-      link: "/notifications",
-      icon: "fa fa-bell",
-    },
-    { index: 5, text: "Settings", link: "#", icon: "fa fa-cog" },
+    { index: 4, text: "Settings", link: "#", icon: "fa fa-cog" },
   ];
 
   const currentActive = props.active || -1;
@@ -31,7 +37,8 @@ function Sidebar(props) {
           className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none"
         >
           <span className="fs-4">
-            <i className="fa fa-bars mx-3 mb-4 mt-5 pt-auto"></i>Dashboard
+            <i className="fa fa-bars mx-3 mb-4 mt-5 pt-auto"></i>
+            Menu
           </span>
         </a>
         <ul className="nav nav-pills flex-column mb-auto">
@@ -39,6 +46,7 @@ function Sidebar(props) {
             <li key={data.index} className="nav-item my-1">
               <a
                 href={data.link}
+                target={data.target || "_self"}
                 className={
                   data.index === currentActive
                     ? "nav-link active flex-shrink-0"

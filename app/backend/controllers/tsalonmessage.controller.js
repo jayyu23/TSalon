@@ -1,6 +1,7 @@
 import tsalonmessageModel from "../models/tsalonmessage.model.js";
 
 const reviewMessage = "Congratulations! Your draft has successfully been submitted for review. When enough peer Salonites have voted for your work, your writing will be published publically as a TBook."
+const welcomeMessage = "Welcome to TSalon! TSalon is a pioneering Web 3 Publishing House, dedicated to producing quality writing and allowing authors to capture the value of their works. To become a fully-fledged Salonite and community member, begin by collecting one of the TBook NFTs available in the TBookstore by clicking 'Explore'. Enjoy :)"
 
 const sendMessage = (req, res, next) => {
     let toName = req.toName;
@@ -19,6 +20,7 @@ const sendMessage = (req, res, next) => {
 }
 
 const logMessage = async (toName, fromName, title, body, date) => {
+    console.log("Log message")
     try {
         let newMessage = await tsalonmessageModel.create({ toName: toName, fromName: fromName, title: title, body: body, date: date });
         return newMessage;
@@ -37,4 +39,4 @@ const getMessages = (req, res, next) => {
     })
 }
 
-export default { sendMessage, logMessage, getMessages, reviewMessage }
+export default { sendMessage, logMessage, getMessages, reviewMessage, welcomeMessage }

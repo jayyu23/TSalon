@@ -283,7 +283,7 @@ function NavBar(props) {
 
   const loggedInHome = (
     <li className="nav-item">
-      <a href="/drafts" className="nav-link px-lg-3 py-3 py-lg-4">
+      <a href="/dashboard" className="nav-link px-lg-3 py-3 py-lg-4">
         <i className="fas fa-house" style={{ fontSize: 16 }}></i>
       </a>
     </li>

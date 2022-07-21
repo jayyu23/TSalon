@@ -16,7 +16,8 @@ class EndPoints {
       getPrice: "price/",
       getCollection: "profile/",
       submitVote: "submitVote",
-      messages: "messages/"
+      messages: "messages/",
+      isUserHolder: "userHolder"
     };
   }
 
@@ -70,6 +71,9 @@ class EndPoints {
 
   getMessagesAPI(username) {
     return this.baseURL + this.urlMap.messages + this.getLink(username)
+  }
+  getUserHolderAPI() {
+    return this.baseURL + this.urlMap.isUserHolder;
   }
 }
 

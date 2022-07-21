@@ -13,6 +13,7 @@ import ReviewPage from "./pages/review";
 import PublicShelf from "./pages/publicshelf";
 import PrivateShelf from "./pages/privateshelf";
 import Notifications from "./pages/notifications";
+import MemberOnly from "./components/memberonly";
 
 class App extends Component {
   constructor(props) {
@@ -35,7 +36,7 @@ class App extends Component {
           <Route path="/review" element={<ReviewPage />} />
           <Route path="/profile/:username" element={<PublicShelf />} />
           <Route path="/collections" element={<PrivateShelf />} />
-          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/dashboard" element={<Notifications />} />
           <Route path="*" element={<Navigate to="/error" />} />
         </Routes>
       </BrowserRouter>

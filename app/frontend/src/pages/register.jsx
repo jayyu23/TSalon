@@ -42,7 +42,7 @@ function RegisterPage(props) {
               sessionStorage.setItem("address", data.walletAddress);
               auth.isLoggedIn = true;
               // alert("Successfully logged in user: " + user.username);
-              navigate("/drafts", {
+              navigate("/dashboard", {
                 state: { username: data.username, walletAddress: loginAddress },
               });
             } else {

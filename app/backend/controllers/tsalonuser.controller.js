@@ -5,6 +5,7 @@ import { expressjwt } from "express-jwt";
 import config from "./../../config/config.js";
 import blockchainController from "./blockchain.controller.js";
 import tbookModel from "../models/tbook.model.js";
+import tsalonmessageController from "./tsalonmessage.controller.js";
 
 const signin = (req, res, next) => {
   let walletAddress = req.body.walletAddress.toLowerCase();
@@ -69,13 +70,15 @@ const createUser = (req, res, next) => {
                     config.jwtSecret
                   );
                   res.cookie("t", token, { expire: new Date() + 9999 });
+                  tsalonmessageController.logMessage(username, "TSalon", `Welcome to TSalon, ${username}!`, tsalonmessageController.welcomeMessage, new Date()).then((acc) => {
+                    return res.status(200).json({
+                      token,
+                      walletAddress: walletAddress,
+                      success: true,
+                      user: username,
+                    });
+                  }, (rej) => { });
 
-                  return res.status(200).json({
-                    token,
-                    walletAddress: walletAddress,
-                    success: true,
-                    user: username,
-                  });
                 },
                 (rej) => {
                   return res.status(400).json({ error: rej });
@@ -118,7 +121,14 @@ const passedAuthentication = (req, res, next) => {
   return res.status(200).json({ success: true });
 };
 
-const signout = (req, res, next) => { };
+const userIsHolder = (req, res, next) => {
+  let address = req.body.walletAddress;
+  blockchainController.isUserHolder(address).then((acc) => {
+    res.status(200).json({ success: true, salonite: acc });
+  }, (rej) => {
+    res.status(400).json({ success: false, error: rej });
+  })
+}
 
 const getCollection = (req, res, next) => {
   let walletAddress = req.walletAddress;
@@ -159,5 +169,6 @@ export default {
   hasAuthorization: hasAuthorization,
   passedAuthentication: passedAuthentication,
   getAddressFromUsername: getAddressFromUsername,
-  getCollection: getCollection
+  getCollection: getCollection,
+  userIsHolder: userIsHolder
 };

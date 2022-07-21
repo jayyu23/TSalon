@@ -6,6 +6,7 @@ import Sidebar from "../components/sidebar";
 import TBookView from "../components/tbookview";
 import endpoints from "../auth/endpoints";
 import { extend } from "lodash";
+import MemberOnly from "../components/memberonly";
 
 function ReviewPage(props) {
   auth.protectRoute();
@@ -28,9 +29,22 @@ function ReviewPage(props) {
   const [votesLeft, setVotesLeft] = useState(0);
   const [reviewHTML, setReviewHTML] = useState(emptyReviewHTML);
   const [voteThreshold, setVoteThreshold] = useState("");
+  const [isSalonite, setIsSalonite] = useState(false);
 
   useEffect(() => {
-    getReview();
+    let authData = auth.getPostAuthData();
+    axios
+      .post(endpoints.getUserHolderAPI(), authData.body, authData.config)
+      .then(
+        (acc) => {
+          let data = acc.data;
+          setIsSalonite(data.salonite);
+          getReview();
+        },
+        (rej) => {
+          console.log(rej);
+        }
+      );
   }, []);
 
   const submitVote = () => {
@@ -143,7 +157,7 @@ function ReviewPage(props) {
     }
   }, [reviewDraft]);
 
-  return (
+  const pageHTML = (
     <div
       className="container h-100 mx-0 px-0 mt-3 w-100"
       style={{ minHeight: 800 }}
@@ -163,6 +177,8 @@ function ReviewPage(props) {
       </div>
     </div>
   );
+
+  return <div>{isSalonite ? pageHTML : <MemberOnly active={3} />}</div>;
 }
 
 export default ReviewPage;

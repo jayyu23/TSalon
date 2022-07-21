@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import NavBar from "../components/navbar";
 import Sidebar from "../components/sidebar";
 import TBookDraft from "../components/tbookdraft";
+import MemberOnly from "../components/memberonly";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import auth from "../auth/authhandler";
@@ -11,9 +12,29 @@ function UserDrafts() {
   const [stage1, setStage1] = useState([]);
   const [stage2, setStage2] = useState([]);
   const [username, setUsername] = useState(null);
+  const [isSalonite, setIsSalonite] = useState(false);
+
   auth.protectRoute();
 
   useEffect(() => {
+    let authData = auth.getPostAuthData();
+    axios
+      .post(endpoints.getUserHolderAPI(), authData.body, authData.config)
+      .then(
+        (acc) => {
+          let data = acc.data;
+          setIsSalonite(data.salonite);
+          getDrafts();
+        },
+        (rej) => {
+          console.log(rej);
+        }
+      );
+  }, []);
+
+  const getDrafts = () => {
+    // First check if the user is a Salonite
+
     let authData = auth.getPostAuthData();
     setUsername(auth.getUsername());
     let usernameLink = auth.getUsernameLink();
@@ -29,7 +50,7 @@ function UserDrafts() {
         console.log(rej);
       }
     );
-  }, []);
+  };
 
   // Javascript to manage tabs
   const showTab1 = () => {
@@ -46,7 +67,7 @@ function UserDrafts() {
     document.getElementById("tab2").style = "display: flex";
   };
 
-  return (
+  const pageHTML = (
     <div className="h-100">
       <div className="container h-100 mx-0 px-0 mt-3 w-100">
         <NavBar />
@@ -59,7 +80,7 @@ function UserDrafts() {
             className="col-xs-12 col-md-9 my-0 "
             style={{ minHeight: window.innerHeight }}
           >
-            <h1 className="my-5 pt-5 text-center">Welcome, {username}</h1>
+            <h1 className="my-5 pt-5 text-center">My Drafts</h1>
 
             <ul className="nav nav-pills nav-fill mb-5">
               <li className="nav-item">
@@ -133,6 +154,7 @@ function UserDrafts() {
       </div>
     </div>
   );
+  return <div>{isSalonite ? pageHTML : <MemberOnly active={2} />}</div>;
 }
 
 export default UserDrafts;
