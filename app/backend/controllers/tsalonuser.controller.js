@@ -152,14 +152,18 @@ const getCollection = (req, res, next) => {
 
 const getAddressFromUsername = (req, res, next, username) => {
   let usernameFiltered = username.replace(/_/g, " ");
-  tsalonuserModel.findOne({ username: { $regex: usernameFiltered, $options: "i" } }).exec().then((acc) => {
-    let walletAddress = acc.walletAddress;
-    req.walletAddress = walletAddress;
-    req.username = acc.username;
-    next();
-  }, (rej) => {
-    res.status(400).json({ success: false, error: rej });
-  })
+  try {
+    tsalonuserModel.findOne({ username: { $regex: usernameFiltered, $options: "i" } }).exec().then((acc) => {
+      let walletAddress = acc.walletAddress;
+      req.walletAddress = walletAddress;
+      req.username = acc.username;
+      next();
+    }, (rej) => {
+      res.status(400).json({ success: false, error: rej });
+    })
+  } catch (err) {
+    res.status(400).json({ success: false, error: err })
+  }
 }
 
 export default {
