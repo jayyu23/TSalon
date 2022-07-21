@@ -27,6 +27,7 @@ function ReviewPage(props) {
   const [reviewDraft, setReviewDraft] = useState(null);
   const [votesLeft, setVotesLeft] = useState(0);
   const [reviewHTML, setReviewHTML] = useState(emptyReviewHTML);
+  const [voteThreshold, setVoteThreshold] = useState("");
 
   useEffect(() => {
     getReview();
@@ -66,6 +67,7 @@ function ReviewPage(props) {
         let data = acc.data;
         setReviewDraft(data.reviewDraft);
         setVotesLeft(data.currentVotes);
+        setVoteThreshold(data.voteThreshold);
         window.scrollTo(0, 0);
       },
       (rej) => {
@@ -126,6 +128,14 @@ function ReviewPage(props) {
               </a>
             </div>
           </span>
+          <p
+            className="mx-4 text-left mt-0 text-muted"
+            style={{ fontSize: 25 }}
+          >
+            {voteThreshold
+              ? "Publication threshold is " + voteThreshold + " votes"
+              : ""}
+          </p>
         </div>
       );
     } else {

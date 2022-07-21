@@ -13,6 +13,8 @@ function NavBar(props) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const chainIdToName = new Map();
 
+  const programChain = "0x4";
+
   chainIdToName.set("0x1", "Ethereum Mainnet");
   chainIdToName.set("0x539", "Ganache");
   chainIdToName.set("0x4", "Rinkeby Testnet");
@@ -48,9 +50,10 @@ function NavBar(props) {
 
       window.ethereum.on("chainChanged", () => {
         setChainId(window.ethereum.chainId);
-        if (isLoggedIn) {
+        if (isLoggedIn && window.ethereum.chainId != programChain) {
           logout();
           // alert("Chain Changed detected. Please login again");
+        } else {
         }
       });
     }
@@ -113,34 +116,63 @@ function NavBar(props) {
   };
 
   const login = () => {
-    axios
-      .post(endpoints.getSignInAPI(), {
-        walletAddress: loginAddress,
-      })
-      .then(
-        (acc) => {
-          let data = acc.data;
-          if (!data.registered) {
-            navigate("/register", { state: { loginAddress: loginAddress } });
-          } else {
-            let user = data.user;
-            // Redirect to user homepage
-            sessionStorage.setItem("t", data.token);
-            sessionStorage.setItem("username", data.user.username);
-            sessionStorage.setItem("address", data.walletAddress);
-            setIsLoggedIn(true);
-            auth.isLoggedIn = true;
-            // alert("Successfully logged in user: " + user.username);
-            // navigate("/drafts", {
-            //   state: { username: user.username, walletAddress: loginAddress },
-            // });
+    const loginProcess = () => {
+      axios
+        .post(endpoints.getSignInAPI(), {
+          walletAddress: loginAddress,
+        })
+        .then(
+          (acc) => {
+            let data = acc.data;
+            if (!data.registered) {
+              navigate("/register", {
+                state: { loginAddress: loginAddress },
+              });
+            } else {
+              let user = data.user;
+              // Redirect to user homepage
+              sessionStorage.setItem("t", data.token);
+              sessionStorage.setItem("username", data.user.username);
+              sessionStorage.setItem("address", data.walletAddress);
+              setIsLoggedIn(true);
+              auth.isLoggedIn = true;
+              // alert("Successfully logged in user: " + user.username);
+              // navigate("/drafts", {
+              //   state: { username: user.username, walletAddress: loginAddress },
+              // });
+            }
+          },
+          (rej) => {
+            console.log(rej);
+            alert(rej.message);
           }
-        },
-        (rej) => {
-          console.log(rej);
-          alert(rej.message);
-        }
-      );
+        );
+    };
+
+    if (chainId != programChain) {
+      window.ethereum
+        .request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: programChain }],
+        })
+        .then(
+          (acc) => {
+            loginProcess();
+          },
+          (rej) => {
+            alert(
+              `Needs to be on ${chainIdToName.get(
+                programChain
+              )}, ChainID: ${programChain}. Current chain ${
+                chainIdToName.get(chainId) || chainId
+              } not supported`
+            );
+            return;
+          }
+        );
+    } else {
+      loginProcess();
+    }
   };
 
   const notLoggedInData = (

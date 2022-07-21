@@ -8,6 +8,8 @@ import pkg from 'lodash';
 import tsalonmessageController from "./tsalonmessage.controller.js";
 const { map } = pkg;
 
+const voteThreshold = 10;
+
 const getReview = (req, res) => {
   // Get the user's vote num
   let username = req.body.username;
@@ -58,7 +60,7 @@ const getReview = (req, res) => {
                 (acc) => {
                   res
                     .status(200)
-                    .json({ success: true, reviewDraft: reviewDraft, currentVotes: currentVotes });
+                    .json({ success: true, reviewDraft: reviewDraft, currentVotes: currentVotes, voteThreshold: voteThreshold });
                 },
                 (rej) => {
                   res.status(400).json({ success: false });
@@ -80,18 +82,20 @@ const submitVote = (req, res) => {
   let tbsn = req.body.tbsn;
   let comment = req.body.comments
   let voteDate = new Date();
-  console.log("Vote Submitted")
-
 
   tsalonvoteModel.create({ voter: username, address: address, tbsn: tbsn, numVotes: votes, date: voteDate, comment: comment }).then((acc) => {
     let newVote = acc;
     // update user
-    tsalonuserModel.findOneAndUpdate({ username: username }, { $set: { lastVotedDate: new Date() }, $inc: { votesUsed: votes } }).exec();
-    tbookModel.updateOne({ tbsn: tbsn }, { $push: { voters: newVote }, $inc: { numVotes: votes, numViews: 1 } }).then((acc) => {
-      tsalonmessageController.logMessage(acc.author, username, `#${tbsn} Peer Review`, `Votes earned: ${votes} \n\n Comments: ${comment}`, new Date());
+    tsalonuserModel.findOneAndUpdate({ username: username }, { lastVoted: new Date(), $inc: { votesUsed: votes } }, { returnDocument: true, returnOriginal: false }).exec().then(
+      (acc) => { console.log(acc) }, (rej) => { console.log(rej) });
+
+    tbookModel.findOneAndUpdate({ tbsn: tbsn }, { $push: { voters: newVote }, $inc: { numVotes: votes, numViews: 1 } }, { returnDocument: true, returnOriginal: false }).then((acc) => {
+      tsalonmessageController.logMessage(acc.author, username, `#${tbsn} Peer Review`, `Comments: ${comment} | Votes earned: ${votes}`, new Date());
+
       // check if ready for publish
       passThreshold(tbsn).then((pass) => {
         if (pass) {
+
           tsalonmessageController.logMessage(acc.author, "TSalon", `#${tbsn} Published!`, `Congratulations! Your writing \"${acc.title}\" has passed peer review and been published as TBook #${tbsn}. 
           As the author, you will receive a free mint of the NFT. Users can view this TBook publicly at tsalon.io/view/${tbsn}`, new Date())
           // console.log(`TBSN: ${tbsn} has passed publication threshold`);
@@ -115,7 +119,6 @@ const submitVote = (req, res) => {
 
 const passThreshold = async (tbsn) => {
   // If the number of votes > 10, then allow publcation
-  const voteThreshold = 10;
   let result = await tbookModel.findOne({ tbsn: tbsn }).exec()
   if (result && result.numVotes >= voteThreshold) {
     return true
