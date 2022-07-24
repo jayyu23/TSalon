@@ -16,10 +16,10 @@ function Poster(props) {
         <div className="w-100 justify-content-center text-center mt-5 pt-5">
           <img src={logoURL} alt="" />
         </div>
-        <h1 className="text-white text-center mt-0" style={{ fontSize: 90 }}>
+        <h1 className="text-white text-center mt-0" style={{ fontSize: 80 }}>
           TSalon
         </h1>
-        <div className="justify-content-center text-center mt-2 mb-5">
+        <div className="justify-content-center text-center mt-2 mb-3">
           <a
             href="https://trapezoidal-nephew-39b.notion.site/TSalon-Whitepaper-9d27f5c901bc4dcaa53bace710421fce"
             target="_blank"
@@ -45,7 +45,7 @@ function Poster(props) {
         </div>
 
         <p
-          className="subheading mt-5 pt-3 text-white text-center"
+          className="subheading mt-3 pt-3 text-white text-center"
           style={{ fontSize: 36, fontFamily: "Avenir" }}
         >
           A Web 3.0 Publishing House
