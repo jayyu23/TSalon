@@ -38,16 +38,18 @@ class BlockchainController {
   }
 
   async updateFromDatabase(publications) {
+    console.log("Init - Updating publications to blockchain")
     for (let index = 0; index < publications.length; index++) {
       let tbsn = publications[index].tbsn;
-      console.log("Syncing " + tbsn + "...")
       // check if exists on the blockchain
       let bookExists = await instance.contract.methods.getTBookExists(tbsn).call();
       if (!bookExists) {
+        console.log("\t\tSyncing " + tbsn + "...")
         // does not exist, then publish
         await instance.publish(tbsn);
       }
     }
+    console.log("Init - Database sync complete")
   }
 
 
@@ -56,7 +58,6 @@ class BlockchainController {
     // let pub = req.publication;
     // await mongoose.connect(config.mongoUri);
     const pub = await tbookModel.findOne({ tbsn: tbsn, stage: "publish" });
-    console.log(pub)
     assert(pub, "Error – Bad TBSN")
     const author = pub.author
     const authorQuery = await tsalonuserModel.findOne({ username: author });
@@ -69,7 +70,7 @@ class BlockchainController {
     let receipt = await instance.contract.methods
       .publish(tbsn, authorAddress)
       .send({ from: instance.defaultWallet, gas: Math.round(estimatedGas * 1.2) });
-    console.log("Publication successful " + tbsn);
+    // console.log("Publication successful " + tbsn);
     return { receipt: receipt, authorAddress: authorAddress };
   }
 

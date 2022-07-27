@@ -18,6 +18,6 @@ mongoose
     console.log("Init - MongoDB Connection Success.");
     // Sync the blockchain
     let pubs = await tbookModel.find({ stage: "publish" }).exec();
-    // çblockchainController.updateFromDatabase(pubs);
+    blockchainController.updateFromDatabase(pubs);
   })
   .catch((error) => console.log(error));

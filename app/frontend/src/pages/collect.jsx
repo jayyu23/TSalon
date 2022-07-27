@@ -110,6 +110,7 @@ function CollectPage(props) {
       if (data.success) {
         setPrices(data.priceData);
         setRefreshDate(new Date());
+        payBox.value = data.priceData.priceETH;
       }
     });
   };
@@ -242,7 +243,7 @@ function CollectPage(props) {
                   className="form form-control col-6 w-50"
                   type="number"
                   step="0.01"
-                  defaultValue={0.01}
+                  defaultValue={prices.priceETH || 0}
                   disabled={true}
                 />
                 <button
