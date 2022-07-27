@@ -1,8 +1,7 @@
 // One-stop-shop to handle endpoints for API calls.
 class EndPoints {
   constructor() {
-    this.baseURL = "https://tsalon.io/api/";
-    // this.baseURL = "http://localhost:8000/api/"
+    this.baseURL = process.env.BASE_URL || "https://tsalon.io/api/";
     this.urlMap = {
       signin: "signin",
       auth: "auth",
