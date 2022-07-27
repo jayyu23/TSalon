@@ -40,6 +40,7 @@ class BlockchainController {
   async updateFromDatabase(publications) {
     for (let index = 0; index < publications.length; index++) {
       let tbsn = publications[index].tbsn;
+      console.log("Syncing " + tbsn + "...")
       // check if exists on the blockchain
       let bookExists = await instance.contract.methods.getTBookExists(tbsn).call();
       if (!bookExists) {
@@ -65,10 +66,11 @@ class BlockchainController {
       .publish(tbsn, authorAddress)
       .estimateGas({ from: instance.defaultWallet });
     // console.log(estimatedGas);
-    await instance.contract.methods
+    let receipt = await instance.contract.methods
       .publish(tbsn, authorAddress)
       .send({ from: instance.defaultWallet, gas: Math.round(estimatedGas * 1.2) });
     console.log("Publication successful " + tbsn);
+    return { receipt: receipt, authorAddress: authorAddress };
   }
 
   async getPrice(req, res, next) {

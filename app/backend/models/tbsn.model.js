@@ -5,7 +5,6 @@ const offset = 75000;
 const counterSchema = new mongoose.Schema({
   _id: { type: String, required: true },
   seq: { type: Number, default: 0 },
-  votesRequired: { type: Number, default: 11 },
 });
 
 counterSchema.index({ _id: 1, seq: 1 }, { unique: true });

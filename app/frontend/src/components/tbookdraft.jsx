@@ -36,7 +36,7 @@ function TBookDraft(props) {
         <h5 className="card-title" style={{ fontSize: 25 }}>
           {tbsn ? `#${tbsn}` : ""}
         </h5>
-        <h5 className="card-title">{props.title || "TBook Draft"}</h5>
+        <h5 className="card-title">{props.title || "Untitled TBook Draft"}</h5>
       </div>
       <span className="mt-auto w-100 text-center mb-4">
         <a

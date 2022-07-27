@@ -1,12 +1,14 @@
 import tbookModel from "../models/tbook.model.js";
 import extend from "lodash/extend.js";
 import tsalonmessageController from "./tsalonmessage.controller.js";
+import tsalonuserModel from "../models/tsalonuser.model.js";
+import blockchainController from "./blockchain.controller.js"
 
 const update = (req, res, next) => {
   let fields = req.body;
 
   if (fields.tbsn == 0) {
-    // create
+    // Create
     const draft = new tbookModel(fields);
     draft.save().then(
       (acc) => {
@@ -18,7 +20,7 @@ const update = (req, res, next) => {
       }
     );
   } else {
-    // update
+    // Save and Update
     tbookModel
       .findOneAndUpdate(
         { tbsn: fields.tbsn },
@@ -29,6 +31,7 @@ const update = (req, res, next) => {
             content: fields.content,
             lastSaveDate: new Date(),
             coverImage: fields.coverImage,
+            pubMode: fields.pubMode,
           },
         }
       )
@@ -158,6 +161,9 @@ const submitForReview = (req, res) => {
   }
   if (pubMode == "green") {
     tbookModel.findOneAndUpdate({ tbsn: tbsn }, { $set: { stage: "publish", reviewDate: new Date() } }).then((acc) => {
+      tsalonuserModel.findOneAndUpdate({ username: acc.author }, { $inc: { greenTokens: -1 } }).exec();
+      // Publish onto the Blockchain
+      blockchainController.publish(tbsn);
       tsalonmessageController.logMessage(acc.author, "TSalon", `Draft #${acc.tbsn} – \"${acc.title}\" Self-Published`,
         `Congratulations! Your writing \"${acc.title}\" has been self-published as TBook #${tbsn}. 
           As the author, you will receive a free mint of the NFT. Users can view this TBook publicly at tsalon.io/view/${tbsn}`, new Date());
@@ -166,6 +172,7 @@ const submitForReview = (req, res) => {
       res.status(400), json({ success: false, message: rej });
     })
   } else {
+    // Then set the stage for review
     tbookModel
       .findOneAndUpdate(
         { tbsn: tbsn },
