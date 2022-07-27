@@ -17,6 +17,12 @@ function TSalonEditor(props) {
   const [currentTBSN, setCurrentTBSN] = useState(
     sessionStorage.getItem("draftTBSN")
   );
+
+  const watermarkBlue = "assets/logo_circle.png";
+  const watermarkGreen = "assets/logo_circle_green.png";
+  const [watermark, setWatermark] = useState(watermarkBlue);
+  const [greenTokens, setGreenTokens] = useState(0);
+
   const author = sessionStorage.getItem("username");
 
   if (!(author && currentTBSN)) {
@@ -29,10 +35,27 @@ function TSalonEditor(props) {
   };
 
   useEffect(() => {
+    updateCanvas();
+  }, [watermark]);
+
+  // on load
+  useEffect(() => {
+    let authData = auth.getPostAuthData();
+    axios
+      .post(endpoints.getGreenTokensAPI(), authData.body, authData.config)
+      .then(
+        (acc) => {
+          let data = acc.data;
+          setGreenTokens(data.greenTokens);
+        },
+        (rej) => {
+          console.log(rej);
+        }
+      );
+
     if (currentTBSN != 0) {
       // Get request and load content.
       let route = endpoints.getDraftAPI(currentTBSN);
-      let authData = auth.getPostAuthData();
       axios.post(route, authData.body, authData.config).then(
         (acc) => {
           let data = acc.data;
@@ -48,6 +71,7 @@ function TSalonEditor(props) {
       );
     }
   }, []);
+
   const [previewHTML, setPreviewHTML] = useState("");
 
   const blurbLength = 100; // 100 words
@@ -60,8 +84,6 @@ function TSalonEditor(props) {
   }.png`;
 
   const [imgURL, setImgURL] = useState(defaultImgUrl);
-
-  const watermark = "assets/logo_circle.png";
 
   const getBlurbWordCount = () => {
     let currentText = document.getElementById("postBlurb").value;
@@ -77,6 +99,20 @@ function TSalonEditor(props) {
     } else {
       blurbWordCount.className = "text-muted mt-1";
       return true;
+    }
+  };
+
+  const setPublicationChoice = () => {
+    let selector = document.getElementById("pubMode");
+    if (selector.value == "blue") {
+      setWatermark(watermarkBlue);
+    } else if (selector.value == "green") {
+      if (greenTokens > 0) {
+        setWatermark(watermarkGreen);
+      } else {
+        alert("Not enough Green Tokens.");
+        selector.value = "blue";
+      }
     }
   };
 
@@ -117,6 +153,7 @@ function TSalonEditor(props) {
   };
 
   const getSubmitBody = () => {
+    // console.log(pubMode);
     return {
       tbsn: currentTBSN,
       title: document.getElementById("postTitle").value,
@@ -124,11 +161,11 @@ function TSalonEditor(props) {
       author: author,
       content: editor.current.getContents(),
       coverImage: document.getElementById("imgCanvas").toDataURL(),
+      // pubMode: pubModeSubmit,
     };
   };
 
   const submitPost = async () => {
-    console.log("submit");
     let apiURL = endpoints.getDraftSubmitAPI();
     let authData = auth.getPostAuthData();
     if (validateContentLength()) {
@@ -146,21 +183,6 @@ function TSalonEditor(props) {
         }
       );
     }
-  };
-
-  const dangerouslyPublish = async () => {
-    await savePost();
-    let apiURL = endpoints.getAllPubAPI();
-    let postBody = getSubmitBody();
-    axios.post(apiURL, postBody).then(
-      (res) => {
-        let tbsn = res.data.publication.tbsn;
-        window.location.href = "/view/" + tbsn;
-      },
-      (rej) => {
-        console.log(rej);
-      }
-    );
   };
 
   const savePost = async () => {
@@ -193,17 +215,23 @@ function TSalonEditor(props) {
       new Blob(binaryData, { type: "application/zip" })
     );
     setImgURL(url);
+    setPublicationChoice("blue");
     updateCanvas();
   };
 
-  const updateCanvas = () => {
+  const updateCanvas = async () => {
     let canvas = document.getElementById("imgCanvas");
     let ctx = canvas.getContext("2d");
     ctx.imageSmoothingQuality = "high";
     let img = document.getElementById("img");
-    let watermark = document.getElementById("watermark");
     ctx.drawImage(img, 0, 0, 300, 300);
-    ctx.drawImage(watermark, 225, 225, 70, 70);
+
+    let watermarkImg = new Image();
+    watermarkImg.onload = () => {
+      ctx.drawImage(watermarkImg, 225, 225, 70, 70);
+    };
+    watermarkImg.src = watermark;
+
     let coord = 225 + Math.floor((300 - 225) / 2) - 1;
     ctx.beginPath();
     ctx.arc(coord, coord, 30, 0, 2 * Math.PI, false);
@@ -211,15 +239,24 @@ function TSalonEditor(props) {
   };
 
   const generatePreview = async () => {
+    let submitButton = document.getElementById("submitButton");
+    submitButton.style.display = "none";
     setPreviewHTML("");
+
     await savePost();
     let view = <TBookView mode="draft" draftContent={getSubmitBody()} />;
+    submitButton.style.display = "inline";
     let previewMessage = document.getElementById("previewMessage");
     setPreviewHTML(view);
     previewMessage.innerText = "Preview generated. Scroll down to view.";
     previewMessage.className = "text-success mt-0 mx-5";
   };
 
+  const blueText = `Blue-Chip: Community-reviewed TBooks will require peer-reviewers to vote on your draft articles before publication as a publicly-collectible TBook NFT.
+  This ensures publication quality and allows the output to be a curated set of writing. Readers and collectors are more likely to buy peer-reviewed articles. (Recommended)`;
+
+  const greenText = `Green-Chip: Self-publication costs 1 Green Token. This allows you to bypass the peer-review process and directly publish as a publicly collectible TBook NFT. This means that you are able to
+  start earning immediately. However, because these are not community-vetted pieces, readers and collectors may be less willing to read and collect these pieces.`;
   return (
     <div className="h-100">
       <div className="container h-100 mx-0 px-0 mt-3 w-100">
@@ -246,7 +283,7 @@ function TSalonEditor(props) {
                 />
                 <img
                   id="watermark"
-                  src={watermark}
+                  // src={watermark}
                   style={{ display: "none" }}
                 />
                 <input
@@ -279,9 +316,7 @@ function TSalonEditor(props) {
               </div>
             </div>
             <div className="px-5">
-              <h4 id="postContent" className="font-weight-normal">
-                Content
-              </h4>
+              <h4 className="font-weight-normal">Content</h4>
               <p className="text-muted mb-0 mt-1">
                 Must be {minContent} - {maxContent} words
               </p>
@@ -313,12 +348,40 @@ function TSalonEditor(props) {
                   ],
                 }}
               />
+
+              <p id="wordCount" className="text-muted mt-0 mx-5">
+                Word Count: 0
+              </p>
+              <p id="submitMessage" className="text-danger mt-0 mx-5"></p>
+              <p id="previewMessage" className="text-success mt-0 mx-5"></p>
+
+              <h4 className="my-4">Publication mode</h4>
+              <select
+                className="form-select form-select-lg my-3"
+                id="pubMode"
+                onChange={setPublicationChoice}
+              >
+                <option value="blue">Community Reviewed Blue-Chip</option>
+                <option value="green">Self-Published Green-Chip</option>
+              </select>
+
+              <div className="card mt-0 mb-5">
+                <p className="card-body mb-0">
+                  <i className="fa fa-circle text-info"></i>
+                  {"\t\t"} {blueText}
+                </p>
+
+                <p className="card-body my-0">
+                  <i className="fa fa-circle text-success"></i> {"\t\t"}
+                  {greenText}
+                </p>
+                <p>
+                  <i className="fas fa-circle-half-stroke text-success mx-3"></i>
+                  Green Tokens: {"\t\t"}
+                  {greenTokens}
+                </p>
+              </div>
             </div>
-            <p id="wordCount" className="text-muted mt-0 mx-5">
-              Word Count: 0
-            </p>
-            <p id="submitMessage" className="text-danger mt-0 mx-5"></p>
-            <p id="previewMessage" className="text-success mt-0 mx-5"></p>
             <div className="row justify-content-center my-5">
               <button
                 className="btn btn-primary col-3 mx-3"
@@ -338,11 +401,12 @@ function TSalonEditor(props) {
             <div className="card w-100">
               {previewHTML}
               <button
+                id="submitButton"
                 className="btn btn-success text-center m-auto mb-4 px-4"
-                style={{ borderRadius: 25 }}
+                style={{ borderRadius: 25, display: "none" }}
                 onClick={submitPost}
               >
-                Submit to Peer Review
+                Submit Draft
               </button>
             </div>
           </div>

@@ -25,7 +25,6 @@ contract TBookFactory is Ownable, ERC721 {
         bool exists;
         uint256 tbsn;
         uint256 numCopies; // Max 10 ** 12 copies
-        uint256 mintPrice;
         address payable author;
         mapping(address => uint256) collectors;
     }
@@ -56,7 +55,7 @@ contract TBookFactory is Ownable, ERC721 {
     uint256 private _maxCopies;
 
     constructor() ERC721("TBook", "TBK") {
-        _maxCopies = 10**9;
+        _maxCopies = 10**5;
     }
 
     // -------- Test functions -----------
@@ -105,9 +104,22 @@ contract TBookFactory is Ownable, ERC721 {
         }
     }
 
+    function userHoldsTBSN(uint256 tbsn, address userAddress)
+        public
+        view
+        returns (bool)
+    {
+        TBookInfo storage book = tbsnToBook[tbsn];
+        if (book.exists && (book.collectors[userAddress] > 0)) {
+            return true;
+        }
+        return false;
+    }
+
     // Mint a copy of the book
     function mint(uint256 tbsn, address mintAddress) internal {
         require(tbsnToBook[tbsn].exists);
+        require(tbsnToBook[tbsn].numCopies < _maxCopies);
         uint256 currentCopy = tbsnToBook[tbsn].numCopies;
 
         // Generate the ID from the TBSN + Copy Number
@@ -211,10 +223,15 @@ contract TBookFactory is Ownable, ERC721 {
     function getPrice(uint256 tbsn) public view returns (uint256) {
         require(tbsnToBook[tbsn].exists, "TBook does not exist");
         uint256 floor = 10;
-        uint256 step = 50;
+        uint256 inc = 10; // linear
+        // exponential:
+        // uint256 step = 50;
+        // uint256 power = copies / step;
+        // uint256 price = floor * (2**power);
+
         uint256 copies = tbsnToBook[tbsn].numCopies;
-        uint256 power = copies / step;
-        return floor * (2**power); // returns in finneys
+        uint256 price = floor + (copies * inc);
+        return price; // returns in finneys
     }
 
     function collect(uint256 tbsn, address collector)
@@ -277,5 +294,9 @@ contract TBookFactory is Ownable, ERC721 {
             info.firstLinkId,
             info.lastLinkId
         );
+    }
+
+    function getTBookExists(uint256 tbsn) public view returns (bool) {
+        return tbsnToBook[tbsn].exists;
     }
 }

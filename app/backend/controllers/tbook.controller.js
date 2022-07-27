@@ -149,29 +149,44 @@ const deleteDraft = (req, res) => {
 const submitForReview = (req, res) => {
   let fields = req.body;
   let tbsn = fields.tbsn;
+  let pubMode = fields.pubMode;
+
+  console.log(fields)
+
   if (!tbsn) {
     res.status(400), json({ success: false, message: "No TBSN found" });
   }
-  tbookModel
-    .findOneAndUpdate(
-      { tbsn: tbsn },
-      {
-        $set: {
-          stage: "review",
-          reviewDate: new Date(),
+  if (pubMode == "green") {
+    tbookModel.findOneAndUpdate({ tbsn: tbsn }, { $set: { stage: "publish", reviewDate: new Date() } }).then((acc) => {
+      tsalonmessageController.logMessage(acc.author, "TSalon", `Draft #${acc.tbsn} – \"${acc.title}\" Self-Published`,
+        `Congratulations! Your writing \"${acc.title}\" has been self-published as TBook #${tbsn}. 
+          As the author, you will receive a free mint of the NFT. Users can view this TBook publicly at tsalon.io/view/${tbsn}`, new Date());
+      res.status(200).json({ success: true })
+    }, (rej) => {
+      res.status(400), json({ success: false, message: rej });
+    })
+  } else {
+    tbookModel
+      .findOneAndUpdate(
+        { tbsn: tbsn },
+        {
+          $set: {
+            stage: "review",
+            reviewDate: new Date(),
+          },
+        }
+      )
+      .then(
+        (acc) => {
+          tsalonmessageController.logMessage(acc.author, "TSalon", `Draft #${acc.tbsn} – \"${acc.title}\" Submitted for Review`,
+            tsalonmessageController.reviewMessage, new Date());
+          res.status(200).json({ success: true })
         },
-      }
-    )
-    .then(
-      (acc) => {
-        tsalonmessageController.logMessage(acc.author, "TSalon", `Draft #${acc.tbsn} – \"${acc.title}\" Submitted for Review`,
-          tsalonmessageController.reviewMessage, new Date());
-        res.status(200).json({ success: true })
-      },
-      (rej) => {
-        res.status(400), json({ success: false, message: "TBSN not found" });
-      }
-    );
+        (rej) => {
+          res.status(400), json({ success: false, message: rej });
+        }
+      );
+  }
 };
 
 export default {

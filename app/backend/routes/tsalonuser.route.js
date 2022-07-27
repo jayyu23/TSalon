@@ -15,6 +15,7 @@ router
 router.route("/api/userHolder").post(tsalonuserController.requireSignin, tsalonuserController.hasAuthorization, tsalonuserController.userIsHolder);
 router.route("/api/createUser").post(tsalonuserController.createUser);
 router.route("/api/profile/:username").get(tsalonuserController.getCollection)
+router.route("/api/getGreenTokens").post(tsalonuserController.requireSignin, tsalonuserController.hasAuthorization, tsalonuserController.getGreenTokens);
 router.route("/api/messages/:username").post(tsalonuserController.requireSignin, tsalonuserController.hasAuthorization,
   tsalonmessageController.getMessages)
 

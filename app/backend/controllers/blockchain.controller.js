@@ -19,11 +19,11 @@ class BlockchainController {
   constructor() {
     this.exchangeAPI = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum";
     this.initWeb3();
-    console.log("Blockchain init status: " + this.init)
+    console.log("Init - Blockchain connection success: " + this.init)
   }
 
   initWeb3() {
-    this.networkId = 4; // Rinkeby
+    this.networkId = 4; // Rinkeby = 4, Ganache = 5777 "0x539"
     this.defaultWallet = process.env.DEFAULT_WALLET;
     this.infuraToken = process.env.INFURA_PROJECT_ID;
     this.contractAddress = TBookFactory.networks[this.networkId].address;
@@ -37,10 +37,23 @@ class BlockchainController {
     this.init = true;
   }
 
+  async updateFromDatabase(publications) {
+    for (let index = 0; index < publications.length; index++) {
+      let tbsn = publications[index].tbsn;
+      // check if exists on the blockchain
+      let bookExists = await instance.contract.methods.getTBookExists(tbsn).call();
+      if (!bookExists) {
+        // does not exist, then publish
+        await instance.publish(tbsn);
+      }
+    }
+  }
+
+
   async publish(tbsn) {
     // Get the author address
     // let pub = req.publication;
-    await mongoose.connect(config.mongoUri);
+    // await mongoose.connect(config.mongoUri);
     const pub = await tbookModel.findOne({ tbsn: tbsn, stage: "publish" });
     console.log(pub)
     assert(pub, "Error – Bad TBSN")
@@ -51,7 +64,7 @@ class BlockchainController {
     let estimatedGas = await instance.contract.methods
       .publish(tbsn, authorAddress)
       .estimateGas({ from: instance.defaultWallet });
-    console.log(estimatedGas);
+    // console.log(estimatedGas);
     await instance.contract.methods
       .publish(tbsn, authorAddress)
       .send({ from: instance.defaultWallet, gas: Math.round(estimatedGas * 1.2) });

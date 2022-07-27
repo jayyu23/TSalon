@@ -166,6 +166,15 @@ const getAddressFromUsername = (req, res, next, username) => {
   }
 }
 
+const getGreenTokens = (req, res, next) => {
+  let username = req.body.username;
+  tsalonuserModel.findOne({ username: username }).select({ username: 1, greenTokens: 1 }).exec().then((acc) => {
+    res.status(200).json({ success: true, greenTokens: acc.greenTokens, username: acc.username });
+  }, (rej) => {
+    res.status(400).json({ success: false, error: rej });
+  })
+}
+
 export default {
   createUser: createUser,
   signin: signin,
@@ -174,5 +183,6 @@ export default {
   passedAuthentication: passedAuthentication,
   getAddressFromUsername: getAddressFromUsername,
   getCollection: getCollection,
-  userIsHolder: userIsHolder
+  userIsHolder: userIsHolder,
+  getGreenTokens: getGreenTokens
 };

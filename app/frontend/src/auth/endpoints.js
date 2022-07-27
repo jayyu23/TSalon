@@ -1,7 +1,8 @@
 // One-stop-shop to handle endpoints for API calls.
 class EndPoints {
   constructor() {
-    this.baseURL = "https://tsalon.io/api/";
+    // this.baseURL = "https://tsalon.io/api/";
+    this.baseURL = "http://localhost:8000/api/"
     this.urlMap = {
       signin: "signin",
       auth: "auth",
@@ -17,7 +18,8 @@ class EndPoints {
       getCollection: "profile/",
       submitVote: "submitVote",
       messages: "messages/",
-      isUserHolder: "userHolder"
+      isUserHolder: "userHolder",
+      getGreenTokens: "getGreenTokens"
     };
   }
 
@@ -74,6 +76,9 @@ class EndPoints {
   }
   getUserHolderAPI() {
     return this.baseURL + this.urlMap.isUserHolder;
+  }
+  getGreenTokensAPI() {
+    return this.baseURL + this.urlMap.getGreenTokens;
   }
 }
 
