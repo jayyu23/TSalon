@@ -24,7 +24,7 @@ const getReview = (req, res) => {
     }
     // First get all the articles that review=true
     tbookModel
-      .find({ review: true })
+      .find({ stage: "review" })
       .sort({ lastReviewDate: 1 })
       .exec()
       .then(
