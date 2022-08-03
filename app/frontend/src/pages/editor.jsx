@@ -48,7 +48,9 @@ function TSalonEditor(props) {
       .post(endpoints.getGreenTokensAPI(), authData.body, authData.config)
       .then(
         (acc) => {
+          console.log(acc.data);
           let greenTokensNum = acc.data.greenTokens;
+          setGreenTokens(greenTokensNum);
           if (currentTBSN != 0) {
             // Get request and load content.
             let route = endpoints.getDraftAPI(currentTBSN);
@@ -69,6 +71,7 @@ function TSalonEditor(props) {
             );
           }
         },
+
         (rej) => {
           console.log(rej);
         }
