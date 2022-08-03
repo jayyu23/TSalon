@@ -319,6 +319,15 @@ function NavBar(props) {
                 <a
                   className="nav-link px-lg-3 py-3 py-lg-4"
                   target="_blank"
+                  href="https://trapezoidal-nephew-39b.notion.site/Guides-92598b3816bc4742b20710be69e99a1a"
+                >
+                  User Guides
+                </a>
+              </li>
+              <li className="nav-item">
+                <a
+                  className="nav-link px-lg-3 py-3 py-lg-4"
+                  target="_blank"
                   href="https://trapezoidal-nephew-39b.notion.site/TSalon-Whitepaper-9d27f5c901bc4dcaa53bace710421fce"
                 >
                   Whitepaper
