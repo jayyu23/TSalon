@@ -154,7 +154,7 @@ function UserDrafts() {
       </div>
     </div>
   );
-  return <div>{isSalonite ? pageHTML : <MemberOnly active={2} />}</div>;
+  return <div>{isSalonite ? pageHTML : pageHTML}</div>; // <MemberOnly active={2} />
 }
 
 export default UserDrafts;
