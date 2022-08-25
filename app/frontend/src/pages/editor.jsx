@@ -82,7 +82,7 @@ function TSalonEditor(props) {
 
   const blurbLength = 100; // 100 words
   const minContent = 300; // min word count for content
-  const maxContent = 2500; // max word count for content
+  const maxContent = 3000; // max word count for content
 
   const defaultImages = ["aqua", "green", "purple", "orange", "yellow"];
   const defaultImgUrl = `assets/logo_square_${

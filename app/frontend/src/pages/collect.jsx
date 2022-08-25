@@ -147,6 +147,7 @@ function CollectPage(props) {
         "Transaction Success! Completed " + new Date().toLocaleString()
       );
       setTxHash(result.transactionHash);
+      // axios post transaction success
     } catch (err) {
       resetTimer();
       setBuyError("Transaction Error. Please try again.");
